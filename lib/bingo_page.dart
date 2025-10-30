@@ -20,7 +20,8 @@ class BingoPage extends StatelessWidget {
               child: Flex(
                 direction: Axis.horizontal,
                 children: [
-                  Expanded(flex: 2, child: _buildHeader(game.playerName)),
+                  Expanded(
+                      flex: 2, child: _buildHeader(game.currentPlayer.name)),
                   Expanded(flex: 2, child: _buildGrid(game.cells)),
                   const Expanded(flex: 1, child: SizedBox.shrink()),
                 ],
@@ -228,9 +229,7 @@ class BingoPage extends StatelessWidget {
               },
               child: Container(
                 decoration: BoxDecoration(
-                  color: (cells[index].isCompleted)
-                      ? const Color.fromARGB(255, 94, 153, 99)
-                      : const Color.fromARGB(255, 212, 148, 88),
+                  color: paintBox(cells, index),
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Center(
@@ -244,5 +243,16 @@ class BingoPage extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  Color paintBox(List<Cell> cells, int index) {
+    if (cells[index].triggerWrong) {
+      game.resetTriggerWrong(index);
+      return const Color.fromARGB(255, 231, 121, 87);
+    } else {
+      return (cells[index].isCompleted)
+          ? const Color.fromARGB(255, 94, 153, 99)
+          : const Color.fromARGB(255, 212, 148, 88);
+    }
   }
 }

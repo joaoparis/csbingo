@@ -3,15 +3,16 @@ import 'dart:convert';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:http/http.dart' as http;
 
-class Player {
+class PlayerDTO {
   final String name;
   final String nationality;
   final String team;
 
-  Player({required this.name, required this.nationality, required this.team});
+  PlayerDTO(
+      {required this.name, required this.nationality, required this.team});
 
-  factory Player.fromJson(Map<String, dynamic> json) {
-    return Player(
+  factory PlayerDTO.fromJson(Map<String, dynamic> json) {
+    return PlayerDTO(
       name: json['name'] ?? '',
       nationality: json['nationality'] ?? '',
       team: json['team'] ?? '',
@@ -24,13 +25,13 @@ class PlayersGateway {
 
   PlayersGateway({this.baseUrl = 'http://localhost:8080'});
 
-  Future<Player> fetchRandomPlayer() async {
+  Future<PlayerDTO> fetchRandomPlayer() async {
     final uri = Uri.parse('$baseUrl/api/player/random');
     try {
       final resp = await http.get(uri);
       if (resp.statusCode == 200) {
         final Map<String, dynamic> jsonBody = json.decode(resp.body);
-        return Player.fromJson(jsonBody);
+        return PlayerDTO.fromJson(jsonBody);
       } else {
         throw Exception(
             'Failed to fetch player: ${resp.statusCode} ${resp.body}');

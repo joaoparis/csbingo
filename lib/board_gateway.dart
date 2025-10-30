@@ -8,11 +8,6 @@ class BoardGateway {
 
   BoardGateway({this.baseUrl = 'http://localhost:8080'});
 
-  /// Fetches a random board from `/api/board/random`.
-  /// Response shape expected:
-  /// {"board": ["Astralis","NAVI", ... ]}
-  ///
-  /// Returns the list of team/cell strings on success.
   Future<List<String>> fetchRandomBoard() async {
     final uri = Uri.parse('$baseUrl/api/board/random');
     try {
