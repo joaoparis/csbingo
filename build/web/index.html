@@ -35,7 +35,7 @@
   <script>
     // The value below is injected by flutter build, do not touch.
     // Use the template token so the build replaces it with the actual version.
-    const serviceWorkerVersion = ""1677826422"";
+    const serviceWorkerVersion = "1677826422";
   </script>
   <!-- This script adds the flutter initialization JS code -->
   <script src="flutter.js" defer></script>
@@ -56,5 +56,24 @@
       });
     });
   </script>
+  <script type="module">
+  // Import the functions you need from the SDKs you need
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-app.js";
+  // TODO: Add SDKs for Firebase products that you want to use
+  // https://firebase.google.com/docs/web/setup#available-libraries
+
+  // Your web app's Firebase configuration
+  const firebaseConfig = {
+    apiKey: "AIzaSyBfauk1Nnw0uFlSoOwLn9GhX4vFTpGFgoo",
+    authDomain: "csbingo-dbeda.firebaseapp.com",
+    projectId: "csbingo-dbeda",
+    storageBucket: "csbingo-dbeda.firebasestorage.app",
+    messagingSenderId: "130333708625",
+    appId: "1:130333708625:web:4b6245a8aacd2325e48370"
+  };
+
+  // Initialize Firebase
+  const app = initializeApp(firebaseConfig);
+</script>
 </body>
 </html>
