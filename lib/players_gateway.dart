@@ -23,7 +23,10 @@ class PlayerDTO {
 class PlayersGateway {
   final String baseUrl;
 
-  PlayersGateway({this.baseUrl = 'http://localhost:8080'});
+  // PlayersGateway({this.baseUrl = 'http://localhost:8080'});
+  PlayersGateway(
+      {this.baseUrl =
+          'https://backendcsbingo-joaoparis7294-rqyu3jzi.leapcell.dev'});
 
   Future<PlayerDTO> fetchRandomPlayer() async {
     final uri = Uri.parse('$baseUrl/api/player/random');

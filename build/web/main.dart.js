@@ -35834,7 +35834,7 @@ A.Es.prototype={}
 A.a_E.prototype={
 rG(){var s=0,r=A.V(t.bl),q,p=2,o=[],n,m,l,k,j,i,h,g,f,e
 var $async$rG=A.W(function(a,b){if(a===1){o.push(b)
-s=p}while(true)switch(s){case 0:f=A.fB("https://backendcsbingo.vercel.app/api/api/player/random")
+s=p}while(true)switch(s){case 0:f=A.fB("https://backendcsbingo-joaoparis7294-rqyu3jzi.leapcell.dev/api/player/random")
 p=4
 s=7
 return A.Y(A.alo(f),$async$rG)
@@ -35858,7 +35858,7 @@ break
 case 4:p=3
 e=o.pop()
 l=A.ah(e)
-k=A.cL("Network error while fetching player (XMLHttpRequest). If you're running on web, this is commonly caused by CORS. Ensure the server at https://backendcsbingo.vercel.app/api adds the header `Access-Control-Allow-Origin: *` (or the origin of your app). Original error: "+A.m(l))
+k=A.cL("Network error while fetching player (XMLHttpRequest). If you're running on web, this is commonly caused by CORS. Ensure the server at https://backendcsbingo-joaoparis7294-rqyu3jzi.leapcell.dev adds the header `Access-Control-Allow-Origin: *` (or the origin of your app). Original error: "+A.m(l))
 throw A.e(k)
 s=6
 break
