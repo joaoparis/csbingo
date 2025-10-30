@@ -32,14 +32,6 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
-
-  void _incrementCounter() {
-    setState(() {
-      _counter++;
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -47,33 +39,25 @@ class _MyHomePageState extends State<MyHomePage> {
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         title: Text(widget.title),
       ),
-      body: Stack(children: [
-        Positioned.fill(
-          child: Image.asset(
-            'assets/images/BG_LANDSCAPE.png', // your Dust2-style background
-            fit: BoxFit.cover,
-            color: Colors.black.withOpacity(0.3),
-            colorBlendMode: BlendMode.darken,
-          ),
-        ),
-        const SafeArea(
-          child: Padding(
-            padding: EdgeInsets.all(8.0),
-            child: Center(
-              child: BingoGame(),
-              // child: BingoPage(
-              //   playerName: "Jonyyyyy",
-              //   playerPhoto: "photo",
-              //   cells: ["PT", "DE", "BR", "EN", "FR", "ES", "IT", "NE"],
-              // ),
+      body: Stack(
+        children: [
+          Positioned.fill(
+            child: Image.asset(
+              'assets/images/BG_LANDSCAPE.png',
+              fit: BoxFit.cover,
+              color: Colors.black.withOpacity(0.3),
+              colorBlendMode: BlendMode.darken,
             ),
           ),
-        ),
-      ]),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: const Icon(Icons.add),
+          const SafeArea(
+            child: Padding(
+              padding: EdgeInsets.all(8.0),
+              child: Center(
+                child: BingoGame(),
+              ),
+            ),
+          ),
+        ],
       ), // This trailing comma makes auto-formatting nicer for build methods.
     );
   }
