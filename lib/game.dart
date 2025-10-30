@@ -1,4 +1,6 @@
+import 'package:csbingo/board_gateway.dart';
 import 'package:flutter/material.dart';
+import 'package:csbingo/players_gateway.dart';
 
 class Game extends ChangeNotifier {
   String state = "Idle";
@@ -15,6 +17,7 @@ class Game extends ChangeNotifier {
     print(skips);
     if (skips > 0) {
       skips--;
+      nextPlayer();
     } else {
       state = "GameOver";
     }
@@ -32,8 +35,9 @@ class Game extends ChangeNotifier {
 
   void start() {
     state = "Playing";
-    generateCells();
+    generateGameCells();
     skips = 2;
+    nextPlayer();
     notifyListeners();
   }
 
@@ -46,6 +50,7 @@ class Game extends ChangeNotifier {
       if (cells.every((cell) => cell.isCompleted)) {
         state = "GameOver";
       }
+      nextPlayer();
       notifyListeners();
     }
   }
@@ -55,6 +60,35 @@ class Game extends ChangeNotifier {
       16,
       (i) => Cell(title: "a", image: "assets/images/C4.png"),
     );
+  }
+
+  generateGameCells() {
+    try {
+      BoardGateway().fetchRandomBoard().then((boardItems) {
+        cells = boardItems
+            .map((item) => Cell(title: item, image: "assets/images/C4.png"))
+            .toList();
+        notifyListeners();
+      });
+    } catch (e) {
+      print('generateGameCells error: $e');
+      generateCells();
+      notifyListeners();
+    }
+  }
+
+  Future<void> nextPlayer() async {
+    try {
+      final player = await PlayersGateway().fetchRandomPlayer();
+      playerName = player.name;
+      playerPhoto = "assets/images/C4.png";
+    } catch (e) {
+      print('nextPlayer error: $e');
+      playerName = 'Unknown';
+      playerPhoto = "assets/images/C4.png";
+    }
+
+    notifyListeners();
   }
 }
 

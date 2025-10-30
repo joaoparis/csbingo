@@ -234,7 +234,9 @@ class BingoPage extends StatelessWidget {
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Center(
-                  child: Image.asset(cells[index].image),
+                  child: (game.state == "Playing")
+                      ? Text(cells[index].title)
+                      : Image.asset(cells[index].image),
                 ),
               ),
             );
