@@ -6,7 +6,10 @@ import 'package:http/http.dart' as http;
 class BoardGateway {
   final String baseUrl;
 
-  BoardGateway({this.baseUrl = 'http://localhost:8080'});
+  // BoardGateway({this.baseUrl = 'http://localhost:8080'});
+  BoardGateway(
+      {this.baseUrl =
+          'https://backendcsbingo-joaoparis7294-rqyu3jzi.leapcell.dev'});
 
   Future<List<String>> fetchRandomBoard() async {
     final uri = Uri.parse('$baseUrl/api/board/random');

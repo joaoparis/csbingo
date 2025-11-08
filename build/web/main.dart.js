@@ -35714,7 +35714,7 @@ $S:0}
 A.Qj.prototype={
 rF(){var s=0,r=A.V(t.yp),q,p=2,o=[],n,m,l,k,j,i,h,g
 var $async$rF=A.W(function(a,b){if(a===1){o.push(b)
-s=p}while(true)switch(s){case 0:h=A.fB("http://localhost:8080/api/board/random")
+s=p}while(true)switch(s){case 0:h=A.fB("https://backendcsbingo-joaoparis7294-rqyu3jzi.leapcell.dev/api/board/random")
 p=4
 s=7
 return A.Y(A.alo(h),$async$rF)
@@ -35734,7 +35734,7 @@ break
 case 4:p=3
 g=o.pop()
 k=A.ah(g)
-j=A.cL("Network error while fetching board (XMLHttpRequest). If you're running on web, this is commonly caused by CORS. Ensure the server at http://localhost:8080 adds the header `Access-Control-Allow-Origin: *` (or the origin of your app). Original error: "+A.m(k))
+j=A.cL("Network error while fetching board (XMLHttpRequest). If you're running on web, this is commonly caused by CORS. Ensure the server at https://backendcsbingo-joaoparis7294-rqyu3jzi.leapcell.dev adds the header `Access-Control-Allow-Origin: *` (or the origin of your app). Original error: "+A.m(k))
 throw A.e(j)
 s=6
 break
