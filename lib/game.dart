@@ -1,117 +1,28 @@
 import 'package:csbingo/board_gateway.dart';
+import 'package:csbingo/game_state.dart';
 import 'package:flutter/material.dart';
 import 'package:csbingo/players_gateway.dart';
 
 class Game extends ChangeNotifier {
+  bool isGameInitialized = false;
   String state = "Idle";
-  int skips = 2;
+  int skips = 3;
+  List<Cell> cells = [];
+  int round = 0;
+
   Player currentPlayer = Player(
     name: "",
     nationality: "",
     team: "",
     image: "assets/images/C4.png",
   );
-  List<Cell> cells = [];
 
-  Game() {
-    generateCells();
-  }
-
-  void skip() {
-    print(skips);
-    if (skips > 0) {
-      skips--;
-      nextPlayer();
-    } else {
-      state = "GameOver";
-    }
-    notifyListeners();
-  }
-
-  String getButtonTitle() {
-    return switch (state) {
-      "Idle" => "PLAY",
-      "Playing" => "SKIP",
-      "GameOver" => "PLAY AGAIN",
-      String() => "SKIP",
-    };
-  }
-
-  void start() {
-    state = "Playing";
-    generateGameCells();
-    skips = 2;
-    nextPlayer();
-    notifyListeners();
-  }
-
-  void cellTapped(int index) {
-    if (cells[index].isCompleted || state != "Playing") {
-      return;
-    } else {
-      if (isCorrect(cells[index])) {
-        cells[index].isCompleted = true;
-        if (cells.every((cell) => cell.isCompleted)) {
-          state = "GameOver";
-        }
-        nextPlayer();
-      } else {
-        blinkRed(index);
-      }
-      notifyListeners();
-    }
-  }
-
-  void blinkRed(int index) {
-    cells[index].triggerWrong = true;
-    notifyListeners();
-    resetTriggerWrong(index);
-  }
-
-  generateCells() {
+  void generate() {
     cells = List.generate(
       16,
       (i) => Cell(title: "a", image: "assets/images/C4.png"),
     );
-  }
-
-  generateGameCells() {
-    try {
-      BoardGateway().fetchRandomBoard().then((boardItems) {
-        cells = boardItems
-            .map((item) => Cell(title: item, image: "assets/images/C4.png"))
-            .toList();
-        notifyListeners();
-      });
-    } catch (e) {
-      print('generateGameCells error: $e');
-      generateCells();
-      notifyListeners();
-    }
-  }
-
-  Future<void> nextPlayer() async {
-    try {
-      final player = await PlayersGateway().fetchRandomPlayer();
-      currentPlayer = Player(
-        name: player.name,
-        nationality: player.nationality,
-        team: player.team,
-        image: "assets/images/C4.png",
-      );
-    } catch (e) {
-      print('nextPlayer error: $e');
-    }
-
-    notifyListeners();
-  }
-
-  bool isCorrect(Cell cell) {
-    if (cell.title == currentPlayer.nationality ||
-        cell.title == currentPlayer.team) {
-      return true;
-    }
-    return false;
+    isGameInitialized = true;
   }
 
   void resetTriggerWrong(int index) =>
@@ -119,6 +30,64 @@ class Game extends ChangeNotifier {
         cells[index].triggerWrong = false;
         notifyListeners();
       });
+
+  void buttonClicked() {
+    switch (state) {
+      case GameState.idle:
+        play();
+      case GameState.playing:
+        playing();
+      case GameState.gameOver:
+        gameOver();
+    }
+  }
+
+  void selectCell(int index) {
+    if (state != GameState.playing) return;
+
+    final cell = cells[index];
+    if (cell.isCompleted) return;
+
+    // if (cell.title == currentPlayer.name) {
+    cell.isCompleted = true;
+    round++;
+    notifyListeners();
+    // } else {
+    //   cell.triggerWrong = true;
+    //   notifyListeners();
+    //   resetTriggerWrong(index);
+    // }
+  }
+
+  void gameOver() {
+    skips = 3;
+    state = GameState.idle;
+    notifyListeners();
+  }
+
+  void play() {
+    if (!isGameInitialized) {
+      round = 0;
+      generate();
+    }
+    state = GameState.loading;
+    notifyListeners();
+  }
+
+  void start() {
+    state = GameState.playing;
+    notifyListeners();
+  }
+
+  void playing() {
+    if (skips > 0) {
+      round++;
+      skips -= 1;
+      return;
+    }
+    state = GameState.gameOver;
+    notifyListeners();
+  }
 }
 
 class Cell {

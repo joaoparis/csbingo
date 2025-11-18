@@ -51,12 +51,6 @@ class _MyHomePageState extends State<MyHomePage> {
           ),
           const SafeArea(
             child: BingoWidget(),
-            // Padding(
-            //   padding: EdgeInsets.all(8.0),
-            //   child: Center(
-            //     child: BingoGame(),
-            //   ),
-            // ),
           ),
         ],
       ),
