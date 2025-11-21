@@ -34,6 +34,7 @@ class Game extends ChangeNotifier {
   void buttonClicked() {
     switch (state) {
       case GameState.idle:
+        reset();
         play();
       case GameState.playing:
         playing();
@@ -64,6 +65,8 @@ class Game extends ChangeNotifier {
     state = GameState.idle;
     notifyListeners();
   }
+
+  void reset() => isGameInitialized = false;
 
   void play() {
     if (!isGameInitialized) {

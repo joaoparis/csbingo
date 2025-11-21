@@ -13,9 +13,8 @@ class ViewModelInstanceBindings {
   final ViewModelInstanceString outputText;
   final ViewModelInstanceString timerText;
   final ViewModelInstanceString scoreText;
-  final ViewModelInstanceString cellStatus;
-  final ViewModelInstanceString cellNumber;
   final List<ViewModelInstanceAssetImage> cellImages;
+  final List<ViewModelInstanceString> cellStatuses;
 
   ViewModelInstanceBindings({
     required this.buttonText,
@@ -24,9 +23,8 @@ class ViewModelInstanceBindings {
     required this.outputText,
     required this.timerText,
     required this.scoreText,
-    required this.cellStatus,
-    required this.cellNumber,
     required this.cellImages,
+    required this.cellStatuses,
   });
 }
 
@@ -83,20 +81,25 @@ class RiveGameBridge {
   void _applyGameStateToRive() async {
     switch (game.state) {
       case GameState.idle:
+        print("[GameState] idle");
         _setIdleText();
         _setPlayButton();
+        _resetCellStatus();
         break;
       case GameState.loading:
+        print("[GameState] loading");
         _setLoadingText();
         await _setCellImages();
         game.start();
         break;
       case GameState.playing:
+        print("[GameState] playing");
         _setPlayText();
         _setSkipButton();
         _setCellsStatus();
         break;
       case GameState.gameOver:
+        print("[GameState] gameOver");
         _setResetButton();
         await _setCellImages(isEmpty: true);
         _setGameOverText();
@@ -169,12 +172,17 @@ class RiveGameBridge {
   void _setCellsStatus() {
     for (var i = 0; i < game.cells.length; i++) {
       if (game.cells[i].isCompleted) {
-        _bindings!.cellNumber.value = "$i";
-        _bindings!.cellStatus.value = "correct";
+        print("Correct $i");
+        _bindings!.cellStatuses[i].value = "correct";
       }
     }
-    // _bindings!.cellNumber.value = "";
-    // _bindings!.cellStatus.value = "idle";
+  }
+
+  void _resetCellStatus() {
+    for (var i = 0; i < _bindings!.cellStatuses.length; i++) {
+      print("Reseting $i");
+      _bindings!.cellStatuses[i].value = "idle";
+    }
   }
 
   void _setIdleText() => _bindings!.outputText.value = "gl hf";
