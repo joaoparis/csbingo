@@ -1,14 +1,31 @@
+import 'dart:async';
+
 import 'package:csbingo/board_gateway.dart';
 import 'package:csbingo/game_state.dart';
+import 'package:csbingo/game_timer.dart';
 import 'package:flutter/material.dart';
 import 'package:csbingo/players_gateway.dart';
 
 class Game extends ChangeNotifier {
+  static int maxRounds = 10;
+  static int maxSkips = 3;
   bool isGameInitialized = false;
   String state = "Idle";
-  int skips = 3;
+  int rounds = maxRounds;
+  int skips = maxSkips;
   List<Cell> cells = [];
-  int round = 0;
+  GameTimer timer = GameTimer();
+  late final VoidCallback _timerListener;
+  late final StreamSubscription _timerFinishedSub;
+  Duration roundTime = const Duration(seconds: 5);
+
+  Game() {
+    _timerListener = () => notifyListeners();
+    timer.timerText.addListener(_timerListener);
+    _timerFinishedSub = timer.onTimerFinished.listen((_) {
+      _onTimerFinished();
+    });
+  }
 
   Player currentPlayer = Player(
     name: "",
@@ -37,7 +54,7 @@ class Game extends ChangeNotifier {
         reset();
         play();
       case GameState.playing:
-        playing();
+        skip();
       case GameState.gameOver:
         gameOver();
     }
@@ -49,19 +66,22 @@ class Game extends ChangeNotifier {
     final cell = cells[index];
     if (cell.isCompleted) return;
 
-    // if (cell.title == currentPlayer.name) {
+    //TODO: check if response is correct
     cell.isCompleted = true;
-    round++;
+
+    rounds--;
+    if (rounds >= 0) {
+      timer.resetTimer();
+      timer.startTimer(roundTime);
+      notifyListeners();
+      return;
+    }
+    timer.resetTimer();
+    state = GameState.gameOver;
     notifyListeners();
-    // } else {
-    //   cell.triggerWrong = true;
-    //   notifyListeners();
-    //   resetTriggerWrong(index);
-    // }
   }
 
   void gameOver() {
-    skips = 3;
     state = GameState.idle;
     notifyListeners();
   }
@@ -70,7 +90,8 @@ class Game extends ChangeNotifier {
 
   void play() {
     if (!isGameInitialized) {
-      round = 0;
+      rounds = maxRounds;
+      skips = maxSkips;
       generate();
     }
     state = GameState.loading;
@@ -78,14 +99,40 @@ class Game extends ChangeNotifier {
   }
 
   void start() {
+    timer.startTimer(roundTime);
     state = GameState.playing;
     notifyListeners();
   }
 
-  void playing() {
-    if (skips > 0) {
-      round++;
-      skips -= 1;
+  void skip() {
+    if (skips < 0 && rounds >= 0) return;
+    rounds--;
+    skips--;
+    if (skips >= 0 || rounds >= 0) {
+      timer.resetTimer();
+      timer.startTimer(roundTime);
+      notifyListeners();
+      return;
+    }
+    state = GameState.gameOver;
+    notifyListeners();
+  }
+
+  @override
+  void dispose() {
+    try {
+      timer.timerText.removeListener(_timerListener);
+    } catch (_) {}
+    _timerFinishedSub.cancel();
+    timer.dispose();
+    super.dispose();
+  }
+
+  void _onTimerFinished() {
+    rounds--;
+    if (rounds >= 0) {
+      timer.resetTimer();
+      timer.startTimer(roundTime);
       return;
     }
     state = GameState.gameOver;

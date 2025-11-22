@@ -34,6 +34,8 @@ class RiveGameBridge {
 
   RiveWidgetController? _controller;
   ViewModelInstanceBindings? _bindings;
+  bool _isLoadingImages = false;
+  final Set<int> _loadedImageIndices = {};
   bool get isReady => _bindings != null && _controller != null;
 
   RiveGameBridge({required this.game}) {
@@ -95,8 +97,9 @@ class RiveGameBridge {
       case GameState.playing:
         print("[GameState] playing");
         _setPlayText();
-        _setSkipButton();
+        _setButtonText();
         _setCellsStatus();
+        _updateTimer();
         break;
       case GameState.gameOver:
         print("[GameState] gameOver");
@@ -151,21 +154,43 @@ class RiveGameBridge {
     _bindings!.buttonText.value = 'SKIP';
   }
 
+  void _setForfeitButton() {
+    _bindings!.buttonStatus.value = 'red';
+    _bindings!.buttonText.value = 'FORFEIT';
+  }
+
+  void _setGreyButton() {
+    _bindings!.buttonStatus.value = 'grey';
+    _bindings!.buttonText.value = 'should be grey';
+  }
+
   void _setPlayButton() {
     _bindings!.buttonStatus.value = 'green';
     _bindings!.buttonText.value = 'PLAY';
   }
 
   Future<void> _setCellImages({bool isEmpty = false}) async {
-    for (var cell in _bindings!.cellImages) {
-      if (isEmpty) {
-        cell.value = null;
-      } else {
+    if (_isLoadingImages) return;
+    _isLoadingImages = true;
+    try {
+      for (var i = 0; i < _bindings!.cellImages.length; i++) {
+        final cell = _bindings!.cellImages[i];
+        if (isEmpty) {
+          cell.value = null;
+          _loadedImageIndices.remove(i);
+          continue;
+        }
+
+        if (_loadedImageIndices.contains(i)) continue;
+
         final response = await http.get(Uri.parse("https://picsum.photos/200"));
         final bytes = response.bodyBytes;
         final renderImage = await Factory.rive.decodeImage(bytes);
         cell.value = renderImage;
+        _loadedImageIndices.add(i);
       }
+    } finally {
+      _isLoadingImages = false;
     }
   }
 
@@ -189,4 +214,13 @@ class RiveGameBridge {
   void _setLoadingText() => _bindings!.outputText.value = "loading...";
   void _setPlayText() => _bindings!.outputText.value = "PáR1S";
   void _setGameOverText() => _bindings!.outputText.value = "gg wp";
+
+  void _updateTimer() =>
+      _bindings!.timerText.value = game.timer.timerText.value;
+
+  void _setButtonText() =>
+      game.skips > 0 ? _setSkipButton() : _setFinalButton();
+
+  void _setFinalButton() =>
+      game.rounds == 0 ? _setForfeitButton() : _setGreyButton();
 }
