@@ -31,6 +31,7 @@ class _BingoWidgetState extends State<BingoWidget> {
   late ViewModelInstanceString _outputText;
   late ViewModelInstanceString _timerText;
   late ViewModelInstanceString _scoreText;
+  late ViewModelInstanceString _roundText;
   late ViewModelInstanceString _buttonText;
   late ViewModelInstanceString _buttonStatus;
   late ViewModelInstanceTrigger _buttonTrigger;
@@ -52,6 +53,7 @@ class _BingoWidgetState extends State<BingoWidget> {
     _outputText.dispose();
     _timerText.dispose();
     _scoreText.dispose();
+    _roundText.dispose();
     _buttonText.dispose();
     _buttonStatus.dispose();
     _buttonTrigger.dispose();
@@ -90,6 +92,7 @@ class _BingoWidgetState extends State<BingoWidget> {
       outputText: _outputText,
       timerText: _timerText,
       scoreText: _scoreText,
+      roundText: _roundText,
       cellImages: _cells.map((c) => c.imageViewModel).toList(),
       cellStatuses: _cells.map((c) => c.status).toList(),
     );
@@ -104,13 +107,11 @@ class _BingoWidgetState extends State<BingoWidget> {
     final outputText = viewModelInstance.string("outputText");
     final timerText = viewModelInstance.string("timerText");
     final scoreText = viewModelInstance.string("scoreText");
+    final roundText = viewModelInstance.string("roundText");
     final buttonText = viewModelInstance.string("buttonText");
     final buttonStatus = viewModelInstance.string("buttonStatus");
     final buttonTrigger = viewModelInstance.trigger("buttonTrigger");
     //CELLS
-    final cellStatus = viewModelInstance.string("cellStatus");
-    final cellNumber = viewModelInstance.string("cellNumber");
-    final cellTrigger = viewModelInstance.trigger("cellTrigger");
     for (var i = 0; i < 16; i++) {
       var img = viewModelInstance.image("c $i");
       if (img == null) {
@@ -128,22 +129,20 @@ class _BingoWidgetState extends State<BingoWidget> {
     if (outputText == null ||
         timerText == null ||
         scoreText == null ||
+        roundText == null ||
         buttonText == null ||
         buttonStatus == null ||
-        buttonTrigger == null ||
-        cellStatus == null ||
-        cellNumber == null ||
-        cellTrigger == null) {
+        buttonTrigger == null) {
       print("something is null: outputText=$outputText, timerText=$timerText, "
-          "scoreText=$scoreText, buttonText=$buttonText, buttonTrigger=$buttonTrigger"
-          "buttonStatus=$buttonStatus cell=$cellStatus, cellNumber=$cellNumber"
-          "cellTrigger=$cellTrigger");
+          "scoreText=$scoreText, roundText=$roundText, buttonText=$buttonText,"
+          " buttonTrigger=$buttonTrigger buttonStatus=$buttonStatus");
       return;
     }
 
     _outputText = outputText;
     _timerText = timerText;
     _scoreText = scoreText;
+    _roundText = roundText;
     _buttonText = buttonText;
     _buttonTrigger = buttonTrigger;
     _buttonStatus = buttonStatus;

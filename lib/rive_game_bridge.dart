@@ -13,6 +13,7 @@ class ViewModelInstanceBindings {
   final ViewModelInstanceString outputText;
   final ViewModelInstanceString timerText;
   final ViewModelInstanceString scoreText;
+  final ViewModelInstanceString roundText;
   final List<ViewModelInstanceAssetImage> cellImages;
   final List<ViewModelInstanceString> cellStatuses;
 
@@ -23,6 +24,7 @@ class ViewModelInstanceBindings {
     required this.outputText,
     required this.timerText,
     required this.scoreText,
+    required this.roundText,
     required this.cellImages,
     required this.cellStatuses,
   });
@@ -58,6 +60,7 @@ class RiveGameBridge {
   void _handleRiveEvent(dynamic event) {
     final name = event.name?.toString() ?? '';
     if (name == 'buttonClick') {
+      print("button clicked");
       game.buttonClicked();
       return;
     }
@@ -99,6 +102,7 @@ class RiveGameBridge {
         _setPlayText();
         _setButtonText();
         _setCellsStatus();
+        _setRoundText();
         _updateTimer();
         break;
       case GameState.gameOver:
@@ -214,6 +218,8 @@ class RiveGameBridge {
   void _setLoadingText() => _bindings!.outputText.value = "loading...";
   void _setPlayText() => _bindings!.outputText.value = "PáR1S";
   void _setGameOverText() => _bindings!.outputText.value = "gg wp";
+
+  void _setRoundText() => _bindings!.roundText.value = game.rounds.toString();
 
   void _updateTimer() =>
       _bindings!.timerText.value = game.timer.timerText.value;
