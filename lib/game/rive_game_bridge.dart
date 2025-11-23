@@ -1,8 +1,9 @@
 import 'dart:async';
 
+import 'package:csbingo/constants/skip_state.dart';
 import 'package:csbingo/game/game.dart';
 import 'package:csbingo/constants/game_state.dart';
-import 'package:csbingo/rive_game_bridge.dart';
+import 'package:csbingo/models/rive_bindinds.dart';
 import 'package:flutter/foundation.dart' hide Factory;
 import 'package:http/http.dart' as http;
 import 'package:rive/rive.dart';
@@ -68,10 +69,12 @@ class RiveGameBridge {
         _setPlayButton();
         _resetCellStatus();
         _resetSkips();
+        _resetRoundText();
         break;
       case GameState.loading:
         print("[GameState] loading");
         _setLoadingText();
+        _setMaxRoundText();
         _resetSkips(state: SkipState.available);
         await _setCellImages();
         game.start();
@@ -90,6 +93,7 @@ class RiveGameBridge {
         _setResetButton();
         await _setCellImages(isEmpty: true);
         _setGameOverText();
+        _resetRoundText();
         break;
     }
   }
@@ -145,7 +149,7 @@ class RiveGameBridge {
 
   void _setGreyButton() {
     _bindings!.buttonStatus.value = 'grey';
-    _bindings!.buttonText.value = 'should be grey';
+    _bindings!.buttonText.value = 'SKIP';
   }
 
   void _setPlayButton() {
@@ -208,15 +212,19 @@ class RiveGameBridge {
   void _setLoadingText() => _bindings!.outputText.value = "loading...";
   void _setPlayText() => _bindings!.outputText.value = "PáR1S";
   void _setGameOverText() => _bindings!.outputText.value = "gg wp";
-
-  void _setRoundText() => _bindings!.roundText.value = game.rounds.toString();
+  void _resetRoundText() => _bindings!.roundText.value = "--";
+  void _setRoundText() =>
+      _bindings!.roundText.value = game.currentRound.toString();
+  void _setMaxRoundText() =>
+      _bindings!.maxRoundText.value = Game.maxRounds.toString();
 
   void _updateTimer() =>
       _bindings!.timerText.value = game.timer.timerText.value;
 
   void _setButtonText() =>
-      game.skips > 0 ? _setSkipButton() : _setFinalButton();
+      game.skips > 0 ? _setOptionButton() : _setGreyButton();
 
-  void _setFinalButton() =>
-      game.rounds == 0 ? _setForfeitButton() : _setGreyButton();
+  void _setOptionButton() => game.currentRound == Game.maxRounds
+      ? _setForfeitButton()
+      : _setSkipButton();
 }

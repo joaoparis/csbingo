@@ -11,7 +11,7 @@ class Game extends ChangeNotifier {
   static int maxSkips = 3;
   bool isGameInitialized = false;
   String state = "Idle";
-  int rounds = maxRounds;
+  int currentRound = 1;
   int skips = maxSkips;
   List<Cell> cells = [];
   GameTimer timer = GameTimer();
@@ -69,8 +69,8 @@ class Game extends ChangeNotifier {
     //TODO: check if response is correct
     cell.isCompleted = true;
 
-    rounds--;
-    if (rounds >= 0) {
+    currentRound++;
+    if (currentRound <= maxRounds) {
       timer.resetTimer();
       timer.startTimer(roundTime);
       notifyListeners();
@@ -90,7 +90,7 @@ class Game extends ChangeNotifier {
 
   void play() {
     if (!isGameInitialized) {
-      rounds = maxRounds;
+      currentRound = 1;
       skips = maxSkips;
       generate();
     }
@@ -105,16 +105,17 @@ class Game extends ChangeNotifier {
   }
 
   void skip() {
-    if (skips < 0 && rounds >= 0) return;
-    rounds--;
+    if (skips <= 0) return;
+    currentRound++;
     skips--;
-    if (skips >= 0 || rounds >= 0) {
-      timer.resetTimer();
-      timer.startTimer(roundTime);
-      notifyListeners();
-      return;
+    if (currentRound <= maxRounds) {
+      if (skips >= 0) {
+        timer.resetTimer();
+        timer.startTimer(roundTime);
+      }
+    } else {
+      state = GameState.gameOver;
     }
-    state = GameState.gameOver;
     notifyListeners();
   }
 
@@ -129,8 +130,8 @@ class Game extends ChangeNotifier {
   }
 
   void _onTimerFinished() {
-    rounds--;
-    if (rounds >= 0) {
+    currentRound++;
+    if (currentRound <= maxRounds) {
       timer.resetTimer();
       timer.startTimer(roundTime);
       return;

@@ -1,6 +1,6 @@
 import 'package:rive/rive.dart';
 
-class ViewModelInstanceBindings {
+class RiveBindings {
   final ViewModelInstanceString buttonText;
   final ViewModelInstanceString buttonStatus;
   final ViewModelInstanceTrigger buttonTrigger;
@@ -8,11 +8,12 @@ class ViewModelInstanceBindings {
   final ViewModelInstanceString timerText;
   final ViewModelInstanceString scoreText;
   final ViewModelInstanceString roundText;
+  final ViewModelInstanceString maxRoundText;
   final List<ViewModelInstanceAssetImage> cellImages;
   final List<ViewModelInstanceString> cellStatuses;
   final List<ViewModelInstanceString> skips;
 
-  ViewModelInstanceBindings({
+  RiveBindings({
     required this.buttonText,
     required this.buttonStatus,
     required this.buttonTrigger,
@@ -20,6 +21,7 @@ class ViewModelInstanceBindings {
     required this.timerText,
     required this.scoreText,
     required this.roundText,
+    required this.maxRoundText,
     required this.cellImages,
     required this.cellStatuses,
     required this.skips,

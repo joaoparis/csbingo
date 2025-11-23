@@ -1,6 +1,7 @@
 import 'package:csbingo/game/game.dart';
+import 'package:csbingo/game/rive_game_bridge.dart';
 import 'package:csbingo/models/cell_image.dart';
-import 'package:csbingo/rive_game_bridge.dart';
+import 'package:csbingo/models/rive_bindinds.dart';
 import 'package:flutter/material.dart';
 import 'package:rive/rive.dart';
 
@@ -22,6 +23,7 @@ class _BingoWidgetState extends State<BingoWidget> {
   late ViewModelInstanceString _timerText;
   late ViewModelInstanceString _scoreText;
   late ViewModelInstanceString _roundText;
+  late ViewModelInstanceString _maxRoundText;
   late ViewModelInstanceString _buttonText;
   late ViewModelInstanceString _buttonStatus;
   late ViewModelInstanceTrigger _buttonTrigger;
@@ -45,6 +47,7 @@ class _BingoWidgetState extends State<BingoWidget> {
     _timerText.dispose();
     _scoreText.dispose();
     _roundText.dispose();
+    _maxRoundText.dispose();
     _buttonText.dispose();
     _buttonStatus.dispose();
     _buttonTrigger.dispose();
@@ -84,6 +87,7 @@ class _BingoWidgetState extends State<BingoWidget> {
       timerText: _timerText,
       scoreText: _scoreText,
       roundText: _roundText,
+      maxRoundText: _maxRoundText,
       cellImages: _cells.map((c) => c.imageViewModel).toList(),
       cellStatuses: _cells.map((c) => c.status).toList(),
       skips: _skips,
@@ -100,6 +104,7 @@ class _BingoWidgetState extends State<BingoWidget> {
     final timerText = viewModelInstance.string("timerText");
     final scoreText = viewModelInstance.string("scoreText");
     final roundText = viewModelInstance.string("roundText");
+    final maxRoundText = viewModelInstance.string("maxRoundText");
     final buttonText = viewModelInstance.string("buttonText");
     final buttonStatus = viewModelInstance.string("buttonStatus");
     final buttonTrigger = viewModelInstance.trigger("buttonTrigger");
@@ -132,12 +137,14 @@ class _BingoWidgetState extends State<BingoWidget> {
         timerText == null ||
         scoreText == null ||
         roundText == null ||
+        maxRoundText == null ||
         buttonText == null ||
         buttonStatus == null ||
         buttonTrigger == null) {
       print("something is null: outputText=$outputText, timerText=$timerText, "
-          "scoreText=$scoreText, roundText=$roundText, buttonText=$buttonText,"
-          " buttonTrigger=$buttonTrigger buttonStatus=$buttonStatus");
+          "scoreText=$scoreText, roundText=$roundText, maxRoundText=$maxRoundText, "
+          "buttonText=$buttonText, buttonTrigger=$buttonTrigger, "
+          "buttonStatus=$buttonStatus");
       return;
     }
 
@@ -145,6 +152,7 @@ class _BingoWidgetState extends State<BingoWidget> {
     _timerText = timerText;
     _scoreText = scoreText;
     _roundText = roundText;
+    _maxRoundText = maxRoundText;
     _buttonText = buttonText;
     _buttonTrigger = buttonTrigger;
     _buttonStatus = buttonStatus;
