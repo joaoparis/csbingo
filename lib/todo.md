@@ -7,11 +7,11 @@
 [+] add round (players left) indicator screen
 [+] add real skips indicators
 [+] make points pretty
-[] fix skips logic
-[] add points logic
-[] add placeholder image
-[] add debug UI cell image text
+[+] fix skips logic
+[+] add placeholder image
+[+] add debug UI cell image text
 [] plumb with BE json
+[] add points logic
 [] check response
 [] fix deployment script
 [] make skips pretty

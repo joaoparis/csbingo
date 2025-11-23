@@ -5,6 +5,7 @@ import 'package:csbingo/game/game.dart';
 import 'package:csbingo/constants/game_state.dart';
 import 'package:csbingo/models/rive_bindinds.dart';
 import 'package:flutter/foundation.dart' hide Factory;
+import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
 import 'package:rive/rive.dart';
 
@@ -65,6 +66,7 @@ class RiveGameBridge {
     switch (game.state) {
       case GameState.idle:
         print("[GameState] idle");
+        _setCellImages(isEmpty: true);
         _setIdleText();
         _setPlayButton();
         _resetCellStatus();
@@ -91,7 +93,6 @@ class RiveGameBridge {
       case GameState.gameOver:
         print("[GameState] gameOver");
         _setResetButton();
-        await _setCellImages(isEmpty: true);
         _setGameOverText();
         _resetRoundText();
         break;
@@ -162,9 +163,13 @@ class RiveGameBridge {
     _isLoadingImages = true;
     try {
       for (var i = 0; i < _bindings!.cellImages.length; i++) {
+        _bindings!.cellsText[i].value = "option $i";
         final cell = _bindings!.cellImages[i];
         if (isEmpty) {
-          cell.value = null;
+          final bytes =
+              await rootBundle.load("assets/images/cell_placeholder.png");
+          cell.value =
+              await Factory.rive.decodeImage(bytes.buffer.asUint8List());
           _loadedImageIndices.remove(i);
           continue;
         }
@@ -193,6 +198,7 @@ class RiveGameBridge {
   void _resetCellStatus() {
     for (var i = 0; i < _bindings!.cellStatuses.length; i++) {
       _bindings!.cellStatuses[i].value = "idle";
+      _bindings!.cellsText[i].value = "option...";
     }
   }
 

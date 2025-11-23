@@ -64,6 +64,7 @@ flutter:
     - assets/images/BG_LANDSCAPE.png
     - assets/images/BG_LANDSCAPE_NIGHT.png
     - assets/images/C4.png
+    - assets/images/cell_placeholder.png
     - assets/images/logo.png
     - assets/rive/csbingo.riv
   #   - images/a_dot_burr.jpeg

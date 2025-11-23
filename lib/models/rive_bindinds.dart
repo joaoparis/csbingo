@@ -11,6 +11,7 @@ class RiveBindings {
   final ViewModelInstanceString maxRoundText;
   final List<ViewModelInstanceAssetImage> cellImages;
   final List<ViewModelInstanceString> cellStatuses;
+  final List<ViewModelInstanceString> cellsText;
   final List<ViewModelInstanceString> skips;
 
   RiveBindings({
@@ -24,6 +25,7 @@ class RiveBindings {
     required this.maxRoundText,
     required this.cellImages,
     required this.cellStatuses,
+    required this.cellsText,
     required this.skips,
   });
 }

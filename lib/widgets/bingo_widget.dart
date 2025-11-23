@@ -90,6 +90,7 @@ class _BingoWidgetState extends State<BingoWidget> {
       maxRoundText: _maxRoundText,
       cellImages: _cells.map((c) => c.imageViewModel).toList(),
       cellStatuses: _cells.map((c) => c.status).toList(),
+      cellsText: _cells.map((c) => c.text).toList(),
       skips: _skips,
     );
     _bridge = RiveGameBridge(game: game);
@@ -130,7 +131,12 @@ class _BingoWidgetState extends State<BingoWidget> {
         print("Failed to load status for cell $i");
         return;
       }
-      _cells.add(CellImage(img, str));
+      var txt = viewModelInstance.string("c${i}text");
+      if (txt == null) {
+        print("Failed to load text for cell $i");
+        return;
+      }
+      _cells.add(CellImage(img, str, txt));
     }
 
     if (outputText == null ||
