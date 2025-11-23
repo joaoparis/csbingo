@@ -1,8 +1,8 @@
 class Player {
-  final String name;
-  final String nationality;
-  final String team;
-  final String image;
+  String name;
+  String nationality;
+  String team;
+  String image;
 
   Player({
     required this.name,

@@ -1,8 +1,12 @@
 class Cell {
-  final String image;
-  final String title;
+  String image;
+  String title;
   bool isCompleted;
   bool triggerWrong = false;
 
-  Cell({required this.title, required this.image, this.isCompleted = false});
+  Cell({
+    required this.title,
+    required this.image,
+    this.isCompleted = false,
+  });
 }

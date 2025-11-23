@@ -1,6 +1,8 @@
 import 'dart:convert';
 
+import 'package:csbingo/models/game_info.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
+import 'package:flutter/services.dart' show rootBundle;
 import 'package:http/http.dart' as http;
 
 class BoardGateway {
@@ -35,5 +37,19 @@ class BoardGateway {
       }
       rethrow;
     }
+  }
+
+  Future<GameInfo> fetchGame() async {
+    // TODO: actually call the BE
+    try {
+      final jsonStr =
+          await rootBundle.loadString('assets/examples/message.json');
+      final Map<String, dynamic> jsonBody = json.decode(jsonStr);
+
+      return GameInfo.fromJson(jsonBody);
+    } catch (e) {
+      print("Error fetching from json: $e");
+    }
+    return GameInfo(cells: List.empty(), players: List.empty());
   }
 }

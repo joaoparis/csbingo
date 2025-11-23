@@ -4,9 +4,7 @@ import 'package:csbingo/constants/skip_state.dart';
 import 'package:csbingo/game/game.dart';
 import 'package:csbingo/constants/game_state.dart';
 import 'package:csbingo/models/rive_bindinds.dart';
-import 'package:flutter/foundation.dart' hide Factory;
 import 'package:flutter/services.dart';
-import 'package:http/http.dart' as http;
 import 'package:rive/rive.dart';
 
 class RiveGameBridge {
@@ -15,8 +13,6 @@ class RiveGameBridge {
 
   RiveWidgetController? _controller;
   RiveBindings? _bindings;
-  bool _isLoadingImages = false;
-  final Set<int> _loadedImageIndices = {};
   bool get isReady => _bindings != null && _controller != null;
 
   RiveGameBridge({required this.game}) {
@@ -66,12 +62,13 @@ class RiveGameBridge {
     switch (game.state) {
       case GameState.idle:
         print("[GameState] idle");
-        _setCellImages(isEmpty: true);
+        await _setCellImages(isEmpty: true);
         _setIdleText();
         _setPlayButton();
         _resetCellStatus();
         _resetSkips();
         _resetRoundText();
+        _resetTimerText();
         break;
       case GameState.loading:
         print("[GameState] loading");
@@ -159,32 +156,14 @@ class RiveGameBridge {
   }
 
   Future<void> _setCellImages({bool isEmpty = false}) async {
-    if (_isLoadingImages) return;
-    _isLoadingImages = true;
-    try {
-      for (var i = 0; i < _bindings!.cellImages.length; i++) {
-        _bindings!.cellsText[i].value = "option $i";
-        final cell = _bindings!.cellImages[i];
-        if (isEmpty) {
-          final bytes =
-              await rootBundle.load("assets/images/cell_placeholder.png");
-          cell.value =
-              await Factory.rive.decodeImage(bytes.buffer.asUint8List());
-          _loadedImageIndices.remove(i);
-          continue;
-        }
-
-        if (_loadedImageIndices.contains(i)) continue;
-
-        final response = await http.get(Uri.parse("https://picsum.photos/200"));
-        final bytes = response.bodyBytes;
-        final renderImage = await Factory.rive.decodeImage(bytes);
-        cell.value = renderImage;
-        _loadedImageIndices.add(i);
-      }
-    } finally {
-      _isLoadingImages = false;
+    for (var i = 0; i < game.gridSize; i++) {
+      final bytes = await rootBundle.load(game.cells[i].image);
+      final decoded =
+          await Factory.rive.decodeImage(bytes.buffer.asUint8List());
+      _bindings!.cellImages[i].value = decoded;
+      _bindings!.cellsText[i].value = game.cells[i].title;
     }
+    print("SET CELLS!");
   }
 
   void _setCellsStatus() {
@@ -198,7 +177,6 @@ class RiveGameBridge {
   void _resetCellStatus() {
     for (var i = 0; i < _bindings!.cellStatuses.length; i++) {
       _bindings!.cellStatuses[i].value = "idle";
-      _bindings!.cellsText[i].value = "option...";
     }
   }
 
@@ -216,13 +194,15 @@ class RiveGameBridge {
 
   void _setIdleText() => _bindings!.outputText.value = "gl hf";
   void _setLoadingText() => _bindings!.outputText.value = "loading...";
-  void _setPlayText() => _bindings!.outputText.value = "PáR1S";
+  void _setPlayText() =>
+      _bindings!.outputText.value = game.players[game.currentRound].name;
   void _setGameOverText() => _bindings!.outputText.value = "gg wp";
   void _resetRoundText() => _bindings!.roundText.value = "--";
+  void _resetTimerText() => _bindings!.timerText.value = "--:--";
   void _setRoundText() =>
       _bindings!.roundText.value = game.currentRound.toString();
   void _setMaxRoundText() =>
-      _bindings!.maxRoundText.value = Game.maxRounds.toString();
+      _bindings!.maxRoundText.value = game.maxRounds.toString();
 
   void _updateTimer() =>
       _bindings!.timerText.value = game.timer.timerText.value;
@@ -230,7 +210,7 @@ class RiveGameBridge {
   void _setButtonText() =>
       game.skips > 0 ? _setOptionButton() : _setGreyButton();
 
-  void _setOptionButton() => game.currentRound == Game.maxRounds
+  void _setOptionButton() => game.currentRound == game.maxRounds
       ? _setForfeitButton()
       : _setSkipButton();
 }

@@ -59,11 +59,11 @@ class RiveGameBridge {
     _applyGameStateToRive();
   }
 
-  void _handleRiveEvent(dynamic event) {
+  Future<void> _handleRiveEvent(dynamic event) async {
     final name = event.name?.toString() ?? '';
     if (name == 'buttonClick') {
       print("button clicked");
-      game.buttonClicked();
+      await game.buttonClicked();
       return;
     }
 

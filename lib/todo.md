@@ -10,9 +10,12 @@
 [+] fix skips logic
 [+] add placeholder image
 [+] add debug UI cell image text
-[] plumb with BE json
+[+] plumb with BE json
+[] fix last cell clicked when skips were clicked
+[] check response with mock gateway response
+[] call real BE for boards
+[] call real BE to check cell clicks
 [] add points logic
-[] check response
 [] fix deployment script
 [] make skips pretty
 [] make wires pretty
