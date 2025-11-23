@@ -4,15 +4,17 @@
 [+-] game state
 [+-] add loading state to button (?)
 [+-] timer
-[] add round (players left) indicator screen
-[] add real skips indicators
-[] make skips pretty
+[+] add round (players left) indicator screen
+[+] add real skips indicators
+[+] make points pretty
 [] fix skips logic
-[] make points pretty
 [] add points logic
 [] add placeholder image
-[] plumb with BE info
+[] add debug UI cell image text
+[] plumb with BE json
 [] check response
-[] fix deployment
+[] fix deployment script
+[] make skips pretty
 [] make wires pretty
-[] make c4 pretty
+[] make c4 pretty (add tape details, c4 details, pcbs details)
+[] add game type shifter UI

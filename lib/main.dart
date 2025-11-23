@@ -1,4 +1,4 @@
-import 'package:csbingo/bingo_widget.dart';
+import 'package:csbingo/widgets/bingo_widget.dart';
 import 'package:flutter/material.dart';
 
 void main() async {
