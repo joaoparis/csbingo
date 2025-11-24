@@ -72,7 +72,7 @@ class _BingoWidgetState extends State<BingoWidget> {
         await File.asset("assets/rive/csbingo.riv", riveFactory: Factory.rive);
 
     if (file == null) {
-      print("Failed to load Rive file.");
+      print("[DEBUG] Failed to load Rive file.");
       return;
     }
     _file = file;
@@ -113,7 +113,7 @@ class _BingoWidgetState extends State<BingoWidget> {
     for (var i = 1; i <= 3; i++) {
       var skip = viewModelInstance.string("skipsVM/skip$i/status");
       if (skip == null) {
-        print("Failed to load string for skip 1");
+        print("[DEBUG] Failed to load string for skip 1");
         return;
       }
       _skips.add(skip);
@@ -123,17 +123,17 @@ class _BingoWidgetState extends State<BingoWidget> {
     for (var i = 0; i < 16; i++) {
       var img = viewModelInstance.image("c $i");
       if (img == null) {
-        print("Failed to load image view model for cell $i");
+        print("[DEBUG] Failed to load image view model for cell $i");
         return;
       }
       var str = viewModelInstance.string("c${i}status");
       if (str == null) {
-        print("Failed to load status for cell $i");
+        print("[DEBUG] Failed to load status for cell $i");
         return;
       }
       var txt = viewModelInstance.string("c${i}text");
       if (txt == null) {
-        print("Failed to load text for cell $i");
+        print("[DEBUG] Failed to load text for cell $i");
         return;
       }
       _cells.add(CellImage(img, str, txt));
@@ -147,7 +147,8 @@ class _BingoWidgetState extends State<BingoWidget> {
         buttonText == null ||
         buttonStatus == null ||
         buttonTrigger == null) {
-      print("something is null: outputText=$outputText, timerText=$timerText, "
+      print(
+          "[DEBUG] something is null: outputText=$outputText, timerText=$timerText, "
           "scoreText=$scoreText, roundText=$roundText, maxRoundText=$maxRoundText, "
           "buttonText=$buttonText, buttonTrigger=$buttonTrigger, "
           "buttonStatus=$buttonStatus");
@@ -163,7 +164,7 @@ class _BingoWidgetState extends State<BingoWidget> {
     _buttonTrigger = buttonTrigger;
     _buttonStatus = buttonStatus;
 
-    print("all view model instances loaded successfully!");
+    print("[DEBUG] all view model instances loaded successfully!");
     return;
   }
 }

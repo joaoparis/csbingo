@@ -48,7 +48,7 @@ class BoardGateway {
 
       return GameInfo.fromJson(jsonBody);
     } catch (e) {
-      print("Error fetching from json: $e");
+      print("[DEBUG] Error fetching from json: $e");
     }
     return GameInfo(cells: List.empty(), players: List.empty());
   }

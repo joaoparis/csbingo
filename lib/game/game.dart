@@ -8,6 +8,7 @@ import 'package:csbingo/models/player.dart';
 import 'package:flutter/material.dart';
 
 class Game extends ChangeNotifier {
+  static bool debug = false;
   int maxRounds = 20;
   int gridSize = 16;
   static int maxSkips = 3;
@@ -55,18 +56,30 @@ class Game extends ChangeNotifier {
     );
     isGameInitialized = true;
 
-    print("GENERATE GAME!");
+    print("[DEBUG] GENERATE GAME!");
   }
 
   Future<void> buttonClicked() async {
     switch (state) {
       case GameState.idle:
         await play();
+        return;
       case GameState.playing:
         skip();
+        return;
       case GameState.gameOver:
         gameOver();
+        return;
     }
+  }
+
+  _notify(String src) {
+    if (debug) {
+      print("[DEBUG] Notifying...");
+      print("[DEBUG] Source: $src");
+      print("[DEBUG] State: $state");
+    }
+    notifyListeners();
   }
 
   void selectCell(int index) {
@@ -79,22 +92,27 @@ class Game extends ChangeNotifier {
 
     //TODO: check if response is correct
     cell.isCompleted = true;
-    notifyListeners();
+    print("CELL COMPLETE: $state $currentRound");
+    _notify("selectCell: cell complete");
 
-    if (_isComplete()) {
+    if (_isFullBoardComplete()) {
+      timer.resetTimer();
       state = GameState.gameOver;
-      notifyListeners();
+      _notify("selectCell: _isFullBoardComplete()=true");
+      return;
     }
 
     if (currentRound <= maxRounds) {
       timer.resetTimer();
       timer.startTimer(roundTime);
-      notifyListeners();
+      // _notify("selectCell: isComplete()=true");
       return;
     }
+
+    currentRound = maxRounds;
     timer.resetTimer();
     state = GameState.gameOver;
-    notifyListeners();
+    _notify("selectCell: isComplete()=true");
   }
 
   void gameOver() {
@@ -102,18 +120,18 @@ class Game extends ChangeNotifier {
 
     timer.timerText.removeListener(_timerListener);
     _timerFinishedSub.cancel();
-    notifyListeners();
+    _notify("gameOver(): state=$state");
     reset();
   }
 
   void reset() {
-    print("RESETTING");
+    print("[DEBUG] RESETTING");
     isGameInitialized = false;
     currentRound = 1;
     skips = maxSkips;
 
     generate();
-    notifyListeners();
+    _notify("reset(): state=$state");
   }
 
   Future<void> play() async {
@@ -121,20 +139,20 @@ class Game extends ChangeNotifier {
       currentRound = 1;
       skips = maxSkips;
     }
-    _timerListener = () => notifyListeners();
+    _timerListener = () => _notify("timerListener");
     timer.timerText.addListener(_timerListener);
     _timerFinishedSub = timer.onTimerFinished.listen((_) {
       _onTimerFinished();
     });
     await _loadGame();
     state = GameState.loading;
-    notifyListeners();
+    _notify("play(): game has loaded state=$state");
   }
 
   void start() {
-    timer.startTimer(roundTime);
     state = GameState.playing;
-    notifyListeners();
+    timer.startTimer(roundTime);
+    _notify("start(): state=$state");
   }
 
   void skip() {
@@ -147,9 +165,10 @@ class Game extends ChangeNotifier {
         timer.startTimer(roundTime);
       }
     } else {
+      currentRound = maxRounds;
       state = GameState.gameOver;
     }
-    notifyListeners();
+    _notify("skip(): state=$state");
   }
 
   @override
@@ -163,6 +182,7 @@ class Game extends ChangeNotifier {
   }
 
   void _onTimerFinished() {
+    print("[DEBUG] _onTimerFinished");
     currentRound++;
     if (currentRound <= maxRounds || state != GameState.gameOver) {
       timer.resetTimer();
@@ -170,8 +190,9 @@ class Game extends ChangeNotifier {
       return;
     }
     timer.resetTimer();
+    currentRound = maxRounds;
     state = GameState.gameOver;
-    notifyListeners();
+    _notify("_onTimerFinished(): state=$state");
   }
 
   Future<void> _loadGame() async {
@@ -191,5 +212,5 @@ class Game extends ChangeNotifier {
     }
   }
 
-  bool _isComplete() => !cells.any((c) => !c.isCompleted);
+  bool _isFullBoardComplete() => !cells.any((c) => !c.isCompleted);
 }

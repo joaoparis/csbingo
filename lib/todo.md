@@ -1,23 +1,22 @@
 # TODO
 
-[+] load dumb images (or text for starters)
-[+-] game state
-[+-] add loading state to button (?)
-[+-] timer
-[+] add round (players left) indicator screen
-[+] add real skips indicators
-[+] make points pretty
-[+] fix skips logic
-[+] add placeholder image
-[+] add debug UI cell image text
-[+] plumb with BE json
-[] fix last cell clicked when skips were clicked
-[] check response with mock gateway response
-[] call real BE for boards
-[] call real BE to check cell clicks
-[] add points logic
-[] fix deployment script
-[] make skips pretty
-[] make wires pretty
-[] make c4 pretty (add tape details, c4 details, pcbs details)
-[] add game type shifter UI
+- [x] Load dumb images (or text for starters)
+- [x] game state
+- [x] add loading state to button (?)
+- [x] timer
+- [x] add round (players left) indicator screen add real skips indicators
+- [x] add round (players left) indicator screen make points pretty
+- [x] add round (players left) indicator screen fix skips logic
+- [x] add round (players left) indicator screen add placeholder image
+- [x] add round (players left) indicator screen add debug UI cell image text
+- [x] add round (players left) indicator screen plumb with BE json
+- [x] fix deployment script
+- [ ] fix last cell clicked when skips were clicked
+- [ ] check response with mock gateway response
+- [ ] call real BE for boards
+- [ ] call real BE to check cell clicks
+- [ ] add points logic
+- [ ] make skips pretty
+- [ ] make wires pretty
+- [ ] make c4 pretty (add tape details, c4 details, pcbs details)
+- [ ] add game type shifter UI

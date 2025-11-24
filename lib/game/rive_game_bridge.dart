@@ -35,7 +35,7 @@ class RiveGameBridge {
   void _handleRiveEvent(dynamic event) {
     final name = event.name?.toString() ?? '';
     if (name == 'buttonClick') {
-      print("button clicked");
+      print("[DEBUG] button clicked");
       game.buttonClicked();
       return;
     }
@@ -61,7 +61,7 @@ class RiveGameBridge {
   void _applyGameStateToRive() async {
     switch (game.state) {
       case GameState.idle:
-        print("[GameState] idle");
+        print("[DEBUG] [GameState] idle");
         await _setCellImages(isEmpty: true);
         _setIdleText();
         _setPlayButton();
@@ -71,7 +71,7 @@ class RiveGameBridge {
         _resetTimerText();
         break;
       case GameState.loading:
-        print("[GameState] loading");
+        print("[DEBUG] [GameState] loading");
         _setLoadingText();
         _setMaxRoundText();
         _resetSkips(state: SkipState.available);
@@ -79,16 +79,16 @@ class RiveGameBridge {
         game.start();
         break;
       case GameState.playing:
-        print("[GameState] playing");
+        print("[DEBUG] [GameState] playing");
+        _updateTimer();
         _setPlayText();
         _setButtonText();
         _setCellsStatus();
         _setRoundText();
         _setSkips();
-        _updateTimer();
         break;
       case GameState.gameOver:
-        print("[GameState] gameOver");
+        print("[DEBUG] [GameState] gameOver");
         _setResetButton();
         _setGameOverText();
         _resetRoundText();
@@ -163,10 +163,11 @@ class RiveGameBridge {
       _bindings!.cellImages[i].value = decoded;
       _bindings!.cellsText[i].value = game.cells[i].title;
     }
-    print("SET CELLS!");
+    print("[DEBUG] ${game.state} SET CELLS!");
   }
 
   void _setCellsStatus() {
+    print("[DEBUG] SET CELLS STATUS!");
     for (var i = 0; i < game.cells.length; i++) {
       if (game.cells[i].isCompleted) {
         _bindings!.cellStatuses[i].value = "correct";
@@ -195,7 +196,7 @@ class RiveGameBridge {
   void _setIdleText() => _bindings!.outputText.value = "gl hf";
   void _setLoadingText() => _bindings!.outputText.value = "loading...";
   void _setPlayText() =>
-      _bindings!.outputText.value = game.players[game.currentRound].name;
+      _bindings!.outputText.value = game.players[game.currentRound - 1].name;
   void _setGameOverText() => _bindings!.outputText.value = "gg wp";
   void _resetRoundText() => _bindings!.roundText.value = "--";
   void _resetTimerText() => _bindings!.timerText.value = "--:--";
