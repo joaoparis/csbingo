@@ -11,7 +11,7 @@
 - [x] add round (players left) indicator screen add debug UI cell image text
 - [x] add round (players left) indicator screen plumb with BE json
 - [x] fix deployment script
-- [ ] fix last cell clicked when skips were clicked
+- [x] fix last cell clicked when skips were clicked
 - [ ] check response with mock gateway response
 - [ ] call real BE for boards
 - [ ] call real BE to check cell clicks

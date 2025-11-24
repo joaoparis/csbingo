@@ -35,7 +35,6 @@ class RiveGameBridge {
   void _handleRiveEvent(dynamic event) {
     final name = event.name?.toString() ?? '';
     if (name == 'buttonClick') {
-      print("[DEBUG] button clicked");
       game.buttonClicked();
       return;
     }
@@ -61,7 +60,6 @@ class RiveGameBridge {
   void _applyGameStateToRive() async {
     switch (game.state) {
       case GameState.idle:
-        print("[DEBUG] [GameState] idle");
         await _setCellImages(isEmpty: true);
         _setIdleText();
         _setPlayButton();
@@ -71,7 +69,6 @@ class RiveGameBridge {
         _resetTimerText();
         break;
       case GameState.loading:
-        print("[DEBUG] [GameState] loading");
         _setLoadingText();
         _setMaxRoundText();
         _resetSkips(state: SkipState.available);
@@ -79,7 +76,6 @@ class RiveGameBridge {
         game.start();
         break;
       case GameState.playing:
-        print("[DEBUG] [GameState] playing");
         _updateTimer();
         _setPlayText();
         _setButtonText();
@@ -88,35 +84,12 @@ class RiveGameBridge {
         _setSkips();
         break;
       case GameState.gameOver:
-        print("[DEBUG] [GameState] gameOver");
         _setResetButton();
         _setGameOverText();
         _resetRoundText();
         break;
     }
   }
-
-  // void _exampleSetCellImage() async {
-  //   for (var cell in _cells) {
-  //     final response = await http.get(Uri.parse("https://picsum.photos/200"));
-  //     final bytes = response.bodyBytes;
-  //     final renderImage = await Factory.rive.decodeImage(bytes);
-  //     if (renderImage != null) {
-  //       cell.imageViewModel.value = renderImage;
-  //       print("Successfully set image for cell");
-  //     } else {
-  //       print("Failed to decode image for cell");
-  //     }
-  //   }
-  // }
-
-  /// Manual helper to set a cell image (async).
-  // Future<void> setCellImage(int index, RiveImage? image) async {
-  //   if (!isReady) return;
-  //   final images = _bindings!.cellImages;
-  //   if (index < 0 || index >= images.length) return;
-  //   images[index].value = image;
-  // }
 
   void dispose() {
     try {
@@ -156,18 +129,24 @@ class RiveGameBridge {
   }
 
   Future<void> _setCellImages({bool isEmpty = false}) async {
+    final futures = <Future<void>>[];
+
     for (var i = 0; i < game.gridSize; i++) {
-      final bytes = await rootBundle.load(game.cells[i].image);
-      final decoded =
-          await Factory.rive.decodeImage(bytes.buffer.asUint8List());
-      _bindings!.cellImages[i].value = decoded;
-      _bindings!.cellsText[i].value = game.cells[i].title;
+      futures.add(
+        (() async {
+          final bytes = await rootBundle.load(game.cells[i].image);
+          final decoded =
+              await Factory.rive.decodeImage(bytes.buffer.asUint8List());
+          _bindings!.cellImages[i].value = decoded;
+          _bindings!.cellsText[i].value = game.cells[i].title;
+        })(),
+      );
     }
-    print("[DEBUG] ${game.state} SET CELLS!");
+
+    await Future.wait(futures);
   }
 
   void _setCellsStatus() {
-    print("[DEBUG] SET CELLS STATUS!");
     for (var i = 0; i < game.cells.length; i++) {
       if (game.cells[i].isCompleted) {
         _bindings!.cellStatuses[i].value = "correct";

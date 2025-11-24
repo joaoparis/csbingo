@@ -48,7 +48,7 @@ class _MyAppState extends State<MyApp> {
       darkTheme: dark,
       themeMode: _themeMode,
       home: MyHomePage(
-        title: 'CS2 BINGO',
+        title: 'CS BINGO',
         onToggleTheme: _toggleTheme,
         themeMode: _themeMode,
       ),

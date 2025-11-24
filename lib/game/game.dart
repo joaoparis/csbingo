@@ -55,8 +55,6 @@ class Game extends ChangeNotifier {
       ),
     );
     isGameInitialized = true;
-
-    print("[DEBUG] GENERATE GAME!");
   }
 
   Future<void> buttonClicked() async {
@@ -92,10 +90,10 @@ class Game extends ChangeNotifier {
 
     //TODO: check if response is correct
     cell.isCompleted = true;
-    print("CELL COMPLETE: $state $currentRound");
     _notify("selectCell: cell complete");
 
     if (_isFullBoardComplete()) {
+      currentRound = maxRounds;
       timer.resetTimer();
       state = GameState.gameOver;
       _notify("selectCell: _isFullBoardComplete()=true");
@@ -125,7 +123,6 @@ class Game extends ChangeNotifier {
   }
 
   void reset() {
-    print("[DEBUG] RESETTING");
     isGameInitialized = false;
     currentRound = 1;
     skips = maxSkips;
@@ -166,6 +163,7 @@ class Game extends ChangeNotifier {
       }
     } else {
       currentRound = maxRounds;
+      timer.resetTimer();
       state = GameState.gameOver;
     }
     _notify("skip(): state=$state");
@@ -182,15 +180,14 @@ class Game extends ChangeNotifier {
   }
 
   void _onTimerFinished() {
-    print("[DEBUG] _onTimerFinished");
     currentRound++;
-    if (currentRound <= maxRounds || state != GameState.gameOver) {
+    if (currentRound <= maxRounds && state != GameState.gameOver) {
       timer.resetTimer();
       timer.startTimer(roundTime);
       return;
     }
-    timer.resetTimer();
     currentRound = maxRounds;
+    timer.resetTimer();
     state = GameState.gameOver;
     _notify("_onTimerFinished(): state=$state");
   }
