@@ -31,4 +31,4 @@ jobs:
           firebaseServiceAccount: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_CSBINGO_DBEDA }}
           channelId: live
           projectId: csbingo-dbeda
-          entryPoint: build/web
+          entryPoint: .
