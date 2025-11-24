@@ -1,0 +1,272 @@
+{
+  "id": 10,
+  "createdAt": "2025-11-09T11:38:40.363Z",
+  "updateAt": "2025-11-09T11:38:40.363Z",
+  "deletedAt": null,
+  "status": "I rather be a bot, then to be a baiter",
+  "cards": null,
+  "players": [
+    {
+      "id": 12,
+      "createdAt": "2025-11-07T17:23:52.602Z",
+      "updateAt": "2025-11-07T17:23:52.602Z",
+      "deletedAt": null,
+      "name": "twistzz",
+      "nationality": "Canada",
+      "team": "FaZe"
+    },
+    {
+      "id": 18,
+      "createdAt": "2025-11-07T17:23:52.628Z",
+      "updateAt": "2025-11-07T17:23:52.628Z",
+      "deletedAt": null,
+      "name": "fer",
+      "nationality": "Brazil",
+      "team": "MIBR"
+    },
+    {
+      "id": 9,
+      "createdAt": "2025-11-07T17:23:52.59Z",
+      "updateAt": "2025-11-07T17:23:52.59Z",
+      "deletedAt": null,
+      "name": "karrigan",
+      "nationality": "Germany",
+      "team": "FaZe"
+    },
+    {
+      "id": 15,
+      "createdAt": "2025-11-07T17:23:52.613Z",
+      "updateAt": "2025-11-07T17:23:52.613Z",
+      "deletedAt": null,
+      "name": "GeT_RiGhT",
+      "nationality": "Sweden",
+      "team": "NiP"
+    },
+    {
+      "id": 13,
+      "createdAt": "2025-11-07T17:23:52.605Z",
+      "updateAt": "2025-11-07T17:23:52.605Z",
+      "deletedAt": null,
+      "name": "rain",
+      "nationality": "Norway",
+      "team": "FaZe"
+    },
+    {
+      "id": 17,
+      "createdAt": "2025-11-07T17:23:52.623Z",
+      "updateAt": "2025-11-07T17:23:52.623Z",
+      "deletedAt": null,
+      "name": "coldzera",
+      "nationality": "Brazil",
+      "team": "SK Gaming"
+    },
+    {
+      "id": 11,
+      "createdAt": "2025-11-07T17:23:52.598Z",
+      "updateAt": "2025-11-07T17:23:52.598Z",
+      "deletedAt": null,
+      "name": "cadiaN",
+      "nationality": "Denmark",
+      "team": "Liquid"
+    },
+    {
+      "id": 8,
+      "createdAt": "2025-11-07T17:23:52.586Z",
+      "updateAt": "2025-11-07T17:23:52.586Z",
+      "deletedAt": null,
+      "name": "blameF",
+      "nationality": "Denmark",
+      "team": "Astralis"
+    },
+    {
+      "id": 14,
+      "createdAt": "2025-11-07T17:23:52.609Z",
+      "updateAt": "2025-11-07T17:23:52.609Z",
+      "deletedAt": null,
+      "name": "Snax",
+      "nationality": "Poland",
+      "team": "Virtus.pro"
+    },
+    {
+      "id": 16,
+      "createdAt": "2025-11-07T17:23:52.618Z",
+      "updateAt": "2025-11-07T17:23:52.618Z",
+      "deletedAt": null,
+      "name": "f0rest",
+      "nationality": "Sweden",
+      "team": "NiP"
+    },
+    {
+      "id": 6,
+      "createdAt": "2025-11-07T17:23:52.578Z",
+      "updateAt": "2025-11-07T17:23:52.578Z",
+      "deletedAt": null,
+      "name": "donk",
+      "nationality": "Russia",
+      "team": "Spirit"
+    },
+    {
+      "id": 3,
+      "createdAt": "2025-11-07T17:23:52.567Z",
+      "updateAt": "2025-11-07T17:23:52.567Z",
+      "deletedAt": null,
+      "name": "ZywOo",
+      "nationality": "France",
+      "team": "Vitality"
+    },
+    {
+      "id": 10,
+      "createdAt": "2025-11-07T17:23:52.594Z",
+      "updateAt": "2025-11-07T17:23:52.594Z",
+      "deletedAt": null,
+      "name": "electronic",
+      "nationality": "Russia",
+      "team": "Cloud9"
+    },
+    {
+      "id": 19,
+      "createdAt": "2025-11-07T17:23:52.634Z",
+      "updateAt": "2025-11-07T17:23:52.634Z",
+      "deletedAt": null,
+      "name": "HooXi",
+      "nationality": "Denmark",
+      "team": "G2"
+    },
+    {
+      "id": 5,
+      "createdAt": "2025-11-07T17:23:52.574Z",
+      "updateAt": "2025-11-07T17:23:52.574Z",
+      "deletedAt": null,
+      "name": "m0NESY",
+      "nationality": "Russia",
+      "team": "G2"
+    },
+    {
+      "id": 2,
+      "createdAt": "2025-11-07T17:23:52.563Z",
+      "updateAt": "2025-11-07T17:23:52.563Z",
+      "deletedAt": null,
+      "name": "s1mple",
+      "nationality": "Ukraine",
+      "team": "NAVI"
+    },
+    {
+      "id": 1,
+      "createdAt": "2025-11-07T17:23:52.559Z",
+      "updateAt": "2025-11-07T17:23:52.559Z",
+      "deletedAt": null,
+      "name": "NiKo",
+      "nationality": "Bosnia & Herzegovina",
+      "team": "G2"
+    },
+    {
+      "id": 20,
+      "createdAt": "2025-11-07T17:23:52.638Z",
+      "updateAt": "2025-11-07T17:23:52.638Z",
+      "deletedAt": null,
+      "name": "huNter-",
+      "nationality": "Bosnia & Herzegovina",
+      "team": "G2"
+    },
+    {
+      "id": 4,
+      "createdAt": "2025-11-07T17:23:52.571Z",
+      "updateAt": "2025-11-07T17:23:52.571Z",
+      "deletedAt": null,
+      "name": "dev1ce",
+      "nationality": "Denmark",
+      "team": "Astralis"
+    },
+    {
+      "id": 7,
+      "createdAt": "2025-11-07T17:23:52.582Z",
+      "updateAt": "2025-11-07T17:23:52.582Z",
+      "deletedAt": null,
+      "name": "ropz",
+      "nationality": "Estonia",
+      "team": "FaZe"
+    }
+  ],
+  "templateCard": [
+    {
+      "isMarked": false,
+      "imageUrl": "",
+      "altName": "Canada"
+    },
+    {
+      "isMarked": false,
+      "imageUrl": "",
+      "altName": "MIBR"
+    },
+    {
+      "isMarked": false,
+      "imageUrl": "",
+      "altName": "FaZe"
+    },
+    {
+      "isMarked": false,
+      "imageUrl": "",
+      "altName": "NiP"
+    },
+    {
+      "isMarked": false,
+      "imageUrl": "",
+      "altName": "Norway"
+    },
+    {
+      "isMarked": false,
+      "imageUrl": "",
+      "altName": "SK Gaming"
+    },
+    {
+      "isMarked": false,
+      "imageUrl": "",
+      "altName": "Denmark"
+    },
+    {
+      "isMarked": false,
+      "imageUrl": "",
+      "altName": "Denmark"
+    },
+    {
+      "isMarked": false,
+      "imageUrl": "",
+      "altName": "Poland"
+    },
+    {
+      "isMarked": false,
+      "imageUrl": "",
+      "altName": "Sweden"
+    },
+    {
+      "isMarked": false,
+      "imageUrl": "",
+      "altName": "Spirit"
+    },
+    {
+      "isMarked": false,
+      "imageUrl": "",
+      "altName": "France"
+    },
+    {
+      "isMarked": false,
+      "imageUrl": "",
+      "altName": "Russia"
+    },
+    {
+      "isMarked": false,
+      "imageUrl": "",
+      "altName": "Denmark"
+    },
+    {
+      "isMarked": false,
+      "imageUrl": "",
+      "altName": "G2"
+    },
+    {
+      "isMarked": false,
+      "imageUrl": "",
+      "altName": "NAVI"
+    }
+  ]
+}
