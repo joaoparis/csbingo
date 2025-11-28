@@ -2,17 +2,20 @@ import 'package:csbingo/models/cell.dart';
 import 'package:csbingo/models/player.dart';
 
 class GameInfo {
+  final String cardId;
   final List<Cell> cells;
   final List<Player> players;
 
   GameInfo({
+    required this.cardId,
     required this.cells,
     required this.players,
   });
 
   factory GameInfo.fromJson(Map<String, dynamic> json) {
+    final id = json['id']?.toString() ?? '-1';
     final playersJson = json['players'] as List<dynamic>? ?? [];
-    final template = json['templateCard'] as List<dynamic>? ?? [];
+    final template = json['cells'] as List<dynamic>? ?? [];
 
     final players = playersJson.map((p) {
       final map = p as Map<String, dynamic>;
@@ -33,6 +36,6 @@ class GameInfo {
       );
     }).toList();
 
-    return GameInfo(cells: cells, players: players);
+    return GameInfo(cardId: id, cells: cells, players: players);
   }
 }

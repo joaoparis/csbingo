@@ -147,8 +147,17 @@ class RiveGameBridge {
 
   void _setCellsStatus() {
     for (var i = 0; i < game.cells.length; i++) {
-      if (game.cells[i].isCompleted) {
-        _bindings!.cellStatuses[i].value = "correct";
+      switch (game.cells[i]) {
+        case var cell when cell.isCompleted:
+          _bindings!.cellStatuses[i].value = "correct";
+          _bindings!.cellsText[i].value = game.cells[i].title;
+          break;
+        case var cell when cell.isWrong:
+          _bindings!.cellStatuses[i].value = "wrong";
+          break;
+        default:
+          _bindings!.cellStatuses[i].value = "idle";
+          break;
       }
     }
   }
@@ -174,12 +183,12 @@ class RiveGameBridge {
   void _setIdleText() => _bindings!.outputText.value = "gl hf";
   void _setLoadingText() => _bindings!.outputText.value = "loading...";
   void _setPlayText() =>
-      _bindings!.outputText.value = game.players[game.currentRound - 1].name;
+      _bindings!.outputText.value = game.players[game.currentRound].name;
   void _setGameOverText() => _bindings!.outputText.value = "gg wp";
   void _resetRoundText() => _bindings!.roundText.value = "--";
   void _resetTimerText() => _bindings!.timerText.value = "--:--";
   void _setRoundText() =>
-      _bindings!.roundText.value = game.currentRound.toString();
+      _bindings!.roundText.value = (game.currentRound + 1).toString();
   void _setMaxRoundText() =>
       _bindings!.maxRoundText.value = game.maxRounds.toString();
 

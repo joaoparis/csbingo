@@ -4,17 +4,19 @@ import 'package:csbingo/gateways/board_gateway.dart';
 import 'package:csbingo/models/cell.dart';
 import 'package:csbingo/constants/game_state.dart';
 import 'package:csbingo/game/game_timer.dart';
+import 'package:csbingo/models/game_info.dart';
 import 'package:csbingo/models/player.dart';
 import 'package:flutter/material.dart';
 
 class Game extends ChangeNotifier {
   static bool debug = false;
+  GameInfo gameInfo = GameInfo(cardId: '-1', cells: [], players: []);
   int maxRounds = 20;
   int gridSize = 16;
   static int maxSkips = 3;
   bool isGameInitialized = false;
   String state = "Idle";
-  int currentRound = 1;
+  int currentRound = 0;
   int skips = maxSkips;
   List<Cell> cells = [];
   List<Player> players = [];
@@ -80,17 +82,15 @@ class Game extends ChangeNotifier {
     notifyListeners();
   }
 
-  void selectCell(int index) {
+  void selectCell(int index) async {
     if (state != GameState.playing) return;
 
     final cell = cells[index];
     if (cell.isCompleted) return;
 
-    currentRound++;
-
-    //TODO: check if response is correct
-    cell.isCompleted = true;
+    await _evaluateAction(index: index);
     _notify("selectCell: cell complete");
+    currentRound++;
 
     if (_isFullBoardComplete()) {
       currentRound = maxRounds;
@@ -100,7 +100,7 @@ class Game extends ChangeNotifier {
       return;
     }
 
-    if (currentRound <= maxRounds) {
+    if (currentRound < maxRounds) {
       timer.resetTimer();
       timer.startTimer(roundTime);
       return;
@@ -123,7 +123,7 @@ class Game extends ChangeNotifier {
 
   void reset() {
     isGameInitialized = false;
-    currentRound = 1;
+    currentRound = 0;
     skips = maxSkips;
 
     generate();
@@ -132,7 +132,7 @@ class Game extends ChangeNotifier {
 
   Future<void> play() async {
     if (!isGameInitialized) {
-      currentRound = 1;
+      currentRound = 0;
       skips = maxSkips;
     }
     _timerListener = () => _notify("timerListener");
@@ -151,11 +151,14 @@ class Game extends ChangeNotifier {
     _notify("start(): state=$state");
   }
 
-  void skip() {
+  Future<void> skip() async {
     if (skips <= 0) return;
+
+    await _evaluateAction();
     currentRound++;
+
     skips--;
-    if (currentRound <= maxRounds) {
+    if (currentRound < maxRounds) {
       if (skips >= 0) {
         timer.resetTimer();
         timer.startTimer(roundTime);
@@ -180,7 +183,7 @@ class Game extends ChangeNotifier {
 
   void _onTimerFinished() {
     currentRound++;
-    if (currentRound <= maxRounds && state != GameState.gameOver) {
+    if (currentRound < maxRounds && state != GameState.gameOver) {
       timer.resetTimer();
       timer.startTimer(roundTime);
       return;
@@ -192,7 +195,7 @@ class Game extends ChangeNotifier {
   }
 
   Future<void> _loadGame() async {
-    final gameInfo = await gateway.fetchGame();
+    gameInfo = await gateway.createCard();
 
     maxRounds = gameInfo.players.length;
     gridSize = gameInfo.cells.length;
@@ -209,4 +212,31 @@ class Game extends ChangeNotifier {
   }
 
   bool _isFullBoardComplete() => !cells.any((c) => !c.isCompleted);
+
+  Future<void> _evaluateAction({int index = -1}) async {
+    var info = await gateway.sendAction(
+      gameInfo.cardId,
+      cellId: index,
+      skip: index == -1 ? true : false,
+    );
+
+    if (index == -1) return;
+    cells[index].isWrong = false;
+    _notify("_evaluateAction: before evaluating answer");
+
+    if (info.cells[index].isCompleted) {
+      print(
+          "[DEBUG] ✅ Right answer ✅ round:$currentRound [cell index: $index] match: ${info.cells[index].title} <> ${gameInfo.players[currentRound].name}");
+      cells[index] = info.cells[index];
+      cells[index].title += "\n${gameInfo.players[currentRound].name}";
+    } else {
+      cells[index].isWrong = true;
+      Future.delayed(const Duration(milliseconds: 500), () {
+        cells[index].isWrong = false;
+        _notify("_evaluateAction: reset wrong answer visual");
+      });
+      print(
+          "[DEBUG] ❌ Wrong answer! ❌ round:$currentRound [cell index: $index] try: ${info.cells[index].title} <> ${gameInfo.players[currentRound].name}");
+    }
+  }
 }
