@@ -1,12 +1,14 @@
 import 'package:rive/rive.dart';
 
-class CellImage {
+class RiveCell {
   final ViewModelInstanceAssetImage imageViewModel;
   final ViewModelInstanceString status;
   final ViewModelInstanceString text;
-  CellImage(
+  final ViewModelInstanceTrigger tap;
+  RiveCell(
     this.imageViewModel,
     this.status,
     this.text,
+    this.tap,
   );
 }

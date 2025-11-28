@@ -12,8 +12,8 @@
 - [x] add round (players left) indicator screen plumb with BE json
 - [x] fix deployment script
 - [x] fix last cell clicked when skips were clicked
-- [ ] check response with mock gateway response
-- [ ] call real BE for boards
+- [x] check response with mock gateway response
+- [x] call real BE for boards
 - [ ] call real BE to check cell clicks
 - [ ] add points logic
 - [ ] make skips pretty

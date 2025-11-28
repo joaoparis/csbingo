@@ -1,6 +1,6 @@
 import 'package:csbingo/game/game.dart';
 import 'package:csbingo/game/rive_game_bridge.dart';
-import 'package:csbingo/models/cell_image.dart';
+import 'package:csbingo/models/rive_cell.dart';
 import 'package:csbingo/models/rive_bindinds.dart';
 import 'package:flutter/material.dart';
 import 'package:rive/rive.dart';
@@ -27,7 +27,7 @@ class _BingoWidgetState extends State<BingoWidget> {
   late ViewModelInstanceString _buttonText;
   late ViewModelInstanceString _buttonStatus;
   late ViewModelInstanceTrigger _buttonTrigger;
-  late final List<CellImage> _cells = [];
+  late final List<RiveCell> _cells = [];
   late final List<ViewModelInstanceString> _skips = [];
 
   RiveGameBridge? _bridge;
@@ -92,6 +92,7 @@ class _BingoWidgetState extends State<BingoWidget> {
       cellStatuses: _cells.map((c) => c.status).toList(),
       cellsText: _cells.map((c) => c.text).toList(),
       skips: _skips,
+      cellTaps: _cells.map((c) => c.tap).toList(),
     );
     _bridge = RiveGameBridge(game: game);
     await _bridge!.init(controller: _controller, bindings: bindings);
@@ -121,22 +122,27 @@ class _BingoWidgetState extends State<BingoWidget> {
 
     //CELLS
     for (var i = 0; i < 16; i++) {
-      var img = viewModelInstance.image("c $i");
+      var img = viewModelInstance.image("cellsVM/cell$i/image");
       if (img == null) {
         print("[DEBUG] Failed to load image view model for cell $i");
         return;
       }
-      var str = viewModelInstance.string("c${i}status");
+      var str = viewModelInstance.string("cellsVM/cell$i/status");
       if (str == null) {
         print("[DEBUG] Failed to load status for cell $i");
         return;
       }
-      var txt = viewModelInstance.string("c${i}text");
+      var txt = viewModelInstance.string("cellsVM/cell$i/text");
       if (txt == null) {
         print("[DEBUG] Failed to load text for cell $i");
         return;
       }
-      _cells.add(CellImage(img, str, txt));
+      var tap = viewModelInstance.trigger("cellsVM/cell$i/tapped");
+      if (tap == null) {
+        print("[DEBUG] Failed to load tap trigger for cell $i");
+        return;
+      }
+      _cells.add(RiveCell(img, str, txt, tap));
     }
 
     if (outputText == null ||

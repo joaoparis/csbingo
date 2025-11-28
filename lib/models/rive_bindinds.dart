@@ -12,6 +12,7 @@ class RiveBindings {
   final List<ViewModelInstanceAssetImage> cellImages;
   final List<ViewModelInstanceString> cellStatuses;
   final List<ViewModelInstanceString> cellsText;
+  final List<ViewModelInstanceTrigger> cellTaps;
   final List<ViewModelInstanceString> skips;
 
   RiveBindings({
@@ -26,6 +27,7 @@ class RiveBindings {
     required this.cellImages,
     required this.cellStatuses,
     required this.cellsText,
+    required this.cellTaps,
     required this.skips,
   });
 }

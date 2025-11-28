@@ -29,6 +29,8 @@ class RiveGameBridge {
     controller.stateMachine.addEventListener(_handleRiveEvent);
     game.addListener(_gameListener);
 
+    bindings.cellTaps.asMap().forEach((i, c) => _handleCellTap(i, c));
+
     _applyGameStateToRive();
   }
 
@@ -39,16 +41,13 @@ class RiveGameBridge {
       return;
     }
 
-    if (name.startsWith('Click ')) {
-      final parts = name.split(' ');
-      final index = int.tryParse(parts.last);
-      if (index != null) {
-        game.selectCell(index);
-      }
-      return;
-    }
+    print("[DEBUG] Unhandled Rive event: $name");
+  }
 
-    // handle other events...
+  void _handleCellTap(int cellIndex, ViewModelInstanceTrigger tap) {
+    tap.addListener((event) {
+      game.selectCell(cellIndex);
+    });
   }
 
   /// Invoked when the Game notifies listeners. Translate game state -> Rive view model updates.
