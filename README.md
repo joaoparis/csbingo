@@ -51,4 +51,3 @@ Notes:
 
 - On Windows using WSL/Git Bash, run these commands in your preferred bash shell (the default shell for this workspace is `bash.exe`).
 - If you haven't initialized Firebase Hosting locally, run `firebase init hosting` and follow the prompts before the first deploy.
-

@@ -103,7 +103,6 @@ class Game extends ChangeNotifier {
     if (currentRound <= maxRounds) {
       timer.resetTimer();
       timer.startTimer(roundTime);
-      // _notify("selectCell: isComplete()=true");
       return;
     }
 
