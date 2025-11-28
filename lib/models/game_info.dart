@@ -5,6 +5,7 @@ class GameInfo {
   final String cardId;
   final List<Cell> cells;
   final List<Player> players;
+  late bool isLocal = false;
 
   GameInfo({
     required this.cardId,
@@ -31,11 +32,14 @@ class GameInfo {
       final map = c as Map<String, dynamic>;
       return Cell(
         title: map['altName']?.toString() ?? '',
-        image: map['imageUrl']?.toString() ?? 'assets/images/C4.png',
+        // image: map['imageUrl']?.toString() ?? 'assets/images/cell_placeholder.png',
+        image: 'assets/images/cell_placeholder.png',
         isCompleted: map['isMarked'] as bool,
       );
     }).toList();
 
     return GameInfo(cardId: id, cells: cells, players: players);
   }
+
+  setIsLocal(bool value) => isLocal = value;
 }

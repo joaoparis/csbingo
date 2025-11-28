@@ -26,12 +26,12 @@ class BoardGateway {
             'Failed to fetch board: ${resp.statusCode} ${resp.body}');
       }
     } catch (e) {
-      print("[DEBUG] Error fetching from backend: $e");
-
-      if (kIsWeb) {
-        throw Exception('Error: $e');
-      }
-      rethrow;
+      print("[DEBUG] Error fetching card from backend: $e");
+      return await _fetchLocalGame();
+      // if (kIsWeb) {
+      //   throw Exception('Error: $e');
+      // }
+      // rethrow;
     }
   }
 
@@ -39,10 +39,13 @@ class BoardGateway {
     String cardId, {
     int cellId = -1,
     bool skip = false,
+    bool isLocal = false,
   }) async {
     final uri = Uri.parse('$baseUrl/api/cards/$cardId');
 
     try {
+      if (isLocal) throw Exception("Local game");
+
       final resp = await http.patch(
         uri,
         headers: {"Content-Type": "application/json"},
@@ -56,26 +59,29 @@ class BoardGateway {
             'Failed to select cell: ${resp.statusCode} ${resp.body}');
       }
     } catch (e) {
-      print("[DEBUG] Error fetching from backend: $e");
-      // return _fetchLocalGame();
+      print("[DEBUG] Error sending action to backend: $e");
+      var info = await _fetchLocalGame();
+      if (!skip) info.cells[cellId].isCompleted = !skip;
+      return info;
 
-      if (kIsWeb) {
-        throw Exception('Error: $e');
-      }
-      rethrow;
+      // if (kIsWeb) {
+      //   throw Exception('Error: $e');
+      // }
+      // rethrow;
     }
   }
 
-  // Future<GameInfo> _fetchLocalGame() async {
-  //   try {
-  //     final jsonStr =
-  //         await rootBundle.loadString('assets/examples/message.json');
-  //     final Map<String, dynamic> jsonBody = json.decode(jsonStr);
-
-  //     return GameInfo.fromJson(jsonBody);
-  //   } catch (e) {
-  //     print("[DEBUG] Error fetching from json: $e");
-  //   }
-  //   return GameInfo(id: cells: List.empty(), players: List.empty());
-  // }
+  Future<GameInfo> _fetchLocalGame() async {
+    try {
+      final jsonStr =
+          await rootBundle.loadString('assets/examples/message.json');
+      final Map<String, dynamic> jsonBody = json.decode(jsonStr);
+      var info = GameInfo.fromJson(jsonBody);
+      info.setIsLocal(true);
+      return info;
+    } catch (e) {
+      print("[DEBUG] Error fetching from json: $e");
+    }
+    return GameInfo(cardId: '1', cells: List.empty(), players: List.empty());
+  }
 }

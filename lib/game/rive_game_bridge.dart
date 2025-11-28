@@ -198,7 +198,7 @@ class RiveGameBridge {
   void _setButtonText() =>
       game.skips > 0 ? _setOptionButton() : _setGreyButton();
 
-  void _setOptionButton() => game.currentRound == game.maxRounds
+  void _setOptionButton() => game.currentRound == game.maxRounds - 1
       ? _setForfeitButton()
       : _setSkipButton();
 }

@@ -15,7 +15,7 @@
 - [x] check response with mock gateway response
 - [x] call real BE for boards
 - [ ] send timeout action to BE
-- [ ] add visual wrong answer representation
+- [x] add visual wrong answer representation
 - [ ] call real BE to check cell clicks
 - [ ] add points logic
 - [ ] make skips pretty

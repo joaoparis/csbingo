@@ -10,7 +10,7 @@ import 'package:flutter/material.dart';
 
 class Game extends ChangeNotifier {
   static bool debug = false;
-  GameInfo gameInfo = GameInfo(cardId: '-1', cells: [], players: []);
+  late GameInfo gameInfo;
   int maxRounds = 20;
   int gridSize = 16;
   static int maxSkips = 3;
@@ -30,7 +30,7 @@ class Game extends ChangeNotifier {
     name: "",
     nationality: "",
     team: "",
-    image: "assets/images/C4.png",
+    image: "assets/images/cell_placeholder.png",
   );
 
   Game() {
@@ -53,7 +53,7 @@ class Game extends ChangeNotifier {
         name: 'PáR1S',
         nationality: 'PT',
         team: 'benfica',
-        image: 'noImage',
+        image: "assets/images/cell_placeholder.png",
       ),
     );
     isGameInitialized = true;
@@ -90,23 +90,23 @@ class Game extends ChangeNotifier {
 
     await _evaluateAction(index: index);
     _notify("selectCell: cell complete");
-    currentRound++;
 
     if (_isFullBoardComplete()) {
-      currentRound = maxRounds;
+      currentRound = maxRounds - 1;
       timer.resetTimer();
       state = GameState.gameOver;
       _notify("selectCell: _isFullBoardComplete()=true");
       return;
     }
 
-    if (currentRound < maxRounds) {
+    if (currentRound < maxRounds - 1) {
+      currentRound++;
       timer.resetTimer();
       timer.startTimer(roundTime);
       return;
     }
 
-    currentRound = maxRounds;
+    currentRound = maxRounds - 1;
     timer.resetTimer();
     state = GameState.gameOver;
     _notify("selectCell: isComplete()=true");
@@ -155,16 +155,18 @@ class Game extends ChangeNotifier {
     if (skips <= 0) return;
 
     await _evaluateAction();
-    currentRound++;
 
-    skips--;
-    if (currentRound < maxRounds) {
+    if (currentRound < maxRounds - 1) {
+      currentRound++;
+      skips--;
       if (skips >= 0) {
         timer.resetTimer();
         timer.startTimer(roundTime);
       }
     } else {
-      currentRound = maxRounds;
+      // If we're on the last round, move to gameOver state and ensure
+      // currentRound stays within valid bounds.
+      currentRound = maxRounds - 1;
       timer.resetTimer();
       state = GameState.gameOver;
     }
@@ -182,13 +184,14 @@ class Game extends ChangeNotifier {
   }
 
   void _onTimerFinished() {
-    currentRound++;
-    if (currentRound < maxRounds && state != GameState.gameOver) {
+    if (currentRound < maxRounds - 1 && state != GameState.gameOver) {
+      currentRound++;
+      _evaluateAction();
       timer.resetTimer();
       timer.startTimer(roundTime);
       return;
     }
-    currentRound = maxRounds;
+    currentRound = maxRounds - 1;
     timer.resetTimer();
     state = GameState.gameOver;
     _notify("_onTimerFinished(): state=$state");
@@ -218,6 +221,7 @@ class Game extends ChangeNotifier {
       gameInfo.cardId,
       cellId: index,
       skip: index == -1 ? true : false,
+      isLocal: gameInfo.isLocal,
     );
 
     if (index == -1) return;
@@ -225,8 +229,8 @@ class Game extends ChangeNotifier {
     _notify("_evaluateAction: before evaluating answer");
 
     if (info.cells[index].isCompleted) {
-      print(
-          "[DEBUG] ✅ Right answer ✅ round:$currentRound [cell index: $index] match: ${info.cells[index].title} <> ${gameInfo.players[currentRound].name}");
+      // print(
+      //     "[DEBUG] ✅ Right answer ✅ card:${gameInfo.cardId} round:$currentRound [cell index: $index] match: ${info.cells[index].title} <> ${gameInfo.players[currentRound].name}");
       cells[index] = info.cells[index];
       cells[index].title += "\n${gameInfo.players[currentRound].name}";
     } else {
@@ -235,8 +239,8 @@ class Game extends ChangeNotifier {
         cells[index].isWrong = false;
         _notify("_evaluateAction: reset wrong answer visual");
       });
-      print(
-          "[DEBUG] ❌ Wrong answer! ❌ round:$currentRound [cell index: $index] try: ${info.cells[index].title} <> ${gameInfo.players[currentRound].name}");
+      // print(
+      //     "[DEBUG] ❌ Wrong answer! ❌ round:$currentRound [cell index: $index] try: ${info.cells[index].title} <> ${gameInfo.players[currentRound].name}");
     }
   }
 }

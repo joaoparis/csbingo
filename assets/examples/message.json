@@ -1,10 +1,5 @@
 {
-  "id": 10,
-  "createdAt": "2025-11-09T11:38:40.363Z",
-  "updateAt": "2025-11-09T11:38:40.363Z",
-  "deletedAt": null,
-  "status": "I rather be a bot, then to be a baiter",
-  "cards": null,
+  "id": 99,
   "players": [
     {
       "id": 12,
@@ -187,7 +182,7 @@
       "team": "FaZe"
     }
   ],
-  "templateCard": [
+  "cells": [
     {
       "isMarked": false,
       "imageUrl": "",

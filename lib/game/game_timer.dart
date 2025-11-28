@@ -49,7 +49,6 @@ class GameTimer extends ChangeNotifier {
       if (remaining == Duration.zero) {
         _onTimerFinished.add(null);
         _stopTicker();
-        // optional: notifyListeners or update state to "time's up"
       }
     });
   }
@@ -62,7 +61,7 @@ class GameTimer extends ChangeNotifier {
   void _updateTimerTextAndNotify() {
     final rem = remaining;
     final text = _formatDuration(rem);
-    // Only update and notify when the displayed text actually changes
+
     if (timerText.value != text) {
       timerText.value = text;
       notifyListeners();
