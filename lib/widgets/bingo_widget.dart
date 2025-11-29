@@ -78,7 +78,11 @@ class _BingoWidgetState extends State<BingoWidget> {
     _file = file;
     _controller = RiveWidgetController(_file);
 
-    await _initViewModels();
+    final ok = await _initViewModels();
+    if (!ok) {
+      print('[DEBUG] Failed to init view models; aborting Rive init.');
+      return;
+    }
     final bindings = RiveBindings(
       buttonText: _buttonText,
       buttonStatus: _buttonStatus,
@@ -99,7 +103,7 @@ class _BingoWidgetState extends State<BingoWidget> {
     setState(() => isInitialized = true);
   }
 
-  Future<void> _initViewModels() async {
+  Future<bool> _initViewModels() async {
     final viewModelInstance = _controller.dataBind(DataBind.auto());
     //OUTPUT TEXT
     final outputText = viewModelInstance.string("outputText");
@@ -114,8 +118,8 @@ class _BingoWidgetState extends State<BingoWidget> {
     for (var i = 1; i <= 3; i++) {
       var skip = viewModelInstance.string("skipsVM/skip$i/status");
       if (skip == null) {
-        print("[DEBUG] Failed to load string for skip 1");
-        return;
+        print("[DEBUG] Failed to load string for skip $i");
+        return false;
       }
       _skips.add(skip);
     }
@@ -125,22 +129,22 @@ class _BingoWidgetState extends State<BingoWidget> {
       var img = viewModelInstance.image("cellsVM/cell$i/image");
       if (img == null) {
         print("[DEBUG] Failed to load image view model for cell $i");
-        return;
+        return false;
       }
       var str = viewModelInstance.string("cellsVM/cell$i/status");
       if (str == null) {
         print("[DEBUG] Failed to load status for cell $i");
-        return;
+        return false;
       }
       var txt = viewModelInstance.string("cellsVM/cell$i/text");
       if (txt == null) {
         print("[DEBUG] Failed to load text for cell $i");
-        return;
+        return false;
       }
       var tap = viewModelInstance.trigger("cellsVM/cell$i/tapped");
       if (tap == null) {
         print("[DEBUG] Failed to load tap trigger for cell $i");
-        return;
+        return false;
       }
       _cells.add(RiveCell(img, str, txt, tap));
     }
@@ -158,7 +162,7 @@ class _BingoWidgetState extends State<BingoWidget> {
           "scoreText=$scoreText, roundText=$roundText, maxRoundText=$maxRoundText, "
           "buttonText=$buttonText, buttonTrigger=$buttonTrigger, "
           "buttonStatus=$buttonStatus");
-      return;
+      return false;
     }
 
     _outputText = outputText;
@@ -171,6 +175,6 @@ class _BingoWidgetState extends State<BingoWidget> {
     _buttonStatus = buttonStatus;
 
     print("[DEBUG] all view model instances loaded successfully!");
-    return;
+    return true;
   }
 }

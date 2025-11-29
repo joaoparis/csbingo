@@ -18,12 +18,10 @@ class Game extends ChangeNotifier {
   String state = "Idle";
   int currentRound = 0;
   int skips = maxSkips;
-  List<Cell> cells = [];
-  List<Player> players = [];
   GameTimer timer = GameTimer();
   late VoidCallback _timerListener;
   late StreamSubscription _timerFinishedSub;
-  Duration roundTime = const Duration(seconds: 5);
+  Duration roundTime = const Duration(seconds: 10);
   BoardGateway gateway = BoardGateway();
 
   Player currentPlayer = Player(
@@ -38,24 +36,27 @@ class Game extends ChangeNotifier {
   }
 
   void generate() {
-    cells = [];
-    cells = List.generate(
-      gridSize,
-      (i) => Cell(
-        title: "[option]",
-        image: "assets/images/cell_placeholder.png",
+    gameInfo = GameInfo(
+      cardId: "",
+      cells: List.generate(
+        gridSize,
+        (i) => Cell(
+          title: "[option]",
+          image: "assets/images/cell_placeholder.png",
+        ),
       ),
-    );
-    players = [];
-    players = List.generate(
-      maxRounds,
-      (i) => Player(
-        name: 'PáR1S',
-        nationality: 'PT',
-        team: 'benfica',
-        image: "assets/images/cell_placeholder.png",
+      players: List.generate(
+        maxRounds,
+        (i) => Player(
+          name: 'PáR1S',
+          nationality: 'PT',
+          team: 'benfica',
+          image: "assets/images/cell_placeholder.png",
+        ),
       ),
+      points: 0,
     );
+
     isGameInitialized = true;
   }
 
@@ -85,7 +86,7 @@ class Game extends ChangeNotifier {
   void selectCell(int index) async {
     if (state != GameState.playing) return;
 
-    final cell = cells[index];
+    final cell = gameInfo.cells[index];
     if (cell.isCompleted) return;
 
     await _evaluateAction(index: index);
@@ -205,16 +206,15 @@ class Game extends ChangeNotifier {
 
     for (int i = 0; i < gridSize; i++) {
       // cells[i].image = gameInfo.cells[i].image;
-      cells[i].title = gameInfo.cells[i].title;
+      gameInfo.cells[i].title = gameInfo.cells[i].title;
     }
 
-    players = [];
     for (int i = 0; i < maxRounds; i++) {
-      players.add(gameInfo.players[i]);
+      gameInfo.players.add(gameInfo.players[i]);
     }
   }
 
-  bool _isFullBoardComplete() => !cells.any((c) => !c.isCompleted);
+  bool _isFullBoardComplete() => !gameInfo.cells.any((c) => !c.isCompleted);
 
   Future<void> _evaluateAction({int index = -1}) async {
     var info = await gateway.sendAction(
@@ -225,18 +225,19 @@ class Game extends ChangeNotifier {
     );
 
     if (index == -1) return;
-    cells[index].isWrong = false;
+    gameInfo.cells[index].isWrong = false;
     _notify("_evaluateAction: before evaluating answer");
 
     if (info.cells[index].isCompleted) {
       // print(
       //     "[DEBUG] ✅ Right answer ✅ card:${gameInfo.cardId} round:$currentRound [cell index: $index] match: ${info.cells[index].title} <> ${gameInfo.players[currentRound].name}");
-      cells[index] = info.cells[index];
-      cells[index].title += "\n${gameInfo.players[currentRound].name}";
+
+      gameInfo.setCorrectCell(index, info.cells[index], currentRound);
+      gameInfo.setPoints(info.points);
     } else {
-      cells[index].isWrong = true;
+      gameInfo.cells[index].isWrong = true;
       Future.delayed(const Duration(milliseconds: 500), () {
-        cells[index].isWrong = false;
+        gameInfo.cells[index].isWrong = false;
         _notify("_evaluateAction: reset wrong answer visual");
       });
       // print(

@@ -82,6 +82,7 @@ class BoardGateway {
     } catch (e) {
       print("[DEBUG] Error fetching from json: $e");
     }
-    return GameInfo(cardId: '1', cells: List.empty(), players: List.empty());
+    return GameInfo(
+        cardId: '1', cells: List.empty(), players: List.empty(), points: 0);
   }
 }

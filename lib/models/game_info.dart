@@ -5,18 +5,21 @@ class GameInfo {
   final String cardId;
   final List<Cell> cells;
   final List<Player> players;
+  int points;
   late bool isLocal = false;
 
   GameInfo({
     required this.cardId,
     required this.cells,
     required this.players,
+    required this.points,
   });
 
   factory GameInfo.fromJson(Map<String, dynamic> json) {
     final id = json['id']?.toString() ?? '-1';
     final playersJson = json['players'] as List<dynamic>? ?? [];
     final template = json['cells'] as List<dynamic>? ?? [];
+    final points = (json['points'] as num?)?.toInt() ?? 0;
 
     final players = playersJson.map((p) {
       final map = p as Map<String, dynamic>;
@@ -38,8 +41,15 @@ class GameInfo {
       );
     }).toList();
 
-    return GameInfo(cardId: id, cells: cells, players: players);
+    return GameInfo(cardId: id, cells: cells, players: players, points: points);
   }
 
   setIsLocal(bool value) => isLocal = value;
+
+  setPoints(int value) => points = value;
+
+  void setCorrectCell(int index, Cell newCell, int currentRound) {
+    cells[index] = newCell;
+    cells[index].title += "\n${players[currentRound].name}";
+  }
 }

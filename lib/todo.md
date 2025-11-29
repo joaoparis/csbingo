@@ -14,11 +14,11 @@
 - [x] fix last cell clicked when skips were clicked
 - [x] check response with mock gateway response
 - [x] call real BE for boards
-- [ ] send timeout action to BE
+- [x] send timeout action to BE
 - [x] add visual wrong answer representation
-- [ ] call real BE to check cell clicks
-- [ ] add points logic
-- [ ] make skips pretty
-- [ ] make wires pretty
+- [x] call real BE to check cell clicks
+- [x] add points logic
+- [+-] make skips pretty
+- [+-] make wires pretty
 - [ ] make c4 pretty (add tape details, c4 details, pcbs details)
-- [ ] add game type shifter UI
+- [ ] add game type shifter UI: normal, ffa

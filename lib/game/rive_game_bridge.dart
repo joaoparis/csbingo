@@ -81,6 +81,7 @@ class RiveGameBridge {
         _setCellsStatus();
         _setRoundText();
         _setSkips();
+        _updateScore();
         break;
       case GameState.gameOver:
         _setResetButton();
@@ -133,11 +134,11 @@ class RiveGameBridge {
     for (var i = 0; i < game.gridSize; i++) {
       futures.add(
         (() async {
-          final bytes = await rootBundle.load(game.cells[i].image);
+          final bytes = await rootBundle.load(game.gameInfo.cells[i].image);
           final decoded =
               await Factory.rive.decodeImage(bytes.buffer.asUint8List());
           _bindings!.cellImages[i].value = decoded;
-          _bindings!.cellsText[i].value = game.cells[i].title;
+          _bindings!.cellsText[i].value = game.gameInfo.cells[i].title;
         })(),
       );
     }
@@ -146,11 +147,11 @@ class RiveGameBridge {
   }
 
   void _setCellsStatus() {
-    for (var i = 0; i < game.cells.length; i++) {
-      switch (game.cells[i]) {
+    for (var i = 0; i < game.gameInfo.cells.length; i++) {
+      switch (game.gameInfo.cells[i]) {
         case var cell when cell.isCompleted:
           _bindings!.cellStatuses[i].value = "correct";
-          _bindings!.cellsText[i].value = game.cells[i].title;
+          _bindings!.cellsText[i].value = game.gameInfo.cells[i].title;
           break;
         case var cell when cell.isWrong:
           _bindings!.cellStatuses[i].value = "wrong";
@@ -182,9 +183,10 @@ class RiveGameBridge {
 
   void _setIdleText() => _bindings!.outputText.value = "gl hf";
   void _setLoadingText() => _bindings!.outputText.value = "loading...";
-  void _setPlayText() =>
-      _bindings!.outputText.value = game.players[game.currentRound].name;
-  void _setGameOverText() => _bindings!.outputText.value = "gg wp";
+  void _setPlayText() => _bindings!.outputText.value =
+      game.gameInfo.players[game.currentRound].name;
+  void _setGameOverText() =>
+      _bindings!.outputText.value = "gg wp (${game.gameInfo.points})";
   void _resetRoundText() => _bindings!.roundText.value = "--";
   void _resetTimerText() => _bindings!.timerText.value = "--:--";
   void _setRoundText() =>
@@ -201,4 +203,8 @@ class RiveGameBridge {
   void _setOptionButton() => game.currentRound == game.maxRounds - 1
       ? _setForfeitButton()
       : _setSkipButton();
+
+  void _updateScore() {
+    _bindings!.scoreText.value = game.gameInfo.points.toString();
+  }
 }
