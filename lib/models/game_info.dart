@@ -24,7 +24,7 @@ class GameInfo {
 
   void setCorrectCell(int index, Cell newCell, int currentRound) {
     cells[index] = newCell;
-    cells[index].title += "\n${players[currentRound].name}";
+    cells[index].title = "${players[currentRound].name}\n${cells[index].title}";
   }
 
   factory GameInfo.fromDTO(
