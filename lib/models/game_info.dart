@@ -1,55 +1,94 @@
 import 'package:csbingo/models/cell.dart';
+import 'package:csbingo/models/game_info_dto.dart';
 import 'package:csbingo/models/player.dart';
 
 class GameInfo {
   final String cardId;
   final List<Cell> cells;
   final List<Player> players;
+
+  int currentRound;
   int points;
-  late bool isLocal = false;
+  int skips;
 
   GameInfo({
     required this.cardId,
     required this.cells,
     required this.players,
     required this.points,
+    this.skips = 0,
+    this.currentRound = 0,
   });
-
-  factory GameInfo.fromJson(Map<String, dynamic> json) {
-    final id = json['id']?.toString() ?? '-1';
-    final playersJson = json['players'] as List<dynamic>? ?? [];
-    final template = json['cells'] as List<dynamic>? ?? [];
-    final points = (json['points'] as num?)?.toInt() ?? 0;
-
-    final players = playersJson.map((p) {
-      final map = p as Map<String, dynamic>;
-      return Player(
-        name: map['name']?.toString() ?? '',
-        nationality: map['nationality']?.toString() ?? '',
-        team: map['team']?.toString() ?? '',
-        image: map['image']?.toString() ?? '',
-      );
-    }).toList();
-
-    final cells = template.map((c) {
-      final map = c as Map<String, dynamic>;
-      return Cell(
-        title: map['altName']?.toString() ?? '',
-        // image: map['imageUrl']?.toString() ?? 'assets/images/cell_placeholder.png',
-        image: 'assets/images/cell_placeholder.png',
-        isCompleted: map['isMarked'] as bool,
-      );
-    }).toList();
-
-    return GameInfo(cardId: id, cells: cells, players: players, points: points);
-  }
-
-  setIsLocal(bool value) => isLocal = value;
 
   setPoints(int value) => points = value;
 
   void setCorrectCell(int index, Cell newCell, int currentRound) {
     cells[index] = newCell;
     cells[index].title += "\n${players[currentRound].name}";
+  }
+
+  factory GameInfo.fromDTO(
+    GameInfoDTO info,
+    int skips,
+    int currentRound,
+  ) {
+    return GameInfo(
+      cardId: info.cardId,
+      cells: info.cells,
+      players: info.players,
+      points: info.points,
+      skips: skips,
+      currentRound: currentRound,
+    );
+  }
+
+  factory GameInfo.forPlaceholders(int gridSize, int maxRounds, int skips) {
+    return GameInfo(
+      cardId: "",
+      cells: List.generate(
+        gridSize,
+        (i) => Cell(
+          title: "[option]",
+          image: "assets/images/cell_placeholder.png",
+        ),
+      ),
+      players: List.generate(
+        maxRounds,
+        (i) => Player(
+          name: '',
+          nationality: '',
+          team: '',
+          image: "assets/images/cell_placeholder.png",
+        ),
+      ),
+      points: 0,
+      skips: skips,
+      currentRound: 0,
+    );
+  }
+
+  factory GameInfo.forLoading(int gridSize, int maxRounds, int skips) {
+    return GameInfo(
+      cardId: "",
+      cells: List.generate(
+        gridSize,
+        (i) => Cell(
+          title: "loading...",
+          image: "assets/images/cell_placeholder.png",
+        ),
+      ),
+      players: List.generate(
+        maxRounds,
+        (i) => Player(
+          name: 'loading...',
+          nationality: '',
+          team: '',
+          image: "assets/images/cell_placeholder.png",
+        ),
+      ),
+      points: 0,
+      skips: skips,
+      currentRound: 0,
+    );
   }
 }

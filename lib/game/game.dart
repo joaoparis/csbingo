@@ -9,55 +9,46 @@ import 'package:csbingo/models/player.dart';
 import 'package:flutter/material.dart';
 
 class Game extends ChangeNotifier {
-  static bool debug = false;
-  late GameInfo gameInfo;
-  int maxRounds = 20;
-  int gridSize = 16;
+  static bool debug = true;
   static int maxSkips = 3;
-  bool isGameInitialized = false;
+
   String state = "Idle";
+  bool isGameInitialized = false;
+  int defaultMaxRounds = 20;
+  int defaultGridSize = 16;
   int currentRound = 0;
-  int skips = maxSkips;
+
   GameTimer timer = GameTimer();
+  Duration defaultRoundTime = const Duration(seconds: 10);
+  Player currentPlayer = Player.emptyPlayer();
+  BoardGateway gateway = BoardGateway(); //TODO: Inject this dependency
+
+  late GameInfo gameInfo;
   late VoidCallback _timerListener;
   late StreamSubscription _timerFinishedSub;
-  Duration roundTime = const Duration(seconds: 10);
-  BoardGateway gateway = BoardGateway();
 
-  Player currentPlayer = Player(
-    name: "",
-    nationality: "",
-    team: "",
-    image: "assets/images/cell_placeholder.png",
-  );
+  int get gridSize => gameInfo.cells.length;
+  int get cellsLength => gameInfo.cells.length;
+  int get skips => gameInfo.skips;
+  int get points => gameInfo.points;
+
+  List<Player> get players => gameInfo.players;
+  Cell cellAt(index) => gameInfo.cells[index];
+  String cellImage(index) => gameInfo.cells[index].image;
+  String cellTitle(index) => gameInfo.cells[index].title;
 
   Game() {
     reset();
   }
 
-  void generate() {
-    gameInfo = GameInfo(
-      cardId: "",
-      cells: List.generate(
-        gridSize,
-        (i) => Cell(
-          title: "[option]",
-          image: "assets/images/cell_placeholder.png",
-        ),
-      ),
-      players: List.generate(
-        maxRounds,
-        (i) => Player(
-          name: 'PáR1S',
-          nationality: 'PT',
-          team: 'benfica',
-          image: "assets/images/cell_placeholder.png",
-        ),
-      ),
-      points: 0,
-    );
-
-    isGameInitialized = true;
+  @override
+  void dispose() {
+    try {
+      timer.timerText.removeListener(_timerListener);
+    } catch (_) {}
+    _timerFinishedSub.cancel();
+    timer.dispose();
+    super.dispose();
   }
 
   Future<void> buttonClicked() async {
@@ -74,15 +65,6 @@ class Game extends ChangeNotifier {
     }
   }
 
-  _notify(String src) {
-    if (debug) {
-      print("[DEBUG] Notifying...");
-      print("[DEBUG] Source: $src");
-      print("[DEBUG] State: $state");
-    }
-    notifyListeners();
-  }
-
   void selectCell(int index) async {
     if (state != GameState.playing) return;
 
@@ -90,32 +72,30 @@ class Game extends ChangeNotifier {
     if (cell.isCompleted) return;
 
     await _evaluateAction(index: index);
-    _notify("selectCell: cell complete");
 
-    if (_isFullBoardComplete()) {
-      currentRound = maxRounds - 1;
+    if (_isBoardComplete) {
+      _resetCurrentRound;
       timer.resetTimer();
       state = GameState.gameOver;
-      _notify("selectCell: _isFullBoardComplete()=true");
+      _notify("selectCell(): _isBoardComplete=$_isBoardComplete state=$state");
       return;
     }
 
-    if (currentRound < maxRounds - 1) {
+    if (_isNotLastRound) {
       currentRound++;
       timer.resetTimer();
-      timer.startTimer(roundTime);
+      timer.startTimer(defaultRoundTime);
       return;
     }
 
-    currentRound = maxRounds - 1;
+    _resetCurrentRound;
     timer.resetTimer();
     state = GameState.gameOver;
-    _notify("selectCell: isComplete()=true");
+    _notify("selectCell(): _isBoardComplete=$_isBoardComplete state=$state");
   }
 
   void gameOver() {
     state = GameState.idle;
-
     timer.timerText.removeListener(_timerListener);
     _timerFinishedSub.cancel();
     _notify("gameOver(): state=$state");
@@ -125,123 +105,138 @@ class Game extends ChangeNotifier {
   void reset() {
     isGameInitialized = false;
     currentRound = 0;
-    skips = maxSkips;
 
-    generate();
+    gameInfo = GameInfo.forPlaceholders(
+      defaultGridSize,
+      defaultMaxRounds,
+      maxSkips,
+    );
+
+    isGameInitialized = true;
     _notify("reset(): state=$state");
   }
 
   Future<void> play() async {
     if (!isGameInitialized) {
       currentRound = 0;
-      skips = maxSkips;
+      gameInfo.skips = maxSkips;
     }
-    _timerListener = () => _notify("timerListener");
-    timer.timerText.addListener(_timerListener);
-    _timerFinishedSub = timer.onTimerFinished.listen((_) {
-      _onTimerFinished();
-    });
+    _setupTimer();
     await _loadGame();
-    state = GameState.loading;
-    _notify("play(): game has loaded state=$state");
+    start();
   }
 
   void start() {
     state = GameState.playing;
-    timer.startTimer(roundTime);
+    timer.startTimer(defaultRoundTime);
     _notify("start(): state=$state");
   }
 
   Future<void> skip() async {
-    if (skips <= 0) return;
+    if (gameInfo.skips <= 0) return;
 
     await _evaluateAction();
 
-    if (currentRound < maxRounds - 1) {
+    if (_isNotLastRound) {
       currentRound++;
-      skips--;
-      if (skips >= 0) {
+      gameInfo.skips--;
+      if (_hasSkips) {
         timer.resetTimer();
-        timer.startTimer(roundTime);
+        timer.startTimer(defaultRoundTime);
       }
     } else {
-      // If we're on the last round, move to gameOver state and ensure
-      // currentRound stays within valid bounds.
-      currentRound = maxRounds - 1;
+      _resetCurrentRound;
       timer.resetTimer();
       state = GameState.gameOver;
     }
     _notify("skip(): state=$state");
   }
 
-  @override
-  void dispose() {
-    try {
-      timer.timerText.removeListener(_timerListener);
-    } catch (_) {}
-    _timerFinishedSub.cancel();
-    timer.dispose();
-    super.dispose();
+  bool get _isBoardComplete => !gameInfo.cells.any((c) => !c.isCompleted);
+  bool get _isNotLastRound => currentRound < defaultMaxRounds - 1;
+  bool get _hasSkips => gameInfo.skips >= 0;
+  bool get _isNotGameOver => state != GameState.gameOver;
+  void _resetCurrentRound() => currentRound = defaultMaxRounds - 1;
+
+  void _setupTimer() {
+    _timerListener = () => _notify("timer");
+    timer.timerText.addListener(_timerListener);
+    _timerFinishedSub = timer.onTimerFinished.listen((_) {
+      _onTimerFinished();
+    });
   }
 
   void _onTimerFinished() {
-    if (currentRound < maxRounds - 1 && state != GameState.gameOver) {
+    if (_isNotLastRound && _isNotGameOver) {
       currentRound++;
       _evaluateAction();
       timer.resetTimer();
-      timer.startTimer(roundTime);
+      timer.startTimer(defaultRoundTime);
       return;
     }
-    currentRound = maxRounds - 1;
+    _resetCurrentRound;
     timer.resetTimer();
     state = GameState.gameOver;
     _notify("_onTimerFinished(): state=$state");
   }
 
   Future<void> _loadGame() async {
-    gameInfo = await gateway.createCard();
-
-    maxRounds = gameInfo.players.length;
-    gridSize = gameInfo.cells.length;
-
-    for (int i = 0; i < gridSize; i++) {
-      // cells[i].image = gameInfo.cells[i].image;
-      gameInfo.cells[i].title = gameInfo.cells[i].title;
-    }
-
-    for (int i = 0; i < maxRounds; i++) {
-      gameInfo.players.add(gameInfo.players[i]);
+    state = GameState.loading;
+    gameInfo = GameInfo.forLoading(
+      defaultGridSize,
+      defaultMaxRounds,
+      maxSkips,
+    );
+    _notify("_loadGame(): start loading game=$state");
+    try {
+      var info = await gateway.createCard();
+      gameInfo = GameInfo.fromDTO(
+        info,
+        maxSkips,
+        0,
+      );
+      _notify("_loadGame(): game has loaded state=$state");
+    } catch (err) {
+      state = GameState.idle;
+      _notify("_loadGame(): failed to load game, reverting to state=$state");
+      rethrow;
     }
   }
-
-  bool _isFullBoardComplete() => !gameInfo.cells.any((c) => !c.isCompleted);
 
   Future<void> _evaluateAction({int index = -1}) async {
     var info = await gateway.sendAction(
       gameInfo.cardId,
       cellId: index,
       skip: index == -1 ? true : false,
-      isLocal: gameInfo.isLocal,
     );
 
     if (index == -1) return;
+
     gameInfo.cells[index].isWrong = false;
-    _notify("_evaluateAction: before evaluating answer");
+    _notify("_evaluateAction(): before evaluating answer");
 
     if (info.cells[index].isCompleted) {
       // print(
       //     "[DEBUG] ✅ Right answer ✅ card:${gameInfo.cardId} round:$currentRound [cell index: $index] match: ${info.cells[index].title} <> ${gameInfo.players[currentRound].name}");
-
       gameInfo.setCorrectCell(index, info.cells[index], currentRound);
       gameInfo.setPoints(info.points);
     } else {
+      // print(
+      //     "[DEBUG] ❌ Wrong answer! ❌ round:$currentRound [cell index: $index] try: ${info.cells[index].title} <> ${gameInfo.players[currentRound].name}");
       gameInfo.cells[index].isWrong = true;
       Future.delayed(const Duration(milliseconds: 500), () {
         gameInfo.cells[index].isWrong = false;
-        _notify("_evaluateAction: reset wrong answer visual");
+        _notify("_evaluateAction(): reset wrong answer visual");
       });
-      // print(
-      //     "[DEBUG] ❌ Wrong answer! ❌ round:$currentRound [cell index: $index] try: ${info.cells[index].title} <> ${gameInfo.players[currentRound].name}");
     }
+  }
+
+  _notify(String src) {
+    if (debug) {
+      print("[DEBUG] Notifying...");
+      print("[DEBUG] Source: $src");
+      print("[DEBUG] State: $state");
+    }
+    notifyListeners();
   }
 }

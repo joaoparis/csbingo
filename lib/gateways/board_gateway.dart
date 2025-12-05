@@ -1,15 +1,15 @@
 import 'dart:convert';
 
 import 'package:csbingo/config.dart';
-import 'package:csbingo/models/game_info.dart';
-import 'package:flutter/foundation.dart';
+import 'package:csbingo/models/game_info_dto.dart';
 import 'package:flutter/services.dart' show rootBundle;
 import 'package:http/http.dart' as http;
 
 class BoardGateway {
   final String baseUrl = AppConfig.apiBaseUrl;
+  static bool isLocal = false;
 
-  Future<GameInfo> createCard() async {
+  Future<GameInfoDTO> createCard() async {
     final uri = Uri.parse('$baseUrl/api/cards');
 
     try {
@@ -19,8 +19,9 @@ class BoardGateway {
         body: jsonEncode({"type": "normal"}),
       );
       if (resp.statusCode == 200) {
+        isLocal = false;
         final Map<String, dynamic> jsonBody = json.decode(resp.body);
-        return GameInfo.fromJson(jsonBody);
+        return GameInfoDTO.fromJson(jsonBody);
       } else {
         throw Exception(
             'Failed to fetch board: ${resp.statusCode} ${resp.body}');
@@ -35,11 +36,10 @@ class BoardGateway {
     }
   }
 
-  Future<GameInfo> sendAction(
+  Future<GameInfoDTO> sendAction(
     String cardId, {
     int cellId = -1,
     bool skip = false,
-    bool isLocal = false,
   }) async {
     final uri = Uri.parse('$baseUrl/api/cards/$cardId');
 
@@ -53,7 +53,7 @@ class BoardGateway {
       );
       if (resp.statusCode == 200) {
         final Map<String, dynamic> jsonBody = json.decode(resp.body);
-        return GameInfo.fromJson(jsonBody);
+        return GameInfoDTO.fromJson(jsonBody);
       } else {
         throw Exception(
             'Failed to select cell: ${resp.statusCode} ${resp.body}');
@@ -71,18 +71,18 @@ class BoardGateway {
     }
   }
 
-  Future<GameInfo> _fetchLocalGame() async {
+  Future<GameInfoDTO> _fetchLocalGame() async {
     try {
       final jsonStr =
           await rootBundle.loadString('assets/examples/message.json');
       final Map<String, dynamic> jsonBody = json.decode(jsonStr);
-      var info = GameInfo.fromJson(jsonBody);
-      info.setIsLocal(true);
+      var info = GameInfoDTO.fromJson(jsonBody);
+      isLocal = true;
       return info;
     } catch (e) {
       print("[DEBUG] Error fetching from json: $e");
     }
-    return GameInfo(
+    return GameInfoDTO(
         cardId: '1', cells: List.empty(), players: List.empty(), points: 0);
   }
 }

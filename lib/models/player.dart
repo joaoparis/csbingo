@@ -10,4 +10,13 @@ class Player {
     required this.team,
     required this.image,
   });
+
+  factory Player.emptyPlayer() {
+    return Player(
+      name: "",
+      nationality: "",
+      team: "",
+      image: "assets/images/cell_placeholder.png",
+    );
+  }
 }

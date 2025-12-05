@@ -18,7 +18,7 @@
 - [x] add visual wrong answer representation
 - [x] call real BE to check cell clicks
 - [x] add points logic
-- [+-] make skips pretty
-- [+-] make wires pretty
-- [ ] make c4 pretty (add tape details, c4 details, pcbs details)
+- [x] make skips pretty
+- [x] make wires pretty
+- [x] make c4 pretty (add tape details, c4 details, pcbs details)
 - [ ] add game type shifter UI: normal, ffa
