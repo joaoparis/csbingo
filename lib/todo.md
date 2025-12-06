@@ -21,4 +21,5 @@
 - [x] make skips pretty
 - [x] make wires pretty
 - [x] make c4 pretty (add tape details, c4 details, pcbs details)
-- [ ] add game type shifter UI: normal, ffa
+- [ ] add game type shifter UI: normal, ffa *** DO THIS NEXT *** shifter is there already, just need to import and use
+- [ ] study BE provider option: Panda API

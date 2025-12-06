@@ -4,7 +4,9 @@ class RiveBindings {
   final ViewModelInstanceString buttonText;
   final ViewModelInstanceString buttonStatus;
   final ViewModelInstanceTrigger buttonTrigger;
+  final ViewModelInstanceTrigger cursorTrigger;
   final ViewModelInstanceString outputText;
+  final ViewModelInstanceString outputTextInfo;
   final ViewModelInstanceString timerText;
   final ViewModelInstanceString scoreText;
   final ViewModelInstanceString roundText;
@@ -19,7 +21,9 @@ class RiveBindings {
     required this.buttonText,
     required this.buttonStatus,
     required this.buttonTrigger,
+    required this.cursorTrigger,
     required this.outputText,
+    required this.outputTextInfo,
     required this.timerText,
     required this.scoreText,
     required this.roundText,

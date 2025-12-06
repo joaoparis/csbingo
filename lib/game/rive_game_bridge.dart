@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:csbingo/constants/skip_state.dart';
 import 'package:csbingo/game/game.dart';
 import 'package:csbingo/constants/game_state.dart';
+import 'package:csbingo/models/game_info.dart';
 import 'package:csbingo/models/rive_bindinds.dart';
 import 'package:flutter/services.dart';
 import 'package:rive/rive.dart';
@@ -29,6 +30,7 @@ class RiveGameBridge {
     controller.stateMachine.addEventListener(_handleRiveEvent);
     game.addListener(_gameListener);
 
+    bindings.cursorTrigger.addListener(game.handleCursorTrigger);
     bindings.cellTaps.asMap().forEach((i, c) => _handleCellTap(i, c));
 
     _applyGameStateToRive();
@@ -180,8 +182,19 @@ class RiveGameBridge {
     }
   }
 
-  void _setIdleText() => _bindings!.outputText.value = "gl hf";
-  void _setLoadingText() => _bindings!.outputText.value = "loading...";
+  void _setIdleText() {
+    _bindings!.outputText.value = "";
+    _bindings!.outputTextInfo.value = "Select game:\n"
+        "(${game.type == GameType.daily ? '*' : ' '}) daily\n"
+        "(${game.type == GameType.ffa ? '*' : ' '}) ffa\n";
+  }
+
+  void _setLoadingText() {
+    _bindings!.outputText.value = "loading...";
+    _bindings!.outputTextInfo.value =
+        "CS BINGO: ${game.type == GameType.daily ? 'daily' : 'ffa'}";
+  }
+
   void _setPlayText() =>
       _bindings!.outputText.value = game.players[game.currentRound].name;
   void _setGameOverText() =>

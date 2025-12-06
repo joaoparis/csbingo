@@ -34,6 +34,11 @@ class Game extends ChangeNotifier {
 
   List<Player> get players => gameInfo.players;
   Cell cellAt(index) => gameInfo.cells[index];
+  GameType get type {
+    print("game type getter: ${gameInfo.hashCode} ${gameInfo.gameType}");
+    return gameInfo.gameType;
+  }
+
   String cellImage(index) => gameInfo.cells[index].image;
   String cellTitle(index) => gameInfo.cells[index].title;
 
@@ -156,6 +161,7 @@ class Game extends ChangeNotifier {
   bool get _isNotLastRound => currentRound < defaultMaxRounds - 1;
   bool get _hasSkips => gameInfo.skips >= 0;
   bool get _isNotGameOver => state != GameState.gameOver;
+
   void _resetCurrentRound() => currentRound = defaultMaxRounds - 1;
 
   void _setupTimer() {
@@ -186,6 +192,7 @@ class Game extends ChangeNotifier {
       defaultGridSize,
       defaultMaxRounds,
       maxSkips,
+      type,
     );
     _notify("_loadGame(): start loading game=$state");
     try {
@@ -194,6 +201,7 @@ class Game extends ChangeNotifier {
         info,
         maxSkips,
         0,
+        type,
       );
       _notify("_loadGame(): game has loaded state=$state");
     } catch (err) {
@@ -239,4 +247,13 @@ class Game extends ChangeNotifier {
     }
     notifyListeners();
   }
+
+  void handleCursorTrigger(bool value) {
+    if (state != GameState.idle) return;
+    _toogleCursor();
+    _notify("handleCursorTrigger(): cursor toggled");
+  }
+
+  void _toogleCursor() => gameInfo.gameType =
+      gameInfo.gameType == GameType.daily ? GameType.ffa : GameType.daily;
 }

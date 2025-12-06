@@ -1,3 +1,4 @@
+import 'package:csbingo/game/game.dart';
 import 'package:csbingo/models/cell.dart';
 import 'package:csbingo/models/game_info_dto.dart';
 import 'package:csbingo/models/player.dart';
@@ -10,6 +11,7 @@ class GameInfo {
   int currentRound;
   int points;
   int skips;
+  GameType gameType;
 
   GameInfo({
     required this.cardId,
@@ -18,6 +20,7 @@ class GameInfo {
     required this.points,
     this.skips = 0,
     this.currentRound = 0,
+    this.gameType = GameType.daily,
   });
 
   setPoints(int value) => points = value;
@@ -31,6 +34,7 @@ class GameInfo {
     GameInfoDTO info,
     int skips,
     int currentRound,
+    GameType type,
   ) {
     return GameInfo(
       cardId: info.cardId,
@@ -39,6 +43,7 @@ class GameInfo {
       points: info.points,
       skips: skips,
       currentRound: currentRound,
+      gameType: type,
     );
   }
 
@@ -67,7 +72,8 @@ class GameInfo {
     );
   }
 
-  factory GameInfo.forLoading(int gridSize, int maxRounds, int skips) {
+  factory GameInfo.forLoading(
+      int gridSize, int maxRounds, int skips, GameType type) {
     return GameInfo(
       cardId: "",
       cells: List.generate(
@@ -89,6 +95,12 @@ class GameInfo {
       points: 0,
       skips: skips,
       currentRound: 0,
+      gameType: type,
     );
   }
+}
+
+enum GameType {
+  daily,
+  ffa,
 }

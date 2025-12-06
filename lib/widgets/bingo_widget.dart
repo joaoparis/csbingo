@@ -21,6 +21,7 @@ class _BingoWidgetState extends State<BingoWidget> {
   late File _file;
   late RiveWidgetController _controller;
   late ViewModelInstanceString _outputText;
+  late ViewModelInstanceString _outputTextInfo;
   late ViewModelInstanceString _timerText;
   late ViewModelInstanceString _scoreText;
   late ViewModelInstanceString _roundText;
@@ -28,6 +29,7 @@ class _BingoWidgetState extends State<BingoWidget> {
   late ViewModelInstanceString _buttonText;
   late ViewModelInstanceString _buttonStatus;
   late ViewModelInstanceTrigger _buttonTrigger;
+  late ViewModelInstanceTrigger _cursorTrigger;
   late final List<RiveCell> _cells = [];
   late final List<ViewModelInstanceString> _skips = [];
 
@@ -45,6 +47,7 @@ class _BingoWidgetState extends State<BingoWidget> {
     _bridge?.dispose();
     _controller.dispose();
     _outputText.dispose();
+    _outputTextInfo.dispose();
     _timerText.dispose();
     _scoreText.dispose();
     _roundText.dispose();
@@ -52,6 +55,7 @@ class _BingoWidgetState extends State<BingoWidget> {
     _buttonText.dispose();
     _buttonStatus.dispose();
     _buttonTrigger.dispose();
+    _cursorTrigger.dispose();
     _file.dispose();
     super.dispose();
   }
@@ -88,7 +92,9 @@ class _BingoWidgetState extends State<BingoWidget> {
       buttonText: _buttonText,
       buttonStatus: _buttonStatus,
       buttonTrigger: _buttonTrigger,
+      cursorTrigger: _cursorTrigger,
       outputText: _outputText,
+      outputTextInfo: _outputTextInfo,
       timerText: _timerText,
       scoreText: _scoreText,
       roundText: _roundText,
@@ -108,6 +114,7 @@ class _BingoWidgetState extends State<BingoWidget> {
     final viewModelInstance = _controller.dataBind(DataBind.auto());
     //OUTPUT TEXT
     final outputText = viewModelInstance.string("outputText");
+    final outputTextInfo = viewModelInstance.string("outputTextInfo");
     final timerText = viewModelInstance.string("timerText");
     final scoreText = viewModelInstance.string("scoreText");
     final roundText = viewModelInstance.string("roundText");
@@ -115,6 +122,7 @@ class _BingoWidgetState extends State<BingoWidget> {
     final buttonText = viewModelInstance.string("buttonText");
     final buttonStatus = viewModelInstance.string("buttonStatus");
     final buttonTrigger = viewModelInstance.trigger("buttonTrigger");
+    final cursorTrigger = viewModelInstance.trigger("cursorVM/cursorTrigger");
     //SKIPS
     for (var i = 1; i <= 3; i++) {
       var skip = viewModelInstance.string("skipsVM/skip$i/status");
@@ -151,28 +159,33 @@ class _BingoWidgetState extends State<BingoWidget> {
     }
 
     if (outputText == null ||
+        outputTextInfo == null ||
         timerText == null ||
         scoreText == null ||
         roundText == null ||
         maxRoundText == null ||
         buttonText == null ||
         buttonStatus == null ||
-        buttonTrigger == null) {
-      print(
-          "[DEBUG] something is null: outputText=$outputText, timerText=$timerText, "
-          "scoreText=$scoreText, roundText=$roundText, maxRoundText=$maxRoundText, "
-          "buttonText=$buttonText, buttonTrigger=$buttonTrigger, "
-          "buttonStatus=$buttonStatus");
+        buttonTrigger == null ||
+        cursorTrigger == null) {
+      print("[DEBUG] something is null: outputText=$outputText, "
+          "outputTextInfo=$outputTextInfo timerText=$timerText, "
+          "scoreText=$scoreText, roundText=$roundText, "
+          "maxRoundText=$maxRoundText, buttonText=$buttonText, "
+          "buttonTrigger=$buttonTrigger, buttonStatus=$buttonStatus"
+          "cursorTrigger=$cursorTrigger");
       return false;
     }
 
     _outputText = outputText;
+    _outputTextInfo = outputTextInfo;
     _timerText = timerText;
     _scoreText = scoreText;
     _roundText = roundText;
     _maxRoundText = maxRoundText;
     _buttonText = buttonText;
     _buttonTrigger = buttonTrigger;
+    _cursorTrigger = cursorTrigger;
     _buttonStatus = buttonStatus;
 
     print("[DEBUG] all view model instances loaded successfully!");
