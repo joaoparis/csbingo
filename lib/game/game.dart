@@ -61,6 +61,9 @@ class Game extends ChangeNotifier {
       case GameState.idle:
         await play();
         return;
+      case GameState.ffaLobby:
+        ffaLobby();
+        return;
       case GameState.playing:
         skip();
         return;
@@ -99,6 +102,11 @@ class Game extends ChangeNotifier {
     _notify("selectCell(): _isBoardComplete=$_isBoardComplete state=$state");
   }
 
+  void ffaLobby() {
+    state = GameState.idle;
+    _notify("buttonClicked(): returning to idle from ffaLobby");
+  }
+
   void gameOver() {
     state = GameState.idle;
     timer.timerText.removeListener(_timerListener);
@@ -122,6 +130,12 @@ class Game extends ChangeNotifier {
   }
 
   Future<void> play() async {
+    if (gameInfo.gameType == GameType.ffa) {
+      state = GameState.ffaLobby;
+      _notify("play(): state=$state");
+      return;
+    }
+
     if (!isGameInitialized) {
       currentRound = 0;
       gameInfo.skips = maxSkips;

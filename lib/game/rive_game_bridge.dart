@@ -69,6 +69,10 @@ class RiveGameBridge {
         _resetRoundText();
         _resetTimerText();
         break;
+      case GameState.ffaLobby:
+        _setFFALobbyText();
+        _setBackButton();
+        break;
       case GameState.loading:
         _setLoadingText();
         _setMaxRoundText();
@@ -127,6 +131,11 @@ class RiveGameBridge {
   void _setPlayButton() {
     _bindings!.buttonStatus.value = 'green';
     _bindings!.buttonText.value = 'PLAY';
+  }
+
+  void _setBackButton() {
+    _bindings!.buttonStatus.value = 'red';
+    _bindings!.buttonText.value = 'BACK';
   }
 
   Future<void> _setCellImages({bool isEmpty = false}) async {
@@ -218,5 +227,10 @@ class RiveGameBridge {
 
   void _updateScore() {
     _bindings!.scoreText.value = game.points.toString();
+  }
+
+  void _setFFALobbyText() {
+    _bindings!.outputText.value = "";
+    _bindings!.outputTextInfo.value = "CS BINGO: ffa\nComming soon!";
   }
 }
