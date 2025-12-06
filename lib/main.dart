@@ -1,4 +1,5 @@
 import 'package:csbingo/widgets/bingo_widget.dart';
+import 'package:csbingo/widgets/cs2_dialog.dart';
 import 'package:flutter/material.dart';
 
 void main() async {
@@ -88,7 +89,11 @@ class _MyHomePageState extends State<MyHomePage> {
           ),
         ),
         actions: [
-          // theme toggle button
+          IconButton(
+            tooltip: 'Login',
+            icon: const Icon(Icons.login),
+            onPressed: _loginDialog,
+          ),
           IconButton(
             tooltip: widget.themeMode == ThemeMode.dark
                 ? 'Disable night mode'
@@ -98,7 +103,11 @@ class _MyHomePageState extends State<MyHomePage> {
                 : Icons.light_mode),
             onPressed: widget.onToggleTheme,
           ),
-          const SizedBox(width: 50),
+          IconButton(
+            tooltip: 'Info',
+            icon: const Icon(Icons.info_outline),
+            onPressed: _infoDialog,
+          ),
         ],
       ),
       body: Stack(
@@ -117,6 +126,31 @@ class _MyHomePageState extends State<MyHomePage> {
             child: BingoWidget(),
           ),
         ],
+      ),
+    );
+  }
+
+  void _loginDialog() {
+    showDialog(
+      context: context,
+      // barrierDismissible: false,
+      builder: (context) => const Cs2Dialog(
+        title: 'Login',
+        content: "Login is currently not implemented. 🤡",
+        buttonText: 'OK',
+      ),
+    );
+  }
+
+  void _infoDialog() {
+    showDialog(
+      context: context,
+      // barrierDismissible: false,
+      builder: (context) => const Cs2Dialog(
+        title: 'About CS BINGO',
+        content:
+            "It's a bingo game for you to play while you wait for CS servers to have 128Hz!",
+        buttonText: 'I love it!',
       ),
     );
   }
