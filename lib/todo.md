@@ -23,7 +23,11 @@
 - [x] make c4 pretty (add tape details, c4 details, pcbs details)
 - [X] add game type shifter UI: normal, ffa *** DO THIS NEXT *** shifter is there already, just need to import and use
 - [X] study BE provider option: Panda API
-- [ ] add images to cells
+- [X] add images to cells
+- [x] create game information
+- [x] fill "About" information with Project info
+- [ ] create cache images in FE
+- [ ] fix trophies images
 - [ ] login with Steam OpenID
 - [ ] BE deployment
 - [ ] add end-game proposed solution

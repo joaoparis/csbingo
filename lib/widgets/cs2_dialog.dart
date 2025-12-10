@@ -10,7 +10,7 @@ class Cs2Dialog extends StatelessWidget {
   });
 
   final String title;
-  final String content;
+  final RichText content;
   final String buttonText;
 
   @override
@@ -62,15 +62,16 @@ class Cs2Dialog extends StatelessWidget {
             child: Container(
               padding: const EdgeInsets.fromLTRB(14, 30, 14, 14),
               alignment: Alignment.topLeft,
-              child: Text(
-                content,
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontSize: 20,
-                  height: 1.3,
-                  fontFamily: "StratumNo2",
-                ),
-              ),
+              child: content,
+              // child: Text(
+              //   content.text.,
+              //   style: const TextStyle(
+              //     color: Colors.white,
+              //     fontSize: 20,
+              //     height: 1.3,
+              //     fontFamily: "StratumNo2",
+              //   ),
+              // ),
             ),
           ),
 

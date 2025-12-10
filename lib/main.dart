@@ -1,6 +1,8 @@
 import 'package:csbingo/widgets/bingo_widget.dart';
 import 'package:csbingo/widgets/cs2_dialog.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -95,6 +97,11 @@ class _MyHomePageState extends State<MyHomePage> {
             onPressed: _loginDialog,
           ),
           IconButton(
+            tooltip: 'How to play?',
+            icon: const Icon(Icons.gamepad_rounded),
+            onPressed: _howToPlayDialog,
+          ),
+          IconButton(
             tooltip: widget.themeMode == ThemeMode.dark
                 ? 'Disable night mode'
                 : 'Enable night mode',
@@ -134,10 +141,45 @@ class _MyHomePageState extends State<MyHomePage> {
     showDialog(
       context: context,
       // barrierDismissible: false,
-      builder: (context) => const Cs2Dialog(
+      builder: (context) => Cs2Dialog(
         title: 'Login',
-        content: "Login is currently not implemented. 🤡",
+        content: RichText(
+          text: const TextSpan(
+            text: "Login is currently not implemented. 🤡",
+            style: TextStyle(
+              color: Colors.white,
+              fontSize: 20,
+              height: 1.3,
+              fontFamily: "StratumNo2",
+            ),
+          ),
+        ),
         buttonText: 'OK',
+      ),
+    );
+  }
+
+  void _howToPlayDialog() {
+    showDialog(
+      context: context,
+      // barrierDismissible: false,
+      builder: (context) => Cs2Dialog(
+        title: 'How to play?',
+        content: RichText(
+          text: const TextSpan(
+            text: "Use the cursor to select the Game Mode you want to play.\n"
+                "In game: Try to match the name of the CS player on the Main Display with one of the cells below.\n"
+                "The cells will show: Trophies, Teammates, Squads & Nationalities\n"
+                "Match the max players possible to win!",
+            style: TextStyle(
+              color: Colors.white,
+              fontSize: 20,
+              height: 1.3,
+              fontFamily: "StratumNo2",
+            ),
+          ),
+        ),
+        buttonText: "Let's go!",
       ),
     );
   }
@@ -146,10 +188,36 @@ class _MyHomePageState extends State<MyHomePage> {
     showDialog(
       context: context,
       // barrierDismissible: false,
-      builder: (context) => const Cs2Dialog(
+      builder: (context) => Cs2Dialog(
         title: 'About CS BINGO',
-        content:
-            "It's a bingo game for you to play while you wait for CS servers to have 128Hz!",
+        content: RichText(
+          text: TextSpan(
+            children: [
+              const TextSpan(
+                text:
+                    "It's a bingo game for you to play while you wait for CS servers to have 128Hz!\n\nCreated by ",
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 20,
+                  height: 1.3,
+                  fontFamily: "StratumNo2",
+                ),
+              ),
+              TextSpan(
+                text: 'PáR1S',
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 20,
+                  height: 1.3,
+                  fontFamily: "StratumNo2",
+                ),
+                recognizer: TapGestureRecognizer()
+                  ..onTap = () =>
+                      launchUrl(Uri.parse('https://joaoparis.github.io/')),
+              ),
+            ],
+          ),
+        ),
         buttonText: 'I love it!',
       ),
     );
