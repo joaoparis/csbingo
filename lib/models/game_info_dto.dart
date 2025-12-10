@@ -33,11 +33,13 @@ class GameInfoDTO {
 
     final cells = template.map((c) {
       final map = c as Map<String, dynamic>;
+      final img = map['imageUrl']?.toString() ?? '';
+
       return Cell(
         title: map['altName']?.toString() ?? '',
-        // image: map['imageUrl']?.toString() ?? 'assets/images/cell_placeholder.png',
-        image: 'assets/images/cell_placeholder.png',
+        image: img.isEmpty ? 'assets/images/question_mark.png' : img,
         isCompleted: map['isMarked'] as bool,
+        criteria: map['criteria']?.toString() ?? '',
       );
     }).toList();
 

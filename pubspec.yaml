@@ -67,6 +67,10 @@ flutter:
     - assets/images/C4.png
     - assets/images/cell_placeholder.png
     - assets/images/logo.png
+    - assets/images/question_mark.png
+    - assets/images/trophy_placeholder.png
+    - assets/images/teammate_placeholder.png
+    - assets/images/squad_placeholder.png
     - assets/rive/csbingo.riv
   #   - images/a_dot_burr.jpeg
   #   - images/a_dot_ham.jpeg

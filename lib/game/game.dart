@@ -9,7 +9,7 @@ import 'package:csbingo/models/player.dart';
 import 'package:flutter/material.dart';
 
 class Game extends ChangeNotifier {
-  static bool debug = true;
+  static bool debug = false;
   static int maxSkips = 3;
 
   String state = "Idle";

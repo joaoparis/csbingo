@@ -55,6 +55,7 @@ class GameInfo {
         (i) => Cell(
           title: "[option]",
           image: "assets/images/cell_placeholder.png",
+          criteria: "",
         ),
       ),
       players: List.generate(
@@ -81,6 +82,7 @@ class GameInfo {
         (i) => Cell(
           title: "loading...",
           image: "assets/images/cell_placeholder.png",
+          criteria: "loading",
         ),
       ),
       players: List.generate(

@@ -3,9 +3,11 @@ import 'dart:async';
 import 'package:csbingo/constants/skip_state.dart';
 import 'package:csbingo/game/game.dart';
 import 'package:csbingo/constants/game_state.dart';
+import 'package:csbingo/models/cell.dart';
 import 'package:csbingo/models/game_info.dart';
 import 'package:csbingo/models/rive_bindinds.dart';
 import 'package:flutter/services.dart';
+import 'package:http/http.dart' as http;
 import 'package:rive/rive.dart';
 
 class RiveGameBridge {
@@ -144,10 +146,7 @@ class RiveGameBridge {
     for (var i = 0; i < game.gridSize; i++) {
       futures.add(
         (() async {
-          final bytes =
-              (await rootBundle.load(game.cellImage(i))).buffer.asUint8List();
-          final image = await Factory.rive.decodeImage(bytes);
-          _bindings!.cellImages[i].value = image;
+          _bindings!.cellImages[i].value = await _getImage(game.cellAt(i));
           _bindings!.cellsText[i].value = game.cellTitle(i);
         })(),
       );
@@ -232,5 +231,49 @@ class RiveGameBridge {
   void _setFFALobbyText() {
     _bindings!.outputText.value = "";
     _bindings!.outputTextInfo.value = "CS BINGO: ffa\nComming soon!";
+  }
+
+  Future<RenderImage?> _getImage(Cell cell) async {
+    Uint8List bytes;
+    final cellImage = cell.image;
+    if (cell.criteria == "nationality") {
+      const proxyBase = 'https://vercel-image-proxy-nu.vercel.app/api/proxy';
+      final proxiedUrl =
+          '$proxyBase?url=${Uri.encodeComponent("https://flagsapi.com/${cell.title}/flat/64.png")}';
+      final resp = await http.get(Uri.parse(proxiedUrl));
+      if (resp.statusCode == 200) {
+        bytes = resp.bodyBytes;
+      } else {
+        print("[CELL_IMAGE] Failed to retrieve image: $cellImage");
+        bytes = (await rootBundle.load('assets/images/question_mark.png'))
+            .buffer
+            .asUint8List();
+      }
+    } else if (cellImage.startsWith("http")) {
+      const proxyBase = 'https://vercel-image-proxy-nu.vercel.app/api/proxy';
+      final proxiedUrl = '$proxyBase?url=${Uri.encodeComponent(cellImage)}';
+      final resp = await http.get(Uri.parse(proxiedUrl));
+      if (resp.statusCode == 200) {
+        bytes = resp.bodyBytes;
+      } else {
+        print("[CELL_IMAGE] Failed to retrieve image: $cellImage");
+        bytes = (await rootBundle.load('assets/images/question_mark.png'))
+            .buffer
+            .asUint8List();
+      }
+    } else {
+      var asset = "assets/images/question_mark.png";
+      switch (cell.criteria) {
+        case "squad":
+          asset = "assets/images/squad_placeholder.png";
+        case "teammate":
+          asset = "assets/images/teammate_placeholder.png";
+        case "trophy":
+          asset = "assets/images/trophy_placeholder.png";
+      }
+      bytes = (await rootBundle.load(asset)).buffer.asUint8List();
+    }
+
+    return await Factory.rive.decodeImage(bytes);
   }
 }
