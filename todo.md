@@ -26,9 +26,11 @@
 - [X] add images to cells
 - [x] create game information
 - [x] fill "About" information with Project info
-- [ ] when requesting images from proxy, some images are not loaded -> implement retry mechanism (?) batch request (?) check proxy implementation
+- [x] when requesting images from proxy, some images are not loaded -> implement retry mechanism (?) batch request (?) check proxy implementation
+- [x] login with Steam OpenID
+- [ ] add login Steam button
 - [ ] fix trophies images
-- [ ] login with Steam OpenID
 - [ ] BE deployment
 - [ ] add end-game proposed solution
 - [ ] add FFA mode with lobby
+- [ ] add "generations" criteria to the games: a generation should be 5 years apart, so '95 to 2000 is one generation, 2000 to 2005 is another...
