@@ -26,7 +26,7 @@
 - [X] add images to cells
 - [x] create game information
 - [x] fill "About" information with Project info
-- [ ] create cache images in FE
+- [ ] when requesting images from proxy, some images are not loaded -> implement retry mechanism (?) batch request (?) check proxy implementation
 - [ ] fix trophies images
 - [ ] login with Steam OpenID
 - [ ] BE deployment

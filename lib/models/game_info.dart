@@ -54,8 +54,8 @@ class GameInfo {
         gridSize,
         (i) => Cell(
           title: "[option]",
-          image: "assets/images/cell_placeholder.png",
-          criteria: "",
+          image: "assets/images/question_mark.png",
+          criteria: "idle",
         ),
       ),
       players: List.generate(

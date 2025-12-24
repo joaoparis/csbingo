@@ -3,7 +3,10 @@ import 'dart:convert';
 import 'package:csbingo/config.dart';
 import 'package:csbingo/models/game_info_dto.dart';
 import 'package:flutter/services.dart' show rootBundle;
+import 'package:http/browser_client.dart';
 import 'package:http/http.dart' as http;
+import 'package:web/web.dart' as web;
+import 'package:url_launcher/url_launcher.dart';
 
 class BoardGateway {
   final String baseUrl = AppConfig.apiBaseUrl;
@@ -83,6 +86,54 @@ class BoardGateway {
       print("[DEBUG] Error fetching from json: $e");
     }
     return GameInfoDTO(
-        cardId: '1', cells: List.empty(), players: List.empty(), points: 0);
+      cardId: '1',
+      cells: List.empty(),
+      players: List.empty(),
+      points: 0,
+    );
+  }
+}
+
+class SteamGateway {
+  final String baseUrl = AppConfig.apiBaseUrl;
+
+  Future<void> login({String? redirect}) async {
+    var uri = Uri.parse('$baseUrl/api/auth/steam');
+
+    final redirectUrl = (redirect != null && redirect.isNotEmpty)
+        ? redirect
+        : (AppConfig.frontendCallbackUrl.isNotEmpty
+            ? AppConfig.frontendCallbackUrl
+            : null);
+
+    if (redirectUrl != null) {
+      uri = uri.replace(queryParameters: {'redirect': redirectUrl});
+    }
+
+    try {
+      if (await canLaunchUrl(uri)) {
+        web.window.location.href = uri.toString();
+        // await launchUrl(uri, mode: LaunchMode.inAppBrowserView);
+        print('[DEBUG] Launched auth URL in browser: $uri');
+      } else {
+        print('[DEBUG] Cannot launch auth URL: $uri');
+      }
+    } catch (e) {
+      print("[DEBUG] Error launching steam login URL: $e");
+    }
+  }
+
+  Future<Map<String, dynamic>> getUser() async {
+    final uri = Uri.parse('$baseUrl/api/steam/user');
+
+    final client = BrowserClient()..withCredentials = true;
+
+    final resp = await client.get(uri);
+
+    if (resp.statusCode == 200) {
+      return json.decode(resp.body) as Map<String, dynamic>;
+    }
+
+    throw Exception('Failed to fetch user: ${resp.statusCode}');
   }
 }

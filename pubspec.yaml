@@ -33,6 +33,7 @@ dependencies:
   http: ^0.13.5
   rive: ^0.14.0-dev.6
   url_launcher: ^6.3.2
+  web: ^1.1.1
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
@@ -69,6 +70,9 @@ flutter:
     - assets/images/cell_placeholder.png
     - assets/images/logo.png
     - assets/images/question_mark.png
+    - assets/images/idle_placeholder.png
+    - assets/images/loading_placeholder.png
+    - assets/images/nationality_placeholder.png
     - assets/images/trophy_placeholder.png
     - assets/images/teammate_placeholder.png
     - assets/images/squad_placeholder.png

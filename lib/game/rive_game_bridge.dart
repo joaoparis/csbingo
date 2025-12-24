@@ -13,6 +13,7 @@ import 'package:rive/rive.dart';
 class RiveGameBridge {
   final Game game;
   late final VoidCallback _gameListener;
+  late final http.Client _httpClient;
 
   RiveWidgetController? _controller;
   RiveBindings? _bindings;
@@ -20,6 +21,7 @@ class RiveGameBridge {
 
   RiveGameBridge({required this.game}) {
     _gameListener = _onGameChanged;
+    _httpClient = http.Client();
   }
 
   Future<void> init({
@@ -63,7 +65,7 @@ class RiveGameBridge {
   void _applyGameStateToRive() async {
     switch (game.state) {
       case GameState.idle:
-        await _setCellImages(isEmpty: true);
+        await _setCellImages();
         _setIdleText();
         _setPlayButton();
         _resetCellStatus();
@@ -108,6 +110,10 @@ class RiveGameBridge {
         _controller!.stateMachine.removeEventListener(_handleRiveEvent);
       } catch (_) {}
     }
+
+    try {
+      _httpClient.close();
+    } catch (_) {}
   }
 
   void _setResetButton() {
@@ -140,19 +146,24 @@ class RiveGameBridge {
     _bindings!.buttonText.value = 'BACK';
   }
 
-  Future<void> _setCellImages({bool isEmpty = false}) async {
-    final futures = <Future<void>>[];
+  Future<void> _setCellImages() async {
+    final results = await Future.wait(
+      List.generate(game.gridSize, (i) async {
+        try {
+          return await _getImage(game.cellAt(i));
+        } catch (e, st) {
+          var asset =
+              "assets/images/${game.cellAt(i).criteria}_placeholder.png";
+          var bytes = await _getBytesFromLocalAsset(asset);
+          return await Factory.rive.decodeImage(bytes);
+        }
+      }),
+    );
 
-    for (var i = 0; i < game.gridSize; i++) {
-      futures.add(
-        (() async {
-          _bindings!.cellImages[i].value = await _getImage(game.cellAt(i));
-          _bindings!.cellsText[i].value = game.cellTitle(i);
-        })(),
-      );
+    for (var i = 0; i < results.length; i++) {
+      _bindings!.cellImages[i].value = results[i];
+      _bindings!.cellsText[i].value = game.cellTitle(i);
     }
-
-    await Future.wait(futures);
   }
 
   void _setCellsStatus() {
@@ -234,46 +245,54 @@ class RiveGameBridge {
   }
 
   Future<RenderImage?> _getImage(Cell cell) async {
-    Uint8List bytes;
-    final cellImage = cell.image;
-    if (cell.criteria == "nationality") {
-      const proxyBase = 'https://vercel-image-proxy-nu.vercel.app/api/proxy';
-      final proxiedUrl =
-          '$proxyBase?url=${Uri.encodeComponent("https://flagsapi.com/${cell.title}/flat/64.png")}';
-      final resp = await http.get(Uri.parse(proxiedUrl));
-      if (resp.statusCode == 200) {
-        bytes = resp.bodyBytes;
-      } else {
-        print("[CELL_IMAGE] Failed to retrieve image: $cellImage");
-        bytes = (await rootBundle.load('assets/images/question_mark.png'))
-            .buffer
-            .asUint8List();
-      }
-    } else if (cellImage.startsWith("http")) {
-      const proxyBase = 'https://vercel-image-proxy-nu.vercel.app/api/proxy';
-      final proxiedUrl = '$proxyBase?url=${Uri.encodeComponent(cellImage)}';
-      final resp = await http.get(Uri.parse(proxiedUrl));
-      if (resp.statusCode == 200) {
-        bytes = resp.bodyBytes;
-      } else {
-        print("[CELL_IMAGE] Failed to retrieve image: $cellImage");
-        bytes = (await rootBundle.load('assets/images/question_mark.png'))
-            .buffer
-            .asUint8List();
-      }
-    } else {
-      var asset = "assets/images/question_mark.png";
-      switch (cell.criteria) {
-        case "squad":
-          asset = "assets/images/squad_placeholder.png";
-        case "teammate":
-          asset = "assets/images/teammate_placeholder.png";
-        case "trophy":
-          asset = "assets/images/trophy_placeholder.png";
-      }
-      bytes = (await rootBundle.load(asset)).buffer.asUint8List();
+    Uint8List? bytes;
+    switch (cell.criteria) {
+      case "nationality":
+        print("NATIONALITY! ${cell.title} ${cell.image} ");
+        bytes = await getImageFromUrl(
+            "https://flagsapi.com/${cell.title}/flat/64.png");
+        break;
+      default:
+        if (cell.image.startsWith("http")) {
+          bytes = await getImageFromUrl(cell.image);
+        } else {
+          var asset = "assets/images/${cell.criteria}_placeholder.png";
+          bytes = await _getBytesFromLocalAsset(asset);
+        }
     }
 
-    return await Factory.rive.decodeImage(bytes);
+    return await Factory.rive.decodeImage(bytes!);
+  }
+
+  Future<Uint8List> _getBytesFromLocalAsset(String asset) async =>
+      (await rootBundle.load(asset)).buffer.asUint8List();
+
+  Future<Uint8List?> getImageFromUrl(url) async {
+    Uint8List? bytes;
+
+    try {
+      const proxyBase = 'https://vercel-image-proxy-nu.vercel.app/api/proxy';
+      final proxiedUrl = '$proxyBase?url=${Uri.encodeComponent(url)}';
+
+      final resp = await _httpClient.get(Uri.parse(proxiedUrl)).timeout(
+        const Duration(seconds: 10),
+        onTimeout: () {
+          throw TimeoutException('Image request timeout for: $url');
+        },
+      );
+
+      if (resp.statusCode == 200) {
+        bytes = resp.bodyBytes;
+        print(
+            "[CELL_IMAGE] Retrieve image from url: $url (status: ${resp.statusCode})");
+      } else {
+        print(
+            "[CELL_IMAGE] Failed to retrieve image from url: $url (status: ${resp.statusCode})");
+      }
+    } catch (e) {
+      print("[CELL_IMAGE] Error fetching image from url: $url - Error: $e");
+    }
+
+    return bytes;
   }
 }

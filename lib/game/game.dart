@@ -35,7 +35,7 @@ class Game extends ChangeNotifier {
   List<Player> get players => gameInfo.players;
   Cell cellAt(index) => gameInfo.cells[index];
   GameType get type {
-    print("game type getter: ${gameInfo.hashCode} ${gameInfo.gameType}");
+    // print("game type getter: ${gameInfo.hashCode} ${gameInfo.gameType}");
     return gameInfo.gameType;
   }
 

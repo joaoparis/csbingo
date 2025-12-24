@@ -1,5 +1,8 @@
+import 'package:csbingo/gateways/board_gateway.dart';
 import 'package:csbingo/widgets/bingo_widget.dart';
+import 'package:csbingo/widgets/cs2_button.dart';
 import 'package:csbingo/widgets/cs2_dialog.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -59,7 +62,7 @@ class _MyAppState extends State<MyApp> {
 }
 
 class MyHomePage extends StatefulWidget {
-  const MyHomePage({
+  MyHomePage({
     super.key,
     required this.title,
     required this.onToggleTheme,
@@ -70,11 +73,74 @@ class MyHomePage extends StatefulWidget {
   final VoidCallback onToggleTheme;
   final ThemeMode themeMode;
 
+  String username = '';
+
   @override
   State<MyHomePage> createState() => _MyHomePageState();
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+  final SteamGateway steamGateway = SteamGateway();
+
+  @override
+  void initState() {
+    super.initState();
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _handleAuthCallback();
+    });
+  }
+
+  Future<void> _handleAuthCallback() async {
+    if (!kIsWeb) {
+      return;
+    }
+
+    try {
+      final userJson = await steamGateway.getUser();
+
+      setState(() {
+        widget.username = userJson['username'] ?? '';
+      });
+
+      if (mounted) {
+        showDialog(
+          context: context,
+          builder: (context) => Cs2Dialog(
+            title: 'Logged in',
+            content: RichText(
+              text: TextSpan(
+                text: 'Welcome back, ',
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 20,
+                  height: 1.3,
+                  fontFamily: "StratumNo2",
+                ),
+                children: [
+                  TextSpan(
+                    text: widget.username,
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 20,
+                      fontFamily: "StratumNo2",
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            buttonText: 'OK',
+          ),
+        );
+      }
+    } catch (e) {
+      // Cookie is missing, invalid, or expired - silently fail
+      // This is expected behavior when user is not authenticated
+      print('[DEBUG] User not authenticated (cookie missing/invalid): $e');
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -91,11 +157,13 @@ class _MyHomePageState extends State<MyHomePage> {
           ),
         ),
         actions: [
-          IconButton(
-            tooltip: 'Login',
-            icon: const Icon(Icons.login),
-            onPressed: _loginDialog,
-          ),
+          widget.username.isEmpty
+              ? IconButton(
+                  tooltip: 'Login',
+                  icon: const Icon(Icons.login),
+                  onPressed: _loginDialog,
+                )
+              : Text(widget.username),
           IconButton(
             tooltip: 'How to play?',
             icon: const Icon(Icons.gamepad_rounded),
@@ -143,16 +211,27 @@ class _MyHomePageState extends State<MyHomePage> {
       // barrierDismissible: false,
       builder: (context) => Cs2Dialog(
         title: 'Login',
-        content: RichText(
-          text: const TextSpan(
-            text: "Login is currently not implemented. 🤡",
-            style: TextStyle(
-              color: Colors.white,
-              fontSize: 20,
-              height: 1.3,
-              fontFamily: "StratumNo2",
+        content: Column(
+          children: [
+            RichText(
+              text: const TextSpan(
+                text: "Login is currently not implemented. 🤡",
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 20,
+                  height: 1.3,
+                  fontFamily: "StratumNo2",
+                ),
+              ),
             ),
-          ),
+            CS2Button(
+              text: "login on steam",
+              onPressed: () {
+                print("let's login!");
+                steamGateway.login();
+              },
+            ),
+          ],
         ),
         buttonText: 'OK',
       ),
@@ -209,6 +288,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   color: Colors.white,
                   fontSize: 20,
                   height: 1.3,
+                  decoration: TextDecoration.underline,
                   fontFamily: "StratumNo2",
                 ),
                 recognizer: TapGestureRecognizer()
