@@ -18,6 +18,7 @@ class RiveGameBridge {
   RiveWidgetController? _controller;
   RiveBindings? _bindings;
   bool get isReady => _bindings != null && _controller != null;
+  bool updatingMainDisplay = false;
 
   RiveGameBridge({required this.game}) {
     _gameListener = _onGameChanged;
@@ -65,19 +66,25 @@ class RiveGameBridge {
   void _applyGameStateToRive() async {
     switch (game.state) {
       case GameState.idle:
-        await _setCellImages();
         _setIdleText();
+        if (updatingMainDisplay) {
+          break;
+        }
+        await _setCellImages();
         _setPlayButton();
         _resetCellStatus();
         _resetSkips();
         _resetRoundText();
         _resetTimerText();
+        updatingMainDisplay = true;
         break;
       case GameState.ffaLobby:
+        updatingMainDisplay = false;
         _setFFALobbyText();
         _setBackButton();
         break;
       case GameState.loading:
+        updatingMainDisplay = false;
         _setLoadingText();
         _setMaxRoundText();
         _resetSkips(state: SkipState.available);
@@ -204,14 +211,14 @@ class RiveGameBridge {
   void _setIdleText() {
     _bindings!.outputText.value = "";
     _bindings!.outputTextInfo.value = "Select game:\n"
-        "(${game.type == GameType.daily ? '*' : ' '}) daily\n"
-        "(${game.type == GameType.ffa ? '*' : ' '}) ffa\n";
+        "(${game.type == GameType.daily ? '*' : ' '}) ${GameType.daily.name}\n"
+        "(${game.type == GameType.random ? '*' : ' '}) ${GameType.random.name}\n"
+        "(${game.type == GameType.ffa ? '*' : ' '}) ${GameType.ffa.name}\n";
   }
 
   void _setLoadingText() {
     _bindings!.outputText.value = "loading...";
-    _bindings!.outputTextInfo.value =
-        "CS BINGO: ${game.type == GameType.daily ? 'daily' : 'ffa'}";
+    _bindings!.outputTextInfo.value = "CS BINGO: ${game.type.name}";
   }
 
   void _setPlayText() =>

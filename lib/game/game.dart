@@ -268,6 +268,14 @@ class Game extends ChangeNotifier {
     _notify("handleCursorTrigger(): cursor toggled");
   }
 
-  void _toogleCursor() => gameInfo.gameType =
-      gameInfo.gameType == GameType.daily ? GameType.ffa : GameType.daily;
+  void _toogleCursor() {
+    var newIndex = gameInfo.gameType.index + 1;
+
+    if (newIndex == GameType.values.length) {
+      gameInfo.gameType = GameType.values[0];
+      return;
+    }
+
+    gameInfo.gameType = GameType.values[newIndex];
+  }
 }

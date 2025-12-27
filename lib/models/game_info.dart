@@ -104,5 +104,6 @@ class GameInfo {
 
 enum GameType {
   daily,
+  random,
   ffa,
 }

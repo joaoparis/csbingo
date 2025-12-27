@@ -66,9 +66,8 @@ flutter:
     - assets/examples/message.json
     - assets/images/BG_LANDSCAPE.png
     - assets/images/BG_LANDSCAPE_NIGHT.png
-    - assets/images/C4.png
-    - assets/images/cell_placeholder.png
     - assets/images/logo.png
+    - assets/images/steam.png
     - assets/images/question_mark.png
     - assets/images/idle_placeholder.png
     - assets/images/loading_placeholder.png

@@ -1,6 +1,5 @@
 import 'package:csbingo/gateways/board_gateway.dart';
 import 'package:csbingo/widgets/bingo_widget.dart';
-import 'package:csbingo/widgets/cs2_button.dart';
 import 'package:csbingo/widgets/cs2_dialog.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
@@ -81,6 +80,7 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   final SteamGateway steamGateway = SteamGateway();
+  bool _isHovering = false;
 
   @override
   void initState() {
@@ -130,7 +130,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 ],
               ),
             ),
-            buttonText: 'OK',
+            buttonText: 'Close',
           ),
         );
       }
@@ -145,14 +145,13 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        // use theme's primary color so the AppBar adapts to light/dark
         backgroundColor: const Color.fromARGB(255, 243, 139, 28),
         title: Text(
           widget.title,
           style: const TextStyle(
-            fontFamily: 'HighSpeed', // matches family in pubspec.yaml
+            fontFamily: 'HighSpeed',
             fontSize: 40,
-            fontWeight: FontWeight.w700, // choose a weight that exists
+            fontWeight: FontWeight.w700,
             color: Colors.black,
           ),
         ),
@@ -212,10 +211,11 @@ class _MyHomePageState extends State<MyHomePage> {
       builder: (context) => Cs2Dialog(
         title: 'Login',
         content: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             RichText(
               text: const TextSpan(
-                text: "Login is currently not implemented. 🤡",
+                text: "Play CS Bingo under your Steam alias!",
                 style: TextStyle(
                   color: Colors.white,
                   fontSize: 20,
@@ -224,16 +224,25 @@ class _MyHomePageState extends State<MyHomePage> {
                 ),
               ),
             ),
-            CS2Button(
-              text: "login on steam",
-              onPressed: () {
-                print("let's login!");
-                steamGateway.login();
-              },
+            const SizedBox(
+              height: 20,
             ),
+            MouseRegion(
+              cursor: SystemMouseCursors.click,
+              onEnter: (_) => setState(() => _isHovering = true),
+              onExit: (_) => setState(() => _isHovering = false),
+              child: AnimatedScale(
+                scale: _isHovering ? 1.1 : 1.0,
+                duration: const Duration(milliseconds: 200),
+                child: GestureDetector(
+                  child: Image.asset("assets/images/steam.png"),
+                  onTap: () => steamGateway.login(),
+                ),
+              ),
+            )
           ],
         ),
-        buttonText: 'OK',
+        buttonText: 'Close',
       ),
     );
   }
