@@ -24,7 +24,9 @@ jobs:
       - name: Build Flutter Web
         run: |
           echo "[DEBUG] API_BASE_URL=${{ secrets.API_BASE_URL }}"
-          flutter build web --release --dart-define=API_BASE_URL=${{ secrets.API_BASE_URL }} --dart-define=FRONTEND_CALLBACK_URL=${{ secrets.FRONTEND_CALLBACK_URL }}
+          flutter build web --release \
+            --dart-define="API_BASE_URL=${{ secrets.API_BASE_URL }}" \
+            --dart-define="FRONTEND_CALLBACK_URL=${{ secrets.FRONTEND_CALLBACK_URL }}"
 
       - name: Deploy to Firebase Hosting
         uses: FirebaseExtended/action-hosting-deploy@v0

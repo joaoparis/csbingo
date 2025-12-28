@@ -13,6 +13,7 @@ class BoardGateway {
   static bool isLocal = false;
 
   Future<GameInfoDTO> createCard() async {
+    print("[DEBUG] Calling createCard at '$baseUrl/api/cards'");
     final uri = Uri.parse('$baseUrl/api/cards');
 
     try {
