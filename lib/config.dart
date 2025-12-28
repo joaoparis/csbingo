@@ -1,6 +1,7 @@
 class AppConfig {
   // Base URL for backend API (set via --dart-define=API_BASE_URL=https://api.example)
-  static const apiBaseUrl = String.fromEnvironment('API_BASE_URL');
+  static const apiBaseUrl = String.fromEnvironment('API_BASE_URL',
+      defaultValue: 'https://cs-bingo.onrender.com');
 
   // Optional frontend callback URL. When provided, the app will request the
   // backend to include this as the `redirect` query parameter so the backend
@@ -8,5 +9,5 @@ class AppConfig {
   // Set via --dart-define=FRONTEND_CALLBACK_URL=https://frontend.example.com/callback
   static const frontendCallbackUrl = String.fromEnvironment(
       'FRONTEND_CALLBACK_URL',
-      defaultValue: 'http://localhost:5000/callback');
+      defaultValue: 'https://csbingo-dbeda.web.app/callback');
 }
