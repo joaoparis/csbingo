@@ -1,3 +1,4 @@
+import 'package:csbingo/config.dart';
 import 'package:csbingo/gateways/board_gateway.dart';
 import 'package:csbingo/widgets/bingo_widget.dart';
 import 'package:csbingo/widgets/cs2_dialog.dart';
@@ -26,6 +27,13 @@ class _MyAppState extends State<MyApp> {
       _themeMode =
           _themeMode == ThemeMode.dark ? ThemeMode.light : ThemeMode.dark;
     });
+  }
+
+  @override
+  void initState() {
+    print("[DEBUG] App started");
+    print("[DEBUG] API BASE URL: ${AppConfig.apiBaseUrl}'");
+    super.initState();
   }
 
   @override
