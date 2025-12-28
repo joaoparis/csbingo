@@ -32,7 +32,7 @@ class _MyAppState extends State<MyApp> {
   @override
   void initState() {
     print("[DEBUG] App started");
-    print("[DEBUG] API BASE URL: ${AppConfig.apiBaseUrl}'");
+    print("[DEBUG] API BASE URL: '${AppConfig.apiBaseUrl}'");
     super.initState();
   }
 
