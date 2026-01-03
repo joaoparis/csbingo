@@ -67,13 +67,13 @@ class RiveGameBridge {
   void _applyGameStateToRive() async {
     switch (game.state) {
       case GameState.idle:
+        _setGhostCellStatus();
         _setIdleText();
         if (hasLoadedMainDisplay) {
           break;
         }
         await _setEmptyImages();
         _setPlayButton();
-        _resetCellStatus();
         _resetSkips();
         _resetRoundText();
         _resetTimerText();
@@ -194,9 +194,8 @@ class RiveGameBridge {
 
   Future<void> _setCellText() async {
     for (var i = 0; i < game.cellsLength; i++) {
-      _bindings!.cellsText[i].value = game.cellAnswer(i).isNotEmpty
-          ? '${game.cellAnswer(i)}\n${game.cellTitle(i)}'
-          : game.cellTitle(i);
+      _bindings!.cellsAnswers[i].value = game.cellAnswer(i);
+      _bindings!.cellsText[i].value = game.cellTitle(i);
     }
   }
 
@@ -217,9 +216,11 @@ class RiveGameBridge {
     }
   }
 
-  void _resetCellStatus() {
+  void _setGhostCellStatus() {
     for (var i = 0; i < _bindings!.cellStatuses.length; i++) {
-      _bindings!.cellStatuses[i].value = "idle";
+      _bindings!.cellStatuses[i].value = "ghost";
+      _bindings!.cellsText[i].value = "";
+      _bindings!.cellsAnswers[i].value = "";
     }
   }
 

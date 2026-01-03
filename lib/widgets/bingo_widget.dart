@@ -107,6 +107,7 @@ class _BingoWidgetState extends State<BingoWidget> {
       cellImages: _cells.map((c) => c.imageViewModel).toList(),
       cellStatuses: _cells.map((c) => c.status).toList(),
       cellsText: _cells.map((c) => c.text).toList(),
+      cellsAnswers: _cells.map((c) => c.answer).toList(),
       skips: _skips,
       cellTaps: _cells.map((c) => c.tap).toList(),
       secondOutputTitleText: _secondOutputTitleText,
@@ -165,7 +166,18 @@ class _BingoWidgetState extends State<BingoWidget> {
         print("[DEBUG] Failed to load tap trigger for cell $i");
         return false;
       }
-      _cells.add(RiveCell(img, str, txt, tap));
+      var answer = viewModelInstance.string("cellsVM/cell$i/answer");
+      if (answer == null) {
+        print("[DEBUG] Failed to load answer text for cell $i");
+        return false;
+      }
+      _cells.add(RiveCell(
+        img,
+        str,
+        txt,
+        tap,
+        answer,
+      ));
     }
 
     //SECOND OUTPUT

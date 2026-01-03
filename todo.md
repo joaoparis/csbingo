@@ -35,6 +35,7 @@
 - [x] UI update: remove "correct", "wrong" delay in animation
 - [x] add end-game proposed solution (use switch to toggle solution vs answer)
 - [ ] Rive bug: toggle animation get's bugged on the last toggle choice
+- [ ] Rive bug: cells red bkgd color should reset at the end of the game
 - [ ] fetch proposed solution from the backend
 - [ ] develop random game mode
 - [ ] add FFA mode: join lobby, select answers until the end, see result at the end
