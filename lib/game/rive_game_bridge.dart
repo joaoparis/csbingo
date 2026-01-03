@@ -18,7 +18,8 @@ class RiveGameBridge {
   RiveWidgetController? _controller;
   RiveBindings? _bindings;
   bool get isReady => _bindings != null && _controller != null;
-  bool updatingMainDisplay = false;
+  bool hasLoadedMainDisplay = false;
+  bool hasLoadedCells = false;
 
   RiveGameBridge({required this.game}) {
     _gameListener = _onGameChanged;
@@ -67,28 +68,28 @@ class RiveGameBridge {
     switch (game.state) {
       case GameState.idle:
         _setIdleText();
-        if (updatingMainDisplay) {
+        if (hasLoadedMainDisplay) {
           break;
         }
-        await _setCellImages();
+        await _setEmptyImages();
         _setPlayButton();
         _resetCellStatus();
         _resetSkips();
         _resetRoundText();
         _resetTimerText();
-        updatingMainDisplay = true;
+        hasLoadedMainDisplay = true;
         break;
       case GameState.ffaLobby:
-        updatingMainDisplay = false;
+        hasLoadedMainDisplay = false;
         _setFFALobbyText();
         _setBackButton();
         break;
       case GameState.loading:
-        updatingMainDisplay = false;
+        _bindings!.secondOutputLoadingTrigger.trigger();
+        hasLoadedMainDisplay = false;
         _setLoadingText();
         _setMaxRoundText();
         _resetSkips(state: SkipState.available);
-        await _setCellImages();
         break;
       case GameState.playing:
         _updateTimer();
@@ -98,11 +99,17 @@ class RiveGameBridge {
         _setRoundText();
         _setSkips();
         _updateScore();
+        _bindings!.secondOutputEmptyTrigger.trigger();
+        await _setCellImages();
+        await _setCellText();
         break;
       case GameState.gameOver:
         _setResetButton();
         _setGameOverText();
         _resetRoundText();
+        await _setCellText();
+        hasLoadedCells = false;
+        hasLoadedMainDisplay = false;
         break;
     }
   }
@@ -153,7 +160,20 @@ class RiveGameBridge {
     _bindings!.buttonText.value = 'BACK';
   }
 
+  Future<void> _setEmptyImages() async {
+    var asset = "assets/images/empty_placeholder.png";
+    var bytes = await _getBytesFromLocalAsset(asset);
+
+    for (var i = 0; i < game.cellsLength; i++) {
+      _bindings!.cellImages[i].value = await Factory.rive.decodeImage(bytes);
+      _bindings!.cellsText[i].value = game.cellTitle(i);
+    }
+  }
+
   Future<void> _setCellImages() async {
+    if (hasLoadedCells) return;
+    hasLoadedCells = true;
+
     final results = await Future.wait(
       List.generate(game.gridSize, (i) async {
         try {
@@ -169,7 +189,14 @@ class RiveGameBridge {
 
     for (var i = 0; i < results.length; i++) {
       _bindings!.cellImages[i].value = results[i];
-      _bindings!.cellsText[i].value = game.cellTitle(i);
+    }
+  }
+
+  Future<void> _setCellText() async {
+    for (var i = 0; i < game.cellsLength; i++) {
+      _bindings!.cellsText[i].value = game.cellAnswer(i).isNotEmpty
+          ? '${game.cellAnswer(i)}\n${game.cellTitle(i)}'
+          : game.cellTitle(i);
     }
   }
 
@@ -209,22 +236,31 @@ class RiveGameBridge {
   }
 
   void _setIdleText() {
+    _bindings!.secondOutputTextTrigger.trigger();
     _bindings!.outputText.value = "";
     _bindings!.outputTextInfo.value = "Select game:\n"
         "(${game.type == GameType.daily ? '*' : ' '}) ${GameType.daily.name}\n"
         "(${game.type == GameType.random ? '*' : ' '}) ${GameType.random.name}\n"
         "(${game.type == GameType.ffa ? '*' : ' '}) ${GameType.ffa.name}\n";
+    _bindings!.secondOutputTitleText.value = game.type.fullName;
+    _bindings!.secondOutputBodyText.value = game.type.description;
   }
 
   void _setLoadingText() {
-    _bindings!.outputText.value = "loading...";
+    _bindings!.outputText.value = "";
     _bindings!.outputTextInfo.value = "CS BINGO: ${game.type.name}";
   }
 
   void _setPlayText() =>
       _bindings!.outputText.value = game.players[game.currentRound].name;
-  void _setGameOverText() =>
-      _bindings!.outputText.value = "gg wp (${game.points})";
+
+  void _setGameOverText() {
+    _bindings!.outputText.value = "";
+    _bindings!.outputTextInfo.value = "Game Over\n"
+        "(${Game.gameOutput == GameOutput.userAnswers ? '*' : ' '}) Your Answers\n"
+        "(${Game.gameOutput == GameOutput.suggestedAnswers ? '*' : ' '}) Suggested Answers";
+  }
+
   void _resetRoundText() => _bindings!.roundText.value = "--";
   void _resetTimerText() => _bindings!.timerText.value = "--:--";
   void _setRoundText() =>

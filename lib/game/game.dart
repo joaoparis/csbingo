@@ -11,6 +11,7 @@ import 'package:flutter/material.dart';
 class Game extends ChangeNotifier {
   static bool debug = false;
   static int maxSkips = 3;
+  static GameOutput gameOutput = GameOutput.userAnswers;
 
   String state = "Idle";
   bool isGameInitialized = false;
@@ -41,6 +42,7 @@ class Game extends ChangeNotifier {
 
   String cellImage(index) => gameInfo.cells[index].image;
   String cellTitle(index) => gameInfo.cells[index].title;
+  String cellAnswer(index) => gameInfo.cells[index].answer;
 
   Game() {
     reset();
@@ -139,6 +141,7 @@ class Game extends ChangeNotifier {
     if (!isGameInitialized) {
       currentRound = 0;
       gameInfo.skips = maxSkips;
+      gameOutput = GameOutput.userAnswers;
     }
     _setupTimer();
     await _loadGame();
@@ -217,7 +220,7 @@ class Game extends ChangeNotifier {
         0,
         type,
       );
-      _notify("_loadGame(): game has loaded state=$state");
+      // _notify("_loadGame(): game has loaded state=$state");
     } catch (err) {
       state = GameState.idle;
       _notify("_loadGame(): failed to load game, reverting to state=$state");
@@ -245,6 +248,7 @@ class Game extends ChangeNotifier {
     } else {
       // print(
       //     "[DEBUG] ❌ Wrong answer! ❌ round:$currentRound [cell index: $index] try: ${info.cells[index].title} <> ${gameInfo.players[currentRound].name}");
+      gameInfo.setIncorrectCell(index, info.cells[index]);
       gameInfo.cells[index].isWrong = true;
       Future.delayed(const Duration(milliseconds: 500), () {
         gameInfo.cells[index].isWrong = false;
@@ -263,12 +267,27 @@ class Game extends ChangeNotifier {
   }
 
   void handleCursorTrigger(bool value) {
+    switch (state) {
+      case GameState.idle:
+        _toogleMainMenuCursor();
+        _notify("handleCursorTrigger(): cursor toggled");
+        return;
+      case GameState.gameOver:
+        _toggleGameOverCursor();
+        _updateCellsText();
+        _notify("handleCursorTrigger(): cursor toggled");
+        return;
+      case GameState.loading:
+      case GameState.ffaLobby:
+      case GameState.playing:
+        return;
+    }
     if (state != GameState.idle) return;
-    _toogleCursor();
+    _toogleMainMenuCursor();
     _notify("handleCursorTrigger(): cursor toggled");
   }
 
-  void _toogleCursor() {
+  void _toogleMainMenuCursor() {
     var newIndex = gameInfo.gameType.index + 1;
 
     if (newIndex == GameType.values.length) {
@@ -277,5 +296,26 @@ class Game extends ChangeNotifier {
     }
 
     gameInfo.gameType = GameType.values[newIndex];
+  }
+
+  void _toggleGameOverCursor() {
+    var newIndex = Game.gameOutput.index + 1;
+
+    if (newIndex == GameOutput.values.length) {
+      Game.gameOutput = GameOutput.values[0];
+      return;
+    }
+
+    Game.gameOutput = GameOutput.values[newIndex];
+  }
+
+  void _updateCellsText() {
+    for (var i = 0; i < gameInfo.cells.length; i++) {
+      if (Game.gameOutput == GameOutput.userAnswers) {
+        gameInfo.setUserAnswers();
+      } else {
+        gameInfo.setSuggestedAnswers();
+      }
+    }
   }
 }

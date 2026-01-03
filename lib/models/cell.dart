@@ -1,6 +1,7 @@
 class Cell {
   String image;
   String title;
+  String answer;
   bool isCompleted;
   bool isWrong;
   String criteria;
@@ -11,5 +12,6 @@ class Cell {
     required this.criteria,
     this.isCompleted = false,
     this.isWrong = false,
+    this.answer = '',
   });
 }

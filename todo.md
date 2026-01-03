@@ -29,9 +29,20 @@
 - [x] when requesting images from proxy, some images are not loaded -> implement retry mechanism (?) batch request (?) check proxy implementation
 - [x] login with Steam OpenID
 - [x] add login Steam button
-- [ ] fix trophies images
-- [ ] BE deployment
-- [ ] add end-game proposed solution
-- [ ] add FFA mode with lobby
+- [x] BE deployment
+- [ ] add end-game proposed solution (use switch to toggle solution vs answer)
+- [ ] add FFA mode: join lobby, select answers until the end, see result at the end
 - [ ] add "generations" criteria to the games: a generation should be 5 years apart, so '95 to 2000 is one generation, 2000 to 2005 is another...
-- [ ] create lobby for FFA (?)
+- [ ] UI update: update Input display UI to be prettier
+- [ ] UI update: fix trophies images
+- [ ] UI update: fix pop-up dialogs "cuts"
+- [ ] BE deplloyment: improve loading game latency (takes too long)
+- [ ] UI update: fix splash screen loading font
+- [ ] UI update: During menu, add info about the game type, in the input display
+- [ ] UI update: Change loading to have a dedicated Rive animation in the Input Screen
+- [ ] UI update: remove "correct", "wrong" delay in animation
+- [ ] Update JSON with the latest major
+
+...
+- [ ] Add Google Ads
+- [ ] Buy and set URL

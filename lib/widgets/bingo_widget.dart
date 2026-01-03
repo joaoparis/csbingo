@@ -32,6 +32,11 @@ class _BingoWidgetState extends State<BingoWidget> {
   late ViewModelInstanceTrigger _cursorTrigger;
   late final List<RiveCell> _cells = [];
   late final List<ViewModelInstanceString> _skips = [];
+  late ViewModelInstanceString _secondOutputTitleText;
+  late ViewModelInstanceString _secondOutputBodyText;
+  late ViewModelInstanceTrigger _loadingTrigger;
+  late ViewModelInstanceTrigger _emptyTrigger;
+  late ViewModelInstanceTrigger _textTrigger;
 
   RiveGameBridge? _bridge;
   Game game = Game();
@@ -104,6 +109,11 @@ class _BingoWidgetState extends State<BingoWidget> {
       cellsText: _cells.map((c) => c.text).toList(),
       skips: _skips,
       cellTaps: _cells.map((c) => c.tap).toList(),
+      secondOutputTitleText: _secondOutputTitleText,
+      secondOutputBodyText: _secondOutputBodyText,
+      secondOutputLoadingTrigger: _loadingTrigger,
+      secondOutputEmptyTrigger: _emptyTrigger,
+      secondOutputTextTrigger: _textTrigger,
     );
     _bridge = RiveGameBridge(game: game);
     await _bridge!.init(controller: _controller, bindings: bindings);
@@ -158,6 +168,15 @@ class _BingoWidgetState extends State<BingoWidget> {
       _cells.add(RiveCell(img, str, txt, tap));
     }
 
+    //SECOND OUTPUT
+    final secondOutputTitleText =
+        viewModelInstance.string("secondOutputVM/title");
+    final secondOutputBodyText =
+        viewModelInstance.string("secondOutputVM/body");
+    final loadingTrigger = viewModelInstance.trigger("secondOutputVM/loading");
+    final emptyTrigger = viewModelInstance.trigger("secondOutputVM/empty");
+    final textTrigger = viewModelInstance.trigger("secondOutputVM/text");
+
     if (outputText == null ||
         outputTextInfo == null ||
         timerText == null ||
@@ -167,13 +186,20 @@ class _BingoWidgetState extends State<BingoWidget> {
         buttonText == null ||
         buttonStatus == null ||
         buttonTrigger == null ||
-        cursorTrigger == null) {
+        cursorTrigger == null ||
+        secondOutputTitleText == null ||
+        secondOutputBodyText == null ||
+        loadingTrigger == null ||
+        emptyTrigger == null ||
+        textTrigger == null) {
       print("[DEBUG] something is null: outputText=$outputText, "
           "outputTextInfo=$outputTextInfo timerText=$timerText, "
           "scoreText=$scoreText, roundText=$roundText, "
           "maxRoundText=$maxRoundText, buttonText=$buttonText, "
           "buttonTrigger=$buttonTrigger, buttonStatus=$buttonStatus"
-          "cursorTrigger=$cursorTrigger");
+          "cursorTrigger=$cursorTrigger secondOutputTitleText=$secondOutputTitleText "
+          "secondOutputBodyText=$secondOutputBodyText loadingTrigger=$loadingTrigger "
+          "emptyTrigger=$emptyTrigger textTrigger=$textTrigger");
       return false;
     }
 
@@ -187,6 +213,11 @@ class _BingoWidgetState extends State<BingoWidget> {
     _buttonTrigger = buttonTrigger;
     _cursorTrigger = cursorTrigger;
     _buttonStatus = buttonStatus;
+    _secondOutputTitleText = secondOutputTitleText;
+    _secondOutputBodyText = secondOutputBodyText;
+    _loadingTrigger = loadingTrigger;
+    _emptyTrigger = emptyTrigger;
+    _textTrigger = textTrigger;
 
     print("[DEBUG] all view model instances loaded successfully!");
     return true;

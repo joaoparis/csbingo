@@ -16,6 +16,11 @@ class RiveBindings {
   final List<ViewModelInstanceString> cellsText;
   final List<ViewModelInstanceTrigger> cellTaps;
   final List<ViewModelInstanceString> skips;
+  final ViewModelInstanceString secondOutputTitleText;
+  final ViewModelInstanceString secondOutputBodyText;
+  final ViewModelInstanceTrigger secondOutputLoadingTrigger;
+  final ViewModelInstanceTrigger secondOutputEmptyTrigger;
+  final ViewModelInstanceTrigger secondOutputTextTrigger;
 
   RiveBindings({
     required this.buttonText,
@@ -33,5 +38,10 @@ class RiveBindings {
     required this.cellsText,
     required this.cellTaps,
     required this.skips,
+    required this.secondOutputTitleText,
+    required this.secondOutputBodyText,
+    required this.secondOutputLoadingTrigger,
+    required this.secondOutputEmptyTrigger,
+    required this.secondOutputTextTrigger,
   });
 }

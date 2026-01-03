@@ -70,6 +70,7 @@ flutter:
     - assets/images/steam.png
     - assets/images/question_mark.png
     - assets/images/idle_placeholder.png
+    - assets/images/empty_placeholder.png
     - assets/images/loading_placeholder.png
     - assets/images/nationality_placeholder.png
     - assets/images/trophy_placeholder.png
