@@ -5,13 +5,13 @@ import 'package:csbingo/models/player.dart';
 
 class PlayedCell {
   final int index;
-  final Cell cell;
   final bool isCorrect;
+  final String answer;
 
   PlayedCell({
     required this.index,
-    required this.cell,
     required this.isCorrect,
+    required this.answer,
   });
 }
 
@@ -41,19 +41,28 @@ class GameInfo {
   void setCorrectCell(int index, Cell newCell, int currentRound) {
     cells[index] = newCell;
     cells[index].answer = players[currentRound].name;
-    userPlays[index] = PlayedCell(index: index, cell: newCell, isCorrect: true);
+    userPlays[index] = PlayedCell(
+      index: index,
+      answer: players[currentRound].name,
+      isCorrect: true,
+    );
   }
 
   void setIncorrectCell(int index, Cell newCell) {
     cells[index] = newCell;
-    userPlays[index] =
-        PlayedCell(index: index, cell: newCell, isCorrect: false);
+    userPlays[index] = PlayedCell(
+      index: index,
+      answer: players[currentRound].name,
+      isCorrect: false,
+    );
   }
 
   void setUserAnswers() {
     for (var i = 0; i < cells.length; i++) {
       if (userPlays.containsKey(i) && userPlays[i]!.isCorrect) {
-        cells[i].answer = players[i % players.length].name;
+        cells[i].answer = userPlays[i]!.answer;
+      } else {
+        cells[i].answer = '';
       }
     }
   }
