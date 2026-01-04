@@ -43,6 +43,7 @@ class Game extends ChangeNotifier {
   String cellImage(index) => gameInfo.cells[index].image;
   String cellTitle(index) => gameInfo.cells[index].title;
   String cellAnswer(index) => gameInfo.cells[index].answer;
+  String cellCriteria(index) => gameInfo.cells[index].criteria;
 
   Game() {
     reset();

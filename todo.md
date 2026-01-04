@@ -34,18 +34,19 @@
 - [x] UI update: Change loading to have a dedicated Rive animation in the Input Screen
 - [x] UI update: remove "correct", "wrong" delay in animation
 - [x] add end-game proposed solution (use switch to toggle solution vs answer)
+- [ ] round players & flags images corners
+- [ ] fetch proposed solution from the backend
 - [ ] Rive bug: toggle animation get's bugged on the last toggle choice
 - [ ] Rive bug: cells red bkgd color should reset at the end of the game
-- [ ] fetch proposed solution from the backend
 - [ ] develop random game mode
 - [ ] add FFA mode: join lobby, select answers until the end, see result at the end
 - [ ] add "generations" criteria to the games: a generation should be 5 years apart, so '95 to 2000 is one generation, 2000 to 2005 is another...
-- [ ] UI update: update Input display UI to be prettier
 - [ ] UI update: fix trophies images
 - [ ] UI update: fix pop-up dialogs "cuts"
 - [ ] BE deplloyment: improve loading game latency (takes too long)
 - [ ] UI update: fix splash screen loading font
 - [ ] Update JSON with the latest CS Major Tournament
+- [ ] UI update: update Input display UI to be prettier
 
 ...
 - [ ] Add Google Ads

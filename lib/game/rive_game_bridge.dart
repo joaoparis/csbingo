@@ -195,8 +195,29 @@ class RiveGameBridge {
   Future<void> _setCellText() async {
     for (var i = 0; i < game.cellsLength; i++) {
       _bindings!.cellsAnswers[i].value = game.cellAnswer(i);
-      _bindings!.cellsText[i].value = game.cellTitle(i);
+      _bindings!.cellsText[i].value =
+          _prettyCellTitle(game.cellTitle(i), game.cellCriteria(i));
     }
+  }
+
+  String _prettyCellTitle(String title, String criteria) {
+    var prettyTitle = "";
+    switch (criteria) {
+      case "teammate":
+        prettyTitle = "Played with ";
+        break;
+      case "trophy":
+        prettyTitle = "Winner of ";
+        break;
+      case "squad":
+        prettyTitle = "Played on ";
+        break;
+      default:
+        prettyTitle = "";
+        break;
+    }
+
+    return prettyTitle + title;
   }
 
   void _setCellsStatus() {

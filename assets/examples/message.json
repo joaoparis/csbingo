@@ -187,82 +187,98 @@
     {
       "isMarked": false,
       "imageUrl": "",
-      "altName": "Canada"
+      "altName": "Canada",
+      "criteria": "nationality"
     },
     {
       "isMarked": false,
       "imageUrl": "",
-      "altName": "MIBR"
+      "altName": "MIBR",
+      "criteria": "squad"
     },
     {
       "isMarked": false,
       "imageUrl": "",
-      "altName": "FaZe"
+      "altName": "FaZe",
+      "criteria": "squad"
     },
     {
       "isMarked": false,
       "imageUrl": "",
-      "altName": "NiP"
+      "altName": "NiP",
+      "criteria": "squad"
     },
     {
       "isMarked": false,
       "imageUrl": "",
-      "altName": "Norway"
+      "altName": "Norway",
+      "criteria": "nationality"
     },
     {
       "isMarked": false,
       "imageUrl": "",
-      "altName": "SK Gaming"
+      "altName": "SK Gaming",
+      "criteria": "squad"
     },
     {
       "isMarked": false,
       "imageUrl": "",
-      "altName": "Denmark"
+      "altName": "Denmark",
+      "criteria": "nationality"
     },
     {
       "isMarked": false,
       "imageUrl": "",
-      "altName": "Denmark"
+      "altName": "Denmark",
+      "criteria": "nationality"
     },
     {
       "isMarked": false,
       "imageUrl": "",
-      "altName": "Poland"
+      "altName": "Poland",
+      "criteria": "nationality"
     },
     {
       "isMarked": false,
       "imageUrl": "",
-      "altName": "Sweden"
+      "altName": "Sweden",
+      "criteria": "nationality"
     },
     {
       "isMarked": false,
       "imageUrl": "",
-      "altName": "Spirit"
+      "altName": "Spirit",
+      "criteria": "squad"
     },
     {
       "isMarked": false,
       "imageUrl": "",
-      "altName": "France"
+      "altName": "France",
+      "criteria": "nationality"
     },
     {
       "isMarked": false,
       "imageUrl": "",
-      "altName": "Russia"
+      "altName": "Russia",
+      "criteria": "nationality"
     },
     {
       "isMarked": false,
       "imageUrl": "",
-      "altName": "Denmark"
+      "altName": "Denmark",
+      "criteria": "nationality"
     },
     {
       "isMarked": false,
       "imageUrl": "",
-      "altName": "G2"
+      "altName": "G2",
+      "criteria": "squad"
     },
     {
       "isMarked": false,
       "imageUrl": "",
-      "altName": "NAVI"
+      "altName": "ESL One Cologne Online: North America 2020",
+      "criteria": "trophy"
     }
   ]
 }
