@@ -188,7 +188,13 @@ class RiveGameBridge {
     );
 
     for (var i = 0; i < results.length; i++) {
-      _bindings!.cellImages[i].value = results[i];
+      if (_bindings!.cellsText[i].value.length <= 33) {
+        _bindings!.cellImages[i].value = results[i];
+      } else {
+        var asset = "assets/images/empty_placeholder.png";
+        var bytes = await _getBytesFromLocalAsset(asset);
+        _bindings!.cellImages[i].value = await Factory.rive.decodeImage(bytes);
+      }
     }
   }
 
@@ -211,6 +217,9 @@ class RiveGameBridge {
         break;
       case "squad":
         prettyTitle = "Played on ";
+        break;
+      case "nationality":
+        prettyTitle = "Is From ";
         break;
       default:
         prettyTitle = "";
