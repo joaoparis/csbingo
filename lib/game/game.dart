@@ -214,7 +214,7 @@ class Game extends ChangeNotifier {
     );
     _notify("_loadGame(): start loading game=$state");
     try {
-      var info = await gateway.createCard();
+      var info = await gateway.createCard(type.name);
       gameInfo = GameInfo.fromDTO(
         info,
         maxSkips,

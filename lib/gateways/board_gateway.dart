@@ -12,9 +12,10 @@ class BoardGateway {
   final String baseUrl = AppConfig.apiBaseUrl;
   static bool isLocal = false;
 
-  Future<GameInfoDTO> createCard() async {
+  Future<GameInfoDTO> createCard(String type) async {
     print("[DEBUG] Calling createCard at '$baseUrl/api/cards'");
     final uri = Uri.parse('$baseUrl/api/cards');
+    uri.replace(queryParameters: {'type': type});
 
     try {
       final resp = await http.post(
