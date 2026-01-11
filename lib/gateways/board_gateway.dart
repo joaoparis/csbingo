@@ -13,9 +13,10 @@ class BoardGateway {
   static bool isLocal = false;
 
   Future<GameInfoDTO> createCard(String type) async {
-    print("[DEBUG] Calling createCard at '$baseUrl/api/cards'");
-    final uri = Uri.parse('$baseUrl/api/cards');
-    uri.replace(queryParameters: {'type': type});
+    final uri = Uri.parse('$baseUrl/api/cards?type=$type');
+    // uri.replace(queryParameters: {'type': type});
+    print(
+        "[DEBUG] Calling createCard at '${uri.toString()}' with type='$type'");
 
     try {
       final resp = await http.post(
