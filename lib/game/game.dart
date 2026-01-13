@@ -20,7 +20,7 @@ class Game extends ChangeNotifier {
   int currentRound = 0;
 
   GameTimer timer = GameTimer();
-  Duration defaultRoundTime = const Duration(seconds: 10);
+  Duration defaultRoundTime = const Duration(seconds: 60);
   Player currentPlayer = Player.emptyPlayer();
   BoardGateway gateway = BoardGateway(); //TODO: Inject this dependency
 
@@ -86,7 +86,7 @@ class Game extends ChangeNotifier {
 
     if (_isBoardComplete) {
       _resetCurrentRound;
-      timer.resetTimer();
+      if (gameInfo.gameType == GameType.daily) timer.resetTimer();
       state = GameState.gameOver;
       _notify("selectCell(): _isBoardComplete=$_isBoardComplete state=$state");
       return;
@@ -94,13 +94,15 @@ class Game extends ChangeNotifier {
 
     if (_isNotLastRound) {
       currentRound++;
-      timer.resetTimer();
-      timer.startTimer(defaultRoundTime);
+      if (gameInfo.gameType == GameType.daily) {
+        timer.resetTimer();
+        timer.startTimer(defaultRoundTime);
+      }
       return;
     }
 
     _resetCurrentRound;
-    timer.resetTimer();
+    if (gameInfo.gameType == GameType.daily) timer.resetTimer();
     state = GameState.gameOver;
     _notify("selectCell(): _isBoardComplete=$_isBoardComplete state=$state");
   }
@@ -144,19 +146,21 @@ class Game extends ChangeNotifier {
       gameInfo.skips = maxSkips;
       gameOutput = GameOutput.userAnswers;
     }
-    _setupTimer();
+    if (gameInfo.gameType == GameType.daily) _setupTimer();
     await _loadGame();
     start();
   }
 
   void start() {
     state = GameState.playing;
-    timer.startTimer(defaultRoundTime);
+    if (gameInfo.gameType == GameType.daily) timer.startTimer(defaultRoundTime);
     _notify("start(): state=$state");
   }
 
   Future<void> skip() async {
     if (gameInfo.skips <= 0) return;
+
+    if (gameInfo.gameType == GameType.random) return;
 
     await _evaluateAction();
 
@@ -246,6 +250,7 @@ class Game extends ChangeNotifier {
       //     "[DEBUG] ✅ Right answer ✅ card:${gameInfo.cardId} round:$currentRound [cell index: $index] match: ${info.cells[index].title} <> ${gameInfo.players[currentRound].name}");
       gameInfo.setCorrectCell(index, info.cells[index], currentRound);
       gameInfo.setPoints(info.points);
+      _notify("_evaluateAction(): reset wrong answer visual");
     } else {
       // print(
       //     "[DEBUG] ❌ Wrong answer! ❌ round:$currentRound [cell index: $index] try: ${info.cells[index].title} <> ${gameInfo.players[currentRound].name}");
