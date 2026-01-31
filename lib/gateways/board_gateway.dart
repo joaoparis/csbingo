@@ -25,6 +25,7 @@ class BoardGateway {
         body: jsonEncode({"type": "normal"}),
       );
       if (resp.statusCode == 200) {
+        print("[DEBUG] Successfully fetched card from backend ${resp.body}");
         isLocal = false;
         final Map<String, dynamic> jsonBody = json.decode(resp.body);
         return GameInfoDTO.fromJson(jsonBody);

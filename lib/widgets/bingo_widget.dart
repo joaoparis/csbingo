@@ -1,6 +1,5 @@
 import 'package:csbingo/game/game.dart';
 import 'package:csbingo/game/rive_game_bridge.dart';
-import 'package:csbingo/models/game_info.dart';
 import 'package:csbingo/models/rive_cell.dart';
 import 'package:csbingo/models/rive_bindinds.dart';
 import 'package:flutter/material.dart';

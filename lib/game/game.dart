@@ -86,7 +86,7 @@ class Game extends ChangeNotifier {
 
     if (_isBoardComplete) {
       _resetCurrentRound;
-      if (gameInfo.gameType == GameType.daily) timer.resetTimer();
+      timer.resetTimer();
       state = GameState.gameOver;
       _notify("selectCell(): _isBoardComplete=$_isBoardComplete state=$state");
       return;
@@ -94,15 +94,13 @@ class Game extends ChangeNotifier {
 
     if (_isNotLastRound) {
       currentRound++;
-      if (gameInfo.gameType == GameType.daily) {
         timer.resetTimer();
         timer.startTimer(defaultRoundTime);
-      }
       return;
     }
 
     _resetCurrentRound;
-    if (gameInfo.gameType == GameType.daily) timer.resetTimer();
+    timer.resetTimer();
     state = GameState.gameOver;
     _notify("selectCell(): _isBoardComplete=$_isBoardComplete state=$state");
   }
@@ -146,21 +144,19 @@ class Game extends ChangeNotifier {
       gameInfo.skips = maxSkips;
       gameOutput = GameOutput.userAnswers;
     }
-    if (gameInfo.gameType == GameType.daily) _setupTimer();
+    _setupTimer();
     await _loadGame();
     start();
   }
 
   void start() {
     state = GameState.playing;
-    if (gameInfo.gameType == GameType.daily) timer.startTimer(defaultRoundTime);
+    timer.startTimer(defaultRoundTime);
     _notify("start(): state=$state");
   }
 
   Future<void> skip() async {
     if (gameInfo.skips <= 0) return;
-
-    if (gameInfo.gameType == GameType.random) return;
 
     await _evaluateAction();
 
