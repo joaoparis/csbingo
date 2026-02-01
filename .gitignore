@@ -120,3 +120,4 @@ app.*.symbols
 
 # FVM Version Cache
 .fvm/
+CODE_REVIEW_CLEANUP_PLAN.md

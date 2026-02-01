@@ -13,7 +13,7 @@ class Game extends ChangeNotifier {
   static int maxSkips = 3;
   static GameOutput gameOutput = GameOutput.userAnswers;
 
-  String state = "Idle";
+  GameState state = GameState.Idle;
   bool isGameInitialized = false;
   int defaultMaxRounds = 20;
   int defaultGridSize = 16;
@@ -61,23 +61,25 @@ class Game extends ChangeNotifier {
 
   Future<void> buttonClicked() async {
     switch (state) {
-      case GameState.idle:
+      case GameState.Idle:
         await play();
         return;
-      case GameState.ffaLobby:
+      case GameState.FFALobby:
         ffaLobby();
         return;
-      case GameState.playing:
+      case GameState.Playing:
         skip();
         return;
-      case GameState.gameOver:
+      case GameState.GameOver:
         gameOver();
+        return;
+      case GameState.Loading:
         return;
     }
   }
 
   void selectCell(int index) async {
-    if (state != GameState.playing) return;
+    if (state != GameState.Playing) return;
 
     final cell = gameInfo.cells[index];
     if (cell.isCompleted) return;
@@ -87,31 +89,31 @@ class Game extends ChangeNotifier {
     if (_isBoardComplete) {
       _resetCurrentRound;
       timer.resetTimer();
-      state = GameState.gameOver;
+      state = GameState.GameOver;
       _notify("selectCell(): _isBoardComplete=$_isBoardComplete state=$state");
       return;
     }
 
     if (_isNotLastRound) {
       currentRound++;
-        timer.resetTimer();
-        timer.startTimer(defaultRoundTime);
+      timer.resetTimer();
+      timer.startTimer(defaultRoundTime);
       return;
     }
 
     _resetCurrentRound;
     timer.resetTimer();
-    state = GameState.gameOver;
+    state = GameState.GameOver;
     _notify("selectCell(): _isBoardComplete=$_isBoardComplete state=$state");
   }
 
   void ffaLobby() {
-    state = GameState.idle;
+    state = GameState.Idle;
     _notify("buttonClicked(): returning to idle from ffaLobby");
   }
 
   void gameOver() {
-    state = GameState.idle;
+    state = GameState.Idle;
     timer.timerText.removeListener(_timerListener);
     _timerFinishedSub.cancel();
     _notify("gameOver(): state=$state");
@@ -134,7 +136,7 @@ class Game extends ChangeNotifier {
 
   Future<void> play() async {
     if (gameInfo.gameType == GameType.ffa) {
-      state = GameState.ffaLobby;
+      state = GameState.FFALobby;
       _notify("play(): state=$state");
       return;
     }
@@ -150,7 +152,7 @@ class Game extends ChangeNotifier {
   }
 
   void start() {
-    state = GameState.playing;
+    state = GameState.Playing;
     timer.startTimer(defaultRoundTime);
     _notify("start(): state=$state");
   }
@@ -170,7 +172,7 @@ class Game extends ChangeNotifier {
     } else {
       _resetCurrentRound;
       timer.resetTimer();
-      state = GameState.gameOver;
+      state = GameState.GameOver;
     }
     _notify("skip(): state=$state");
   }
@@ -178,7 +180,7 @@ class Game extends ChangeNotifier {
   bool get _isBoardComplete => !gameInfo.cells.any((c) => !c.isCompleted);
   bool get _isNotLastRound => currentRound < defaultMaxRounds - 1;
   bool get _hasSkips => gameInfo.skips >= 0;
-  bool get _isNotGameOver => state != GameState.gameOver;
+  bool get _isNotGameOver => state != GameState.GameOver;
 
   void _resetCurrentRound() => currentRound = defaultMaxRounds - 1;
 
@@ -200,12 +202,12 @@ class Game extends ChangeNotifier {
     }
     _resetCurrentRound;
     timer.resetTimer();
-    state = GameState.gameOver;
+    state = GameState.GameOver;
     _notify("_onTimerFinished(): state=$state");
   }
 
   Future<void> _loadGame() async {
-    state = GameState.loading;
+    state = GameState.Loading;
     gameInfo = GameInfo.forLoading(
       defaultGridSize,
       defaultMaxRounds,
@@ -223,7 +225,7 @@ class Game extends ChangeNotifier {
       );
       // _notify("_loadGame(): game has loaded state=$state");
     } catch (err) {
-      state = GameState.idle;
+      state = GameState.Idle;
       _notify("_loadGame(): failed to load game, reverting to state=$state");
       rethrow;
     }
@@ -270,23 +272,20 @@ class Game extends ChangeNotifier {
 
   void handleCursorTrigger(bool value) {
     switch (state) {
-      case GameState.idle:
+      case GameState.Idle:
         _toogleMainMenuCursor();
         _notify("handleCursorTrigger(): cursor toggled");
         return;
-      case GameState.gameOver:
+      case GameState.GameOver:
         _toggleGameOverCursor();
         _updateCellsText();
         _notify("handleCursorTrigger(): cursor toggled");
         return;
-      case GameState.loading:
-      case GameState.ffaLobby:
-      case GameState.playing:
+      case GameState.Loading:
+      case GameState.FFALobby:
+      case GameState.Playing:
         return;
     }
-    if (state != GameState.idle) return;
-    _toogleMainMenuCursor();
-    _notify("handleCursorTrigger(): cursor toggled");
   }
 
   void _toogleMainMenuCursor() {

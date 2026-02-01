@@ -66,7 +66,7 @@ class RiveGameBridge {
 
   void _applyGameStateToRive() async {
     switch (game.state) {
-      case GameState.idle:
+      case GameState.Idle:
         _setGhostCellStatus();
         _setIdleText();
         if (hasLoadedMainDisplay) {
@@ -79,19 +79,19 @@ class RiveGameBridge {
         _resetTimerText();
         hasLoadedMainDisplay = true;
         break;
-      case GameState.ffaLobby:
+      case GameState.FFALobby:
         hasLoadedMainDisplay = false;
         _setFFALobbyText();
         _setBackButton();
         break;
-      case GameState.loading:
+      case GameState.Loading:
         _bindings!.secondOutputLoadingTrigger.trigger();
         hasLoadedMainDisplay = false;
         _setLoadingText();
         _setMaxRoundText();
         _resetSkips(state: SkipState.available);
         break;
-      case GameState.playing:
+      case GameState.Playing:
         _updateTimer();
         _setPlayText();
         _setButtonText();
@@ -103,7 +103,7 @@ class RiveGameBridge {
         await _setCellImages();
         await _setCellText();
         break;
-      case GameState.gameOver:
+      case GameState.GameOver:
         _setResetButton();
         _setGameOverText();
         _resetRoundText();
