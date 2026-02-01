@@ -297,7 +297,7 @@ class RiveGameBridge {
   void _setRoundText() =>
       _bindings!.roundText.value = (game.currentRound + 1).toString();
   void _setMaxRoundText() =>
-      _bindings!.maxRoundText.value = game.defaultMaxRounds.toString();
+      _bindings!.maxRoundText.value = game.config.maxRounds.toString();
 
   void _updateTimer() =>
       _bindings!.timerText.value = game.timer.timerText.value;
@@ -305,7 +305,7 @@ class RiveGameBridge {
   void _setButtonText() =>
       game.skips > 0 ? _setOptionButton() : _setGreyButton();
 
-  void _setOptionButton() => game.currentRound == game.defaultMaxRounds - 1
+  void _setOptionButton() => game.currentRound == game.config.maxRounds - 1
       ? _setForfeitButton()
       : _setSkipButton();
 

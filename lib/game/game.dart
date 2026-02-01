@@ -4,25 +4,23 @@ import 'package:csbingo/gateways/board_gateway.dart';
 import 'package:csbingo/models/cell.dart';
 import 'package:csbingo/constants/game_state.dart';
 import 'package:csbingo/game/game_timer.dart';
+import 'package:csbingo/models/game_config.dart';
 import 'package:csbingo/models/game_info.dart';
 import 'package:csbingo/models/player.dart';
 import 'package:flutter/material.dart';
 
 class Game extends ChangeNotifier {
-  static bool debug = false;
-  static int maxSkips = 3;
+  final GameConfig config = const GameConfig();
+  final GameTimer timer = GameTimer();
+  final BoardGateway gateway = BoardGateway(); //TODO: Inject this dependency
+
   static GameOutput gameOutput = GameOutput.userAnswers;
 
-  GameState state = GameState.Idle;
-  bool isGameInitialized = false;
-  int defaultMaxRounds = 20;
-  int defaultGridSize = 16;
-  int currentRound = 0;
-
-  GameTimer timer = GameTimer();
-  Duration defaultRoundTime = const Duration(seconds: 60);
   Player currentPlayer = Player.emptyPlayer();
-  BoardGateway gateway = BoardGateway(); //TODO: Inject this dependency
+  GameState state = GameState.Idle;
+
+  bool isGameInitialized = false;
+  int currentRound = 0;
 
   late GameInfo gameInfo;
   late VoidCallback _timerListener;
@@ -34,12 +32,9 @@ class Game extends ChangeNotifier {
   int get points => gameInfo.points;
 
   List<Player> get players => gameInfo.players;
-  Cell cellAt(index) => gameInfo.cells[index];
-  GameType get type {
-    // print("game type getter: ${gameInfo.hashCode} ${gameInfo.gameType}");
-    return gameInfo.gameType;
-  }
+  GameType get type => gameInfo.gameType;
 
+  Cell cellAt(index) => gameInfo.cells[index];
   String cellImage(index) => gameInfo.cells[index].image;
   String cellTitle(index) => gameInfo.cells[index].title;
   String cellAnswer(index) => gameInfo.cells[index].answer;
@@ -97,7 +92,7 @@ class Game extends ChangeNotifier {
     if (_isNotLastRound) {
       currentRound++;
       timer.resetTimer();
-      timer.startTimer(defaultRoundTime);
+      timer.startTimer(config.roundTime);
       return;
     }
 
@@ -125,9 +120,9 @@ class Game extends ChangeNotifier {
     currentRound = 0;
 
     gameInfo = GameInfo.forPlaceholders(
-      defaultGridSize,
-      defaultMaxRounds,
-      maxSkips,
+      config.gridSize,
+      config.maxRounds,
+      config.maxSkips,
     );
 
     isGameInitialized = true;
@@ -143,7 +138,7 @@ class Game extends ChangeNotifier {
 
     if (!isGameInitialized) {
       currentRound = 0;
-      gameInfo.skips = maxSkips;
+      gameInfo.skips = config.maxSkips;
       gameOutput = GameOutput.userAnswers;
     }
     _setupTimer();
@@ -153,7 +148,7 @@ class Game extends ChangeNotifier {
 
   void start() {
     state = GameState.Playing;
-    timer.startTimer(defaultRoundTime);
+    timer.startTimer(config.roundTime);
     _notify("start(): state=$state");
   }
 
@@ -167,7 +162,7 @@ class Game extends ChangeNotifier {
       gameInfo.skips--;
       if (_hasSkips) {
         timer.resetTimer();
-        timer.startTimer(defaultRoundTime);
+        timer.startTimer(config.roundTime);
       }
     } else {
       _resetCurrentRound;
@@ -178,11 +173,11 @@ class Game extends ChangeNotifier {
   }
 
   bool get _isBoardComplete => !gameInfo.cells.any((c) => !c.isCompleted);
-  bool get _isNotLastRound => currentRound < defaultMaxRounds - 1;
+  bool get _isNotLastRound => currentRound < config.maxRounds - 1;
   bool get _hasSkips => gameInfo.skips >= 0;
   bool get _isNotGameOver => state != GameState.GameOver;
 
-  void _resetCurrentRound() => currentRound = defaultMaxRounds - 1;
+  void _resetCurrentRound() => currentRound = config.maxRounds - 1;
 
   void _setupTimer() {
     _timerListener = () => _notify("timer");
@@ -197,7 +192,7 @@ class Game extends ChangeNotifier {
       currentRound++;
       _evaluateAction();
       timer.resetTimer();
-      timer.startTimer(defaultRoundTime);
+      timer.startTimer(config.roundTime);
       return;
     }
     _resetCurrentRound;
@@ -209,9 +204,9 @@ class Game extends ChangeNotifier {
   Future<void> _loadGame() async {
     state = GameState.Loading;
     gameInfo = GameInfo.forLoading(
-      defaultGridSize,
-      defaultMaxRounds,
-      maxSkips,
+      config.gridSize,
+      config.maxRounds,
+      config.maxSkips,
       type,
     );
     _notify("_loadGame(): start loading game=$state");
@@ -219,7 +214,7 @@ class Game extends ChangeNotifier {
       var info = await gateway.createCard(type.name);
       gameInfo = GameInfo.fromDTO(
         info,
-        maxSkips,
+        config.maxSkips,
         0,
         type,
       );
@@ -262,7 +257,7 @@ class Game extends ChangeNotifier {
   }
 
   _notify(String src) {
-    if (debug) {
+    if (config.debugMode) {
       print("[DEBUG] Notifying...");
       print("[DEBUG] Source: $src");
       print("[DEBUG] State: $state");
