@@ -1,11 +1,4 @@
-import 'package:csbingo/config.dart';
-import 'package:csbingo/gateways/board_gateway.dart';
-import 'package:csbingo/widgets/bingo_widget.dart';
-import 'package:csbingo/widgets/cs2_dialog.dart';
-import 'package:flutter/foundation.dart';
-import 'package:flutter/gestures.dart';
-import 'package:flutter/material.dart';
-import 'package:url_launcher/url_launcher.dart';
+import 'package:csbingo/csbingo.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();

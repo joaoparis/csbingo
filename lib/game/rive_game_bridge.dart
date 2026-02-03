@@ -1,28 +1,25 @@
 import 'dart:async';
 
-import 'package:csbingo/constants/skip_state.dart';
-import 'package:csbingo/game/game.dart';
-import 'package:csbingo/constants/game_state.dart';
-import 'package:csbingo/models/cell.dart';
-import 'package:csbingo/models/game_info.dart';
-import 'package:csbingo/models/rive_bindinds.dart';
 import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
 import 'package:rive/rive.dart';
 
+import 'package:csbingo/csbingo.dart';
+
 class RiveGameBridge {
-  final Game game;
+  final GameManager manager;
   late final VoidCallback _gameListener;
+  late final VoidCallback _menuListener;
   late final http.Client _httpClient;
 
   RiveWidgetController? _controller;
   RiveBindings? _bindings;
   bool get isReady => _bindings != null && _controller != null;
-  bool hasLoadedMainDisplay = false;
   bool hasLoadedCells = false;
 
-  RiveGameBridge({required this.game}) {
+  RiveGameBridge({required this.manager}) {
     _gameListener = _onGameChanged;
+    _menuListener = _onMenuChanged;
     _httpClient = http.Client();
   }
 
@@ -34,18 +31,33 @@ class RiveGameBridge {
     _bindings = bindings;
 
     controller.stateMachine.addEventListener(_handleRiveEvent);
-    game.addListener(_gameListener);
 
-    bindings.cursorTrigger.addListener(game.handleCursorTrigger);
+    manager.addListener(_menuListener);
+
+    _attachGameListener();
+    manager.setGameInstanceChangeCallback(_attachGameListener);
+
+    bindings.cursorTrigger.addListener(manager.handleCursorTrigger);
     bindings.cellTaps.asMap().forEach((i, c) => _handleCellTap(i, c));
 
-    _applyGameStateToRive();
+    _applyMenuStateToRive();
+  }
+
+  void _attachGameListener() {
+    try {
+      print(
+          "[RIVE_GAME_BRIDGE] Attaching game listener to game instance: ${manager.game.hashCode}");
+      manager.game.addListener(_gameListener);
+    } catch (e) {
+      print(
+          "[RIVE_GAME_BRIDGE] Error attaching game listener: $e. It might be the first time.");
+    }
   }
 
   void _handleRiveEvent(dynamic event) {
     final name = event.name?.toString() ?? '';
     if (name == 'buttonClick') {
-      game.buttonClicked();
+      manager.buttonClicked();
       return;
     }
 
@@ -54,44 +66,29 @@ class RiveGameBridge {
 
   void _handleCellTap(int cellIndex, ViewModelInstanceTrigger tap) {
     tap.addListener((event) {
-      game.selectCell(cellIndex);
+      manager.game.selectCell(cellIndex);
     });
   }
 
-  /// Invoked when the Game notifies listeners. Translate game state -> Rive view model updates.
   void _onGameChanged() {
+    print("[RIVE_GAME_BRIDGE] Game changed: ${manager.game.info.state}");
     if (!isReady) return;
     _applyGameStateToRive();
   }
 
   void _applyGameStateToRive() async {
-    switch (game.state) {
-      case GameState.Idle:
-        _setGhostCellStatus();
-        _setIdleText();
-        if (hasLoadedMainDisplay) {
-          break;
-        }
-        await _setEmptyImages();
-        _setPlayButton();
-        _resetSkips();
-        _resetRoundText();
-        _resetTimerText();
-        hasLoadedMainDisplay = true;
-        break;
-      case GameState.FFALobby:
-        hasLoadedMainDisplay = false;
-        _setFFALobbyText();
-        _setBackButton();
-        break;
-      case GameState.Loading:
+    print(
+        "[RIVE_GAME_BRIDGE] Applying game state to Rive: ${manager.game.info.state}");
+    switch (manager.game.info.state) {
+      case GameState.loading:
         _bindings!.secondOutputLoadingTrigger.trigger();
-        hasLoadedMainDisplay = false;
         _setLoadingText();
         _setMaxRoundText();
         _resetSkips(state: SkipState.available);
         break;
-      case GameState.Playing:
+      case GameState.playing:
+        _bindings!.secondOutputEmptyTrigger.trigger();
+        await _setCellImages();
         _updateTimer();
         _setPlayText();
         _setButtonText();
@@ -99,24 +96,56 @@ class RiveGameBridge {
         _setRoundText();
         _setSkips();
         _updateScore();
-        _bindings!.secondOutputEmptyTrigger.trigger();
-        await _setCellImages();
         await _setCellText();
         break;
-      case GameState.GameOver:
+      case GameState.gameOver:
         _setResetButton();
         _setGameOverText();
         _resetRoundText();
+        _resetTimerText();
         await _setCellText();
         hasLoadedCells = false;
-        hasLoadedMainDisplay = false;
+        break;
+      case GameState.error:
+        _setGhostCellStatus();
+        _bindings!.outputText.value = "Error loading game.";
+        break;
+      case GameState.inactive:
+        _setGhostCellStatus();
+        _bindings!.outputText.value = "";
+        break;
+    }
+  }
+
+  void _onMenuChanged() {
+    print("[RIVE_GAME_BRIDGE] Manager changed: ${manager.game.info.state}");
+    if (!isReady) return;
+    _applyMenuStateToRive();
+  }
+
+  void _applyMenuStateToRive() async {
+    print(
+        "[RIVE_GAME_BRIDGE] Applying manager state to Rive: ${manager.menuState}");
+    switch (manager.menuState) {
+      case MenuState.dailyGame:
+      case MenuState.randomGame:
+      case MenuState.ffaGame:
+        _setPlayButton();
+        _setMenuTextInMainDisplay();
+        _bindings!.secondOutputTextTrigger.trigger();
+        _setGhostCellStatus();
+        _setEmptyImages();
+        _bindings!.secondOutputTitleText.value = manager.targetType.fullName;
+        _bindings!.secondOutputBodyText.value = manager.targetType.description;
+        break;
+      case MenuState.inactive:
         break;
     }
   }
 
   void dispose() {
     try {
-      game.removeListener(_gameListener);
+      manager.removeListener(_gameListener);
     } catch (_) {}
 
     if (_controller != null) {
@@ -164,9 +193,9 @@ class RiveGameBridge {
     var asset = "assets/images/empty_placeholder.png";
     var bytes = await _getBytesFromLocalAsset(asset);
 
-    for (var i = 0; i < game.cellsLength; i++) {
+    for (var i = 0; i < manager.game.config.gridSize; i++) {
       _bindings!.cellImages[i].value = await Factory.rive.decodeImage(bytes);
-      _bindings!.cellsText[i].value = game.cellTitle(i);
+      _bindings!.cellsText[i].value = manager.game.cellTitle(i);
     }
   }
 
@@ -175,12 +204,12 @@ class RiveGameBridge {
     hasLoadedCells = true;
 
     final results = await Future.wait(
-      List.generate(game.gridSize, (i) async {
+      List.generate(manager.game.config.gridSize, (i) async {
         try {
-          return await _getImage(game.cellAt(i));
-        } catch (e, st) {
+          return await _getImage(manager.game.cellAt(i));
+        } catch (e) {
           var asset =
-              "assets/images/${game.cellAt(i).criteria}_placeholder.png";
+              "assets/images/${manager.game.cellAt(i).criteria}_placeholder.png";
           var bytes = await _getBytesFromLocalAsset(asset);
           return await Factory.rive.decodeImage(bytes);
         }
@@ -199,10 +228,10 @@ class RiveGameBridge {
   }
 
   Future<void> _setCellText() async {
-    for (var i = 0; i < game.cellsLength; i++) {
-      _bindings!.cellsAnswers[i].value = game.cellAnswer(i);
-      _bindings!.cellsText[i].value =
-          _prettyCellTitle(game.cellTitle(i), game.cellCriteria(i));
+    for (var i = 0; i < manager.game.config.gridSize; i++) {
+      _bindings!.cellsAnswers[i].value = manager.game.cellAnswer(i);
+      _bindings!.cellsText[i].value = _prettyCellTitle(
+          manager.game.cellTitle(i), manager.game.cellCriteria(i));
     }
   }
 
@@ -230,11 +259,11 @@ class RiveGameBridge {
   }
 
   void _setCellsStatus() {
-    for (var i = 0; i < game.cellsLength; i++) {
-      switch (game.cellAt(i)) {
+    for (var i = 0; i < manager.game.config.gridSize; i++) {
+      switch (manager.game.cellAt(i)) {
         case var cell when cell.isCompleted:
           _bindings!.cellStatuses[i].value = "correct";
-          _bindings!.cellsText[i].value = game.cellTitle(i);
+          _bindings!.cellsText[i].value = manager.game.cellTitle(i);
           break;
         case var cell when cell.isWrong:
           _bindings!.cellStatuses[i].value = "wrong";
@@ -262,55 +291,53 @@ class RiveGameBridge {
 
   void _setSkips() {
     for (var i = 0; i < _bindings!.skips.length; i++) {
-      if (i >= game.skips) _bindings!.skips[i].value = "red";
+      if (i >= manager.game.skips) _bindings!.skips[i].value = "red";
     }
   }
 
-  void _setIdleText() {
-    _bindings!.secondOutputTextTrigger.trigger();
+  void _setMenuTextInMainDisplay() {
     _bindings!.outputText.value = "";
     _bindings!.outputTextInfo.value = "Select game:\n"
-        "(${game.type == GameType.daily ? '*' : ' '}) ${GameType.daily.name}\n"
-        "(${game.type == GameType.random ? '*' : ' '}) ${GameType.random.name}\n"
-        "(${game.type == GameType.ffa ? '*' : ' '}) ${GameType.ffa.name}\n";
-    _bindings!.secondOutputTitleText.value = game.type.fullName;
-    _bindings!.secondOutputBodyText.value = game.type.description;
+        "(${manager.targetType == GameType.daily ? '*' : ' '}) ${GameType.daily.name}\n"
+        "(${manager.targetType == GameType.random ? '*' : ' '}) ${GameType.random.name}\n"
+        "(${manager.targetType == GameType.ffa ? '*' : ' '}) ${GameType.ffa.name}\n";
   }
 
   void _setLoadingText() {
     _bindings!.outputText.value = "";
-    _bindings!.outputTextInfo.value = "CS BINGO: ${game.type.name}";
+    _bindings!.outputTextInfo.value = "CS BINGO: ${manager.game.type.name}";
   }
 
-  void _setPlayText() =>
-      _bindings!.outputText.value = game.players[game.currentRound].name;
+  void _setPlayText() => _bindings!.outputText.value =
+      manager.game.info.players[manager.game.info.currentRound].name;
 
   void _setGameOverText() {
     _bindings!.outputText.value = "";
     _bindings!.outputTextInfo.value = "Game Over\n"
-        "(${Game.gameOutput == GameOutput.userAnswers ? '*' : ' '}) Your Answers\n"
-        "(${Game.gameOutput == GameOutput.suggestedAnswers ? '*' : ' '}) Suggested Answers";
+        "(${manager.game.info.gameOverState == GameOverState.displayingPlayerAnswers ? '*' : ' '}) Your Answers\n"
+        "(${manager.game.info.gameOverState == GameOverState.displayingSuggestedAnswers ? '*' : ' '}) Suggested Answers";
   }
 
   void _resetRoundText() => _bindings!.roundText.value = "--";
   void _resetTimerText() => _bindings!.timerText.value = "--:--";
-  void _setRoundText() =>
-      _bindings!.roundText.value = (game.currentRound + 1).toString();
+  void _setRoundText() => _bindings!.roundText.value =
+      (manager.game.info.currentRound + 1).toString();
   void _setMaxRoundText() =>
-      _bindings!.maxRoundText.value = game.config.maxRounds.toString();
+      _bindings!.maxRoundText.value = manager.game.config.maxRounds.toString();
 
   void _updateTimer() =>
-      _bindings!.timerText.value = game.timer.timerText.value;
+      _bindings!.timerText.value = manager.game.timer.timerText.value;
 
   void _setButtonText() =>
-      game.skips > 0 ? _setOptionButton() : _setGreyButton();
+      manager.game.skips > 0 ? _setOptionButton() : _setGreyButton();
 
-  void _setOptionButton() => game.currentRound == game.config.maxRounds - 1
-      ? _setForfeitButton()
-      : _setSkipButton();
+  void _setOptionButton() =>
+      manager.game.info.currentRound == manager.game.config.maxRounds - 1
+          ? _setForfeitButton()
+          : _setSkipButton();
 
   void _updateScore() {
-    _bindings!.scoreText.value = game.points.toString();
+    _bindings!.scoreText.value = manager.game.info.points.toString();
   }
 
   void _setFFALobbyText() {

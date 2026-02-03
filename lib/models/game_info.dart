@@ -1,6 +1,4 @@
-import 'package:csbingo/models/cell.dart';
-import 'package:csbingo/models/game_info_dto.dart';
-import 'package:csbingo/models/player.dart';
+import 'package:csbingo/csbingo.dart';
 
 class PlayedCell {
   final int index;
@@ -19,20 +17,24 @@ class GameInfo {
   final List<Cell> cells;
   final List<Player> players;
 
+  GameState state;
+  GameOverState gameOverState = GameOverState.displayingPlayerAnswers;
+  GameType type; // probably will be deleted - it's saved inside the Game itself
+
   int currentRound;
   int points;
   int skips;
   Map<int, PlayedCell> userPlays = {};
-  GameType gameType;
 
   GameInfo({
     required this.cardId,
     required this.cells,
     required this.players,
     required this.points,
+    this.state = GameState.loading,
     this.skips = 0,
     this.currentRound = 0,
-    this.gameType = GameType.daily,
+    this.type = GameType.daily,
   });
 
   setPoints(int value) => points = value;
@@ -85,11 +87,15 @@ class GameInfo {
       points: info.points,
       skips: skips,
       currentRound: currentRound,
-      gameType: type,
+      type: type,
     );
   }
 
-  factory GameInfo.forPlaceholders(int gridSize, int maxRounds, int skips) {
+  factory GameInfo.forPlaceholders({
+    int gridSize = 16,
+    int maxRounds = 0,
+    int skips = 0,
+  }) {
     return GameInfo(
       cardId: "",
       cells: List.generate(
@@ -116,7 +122,11 @@ class GameInfo {
   }
 
   factory GameInfo.forLoading(
-      int gridSize, int maxRounds, int skips, GameType type) {
+    int gridSize,
+    int maxRounds,
+    int skips,
+    GameType type,
+  ) {
     return GameInfo(
       cardId: "",
       cells: List.generate(
@@ -139,7 +149,8 @@ class GameInfo {
       points: 0,
       skips: skips,
       currentRound: 0,
-      gameType: type,
+      type: type,
+      state: GameState.loading,
     );
   }
 }
@@ -163,9 +174,4 @@ enum GameType {
         GameType.ffa =>
           "Join a Free For All lobby with other players and compete to get the highest score! Coming soon!",
       };
-}
-
-enum GameOutput {
-  userAnswers,
-  suggestedAnswers;
 }

@@ -1,12 +1,62 @@
-enum GameState {
+enum OldGameState {
   Idle,
   Loading,
   Playing,
   GameOver,
   FFALobby,
-  // static const String idle = "Idle";
-  // static const String loading = "Loading";
-  // static const String playing = "Playing";
-  // static const String gameOver = "GameOver";
-  // static const String ffaLobby = "FFALobby";
+}
+
+// --------------------------------
+
+enum OrchestratorState {
+  menu,
+  loading,
+  playing,
+  gameOver,
+}
+
+enum OrchestratorEvents {
+  selectOption,
+  startGame,
+  gameOver,
+  returnToMenu,
+}
+
+enum MenuState {
+  dailyGame,
+  randomGame,
+  ffaGame,
+  inactive,
+}
+
+enum MenuEvent {
+  toggleOption,
+  selectOption,
+}
+
+enum GameState {
+  loading,
+  playing,
+  gameOver,
+  error,
+  inactive,
+}
+
+enum GameEvent {
+  startGame,
+  tapCell,
+  roundEvaluated,
+  nextRound,
+  skipRound,
+  timeUp,
+  gameOver,
+}
+
+enum GameOverState {
+  displayingPlayerAnswers,
+  displayingSuggestedAnswers,
+}
+
+enum GameOverEvent {
+  toggleOption,
 }

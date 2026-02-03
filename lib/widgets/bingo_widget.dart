@@ -1,9 +1,5 @@
-import 'package:csbingo/game/game.dart';
-import 'package:csbingo/game/rive_game_bridge.dart';
-import 'package:csbingo/models/rive_cell.dart';
-import 'package:csbingo/models/rive_bindinds.dart';
-import 'package:flutter/material.dart';
 import 'package:rive/rive.dart';
+import 'package:csbingo/csbingo.dart';
 
 class BingoWidget extends StatefulWidget {
   const BingoWidget({super.key});
@@ -38,7 +34,9 @@ class _BingoWidgetState extends State<BingoWidget> {
   late ViewModelInstanceTrigger _textTrigger;
 
   RiveGameBridge? _bridge;
-  Game game = Game();
+  GameManager gameManager = GameManager(
+    game: DailyGame(),
+  );
 
   @override
   void initState() {
@@ -115,7 +113,7 @@ class _BingoWidgetState extends State<BingoWidget> {
       secondOutputEmptyTrigger: _emptyTrigger,
       secondOutputTextTrigger: _textTrigger,
     );
-    _bridge = RiveGameBridge(game: game);
+    _bridge = RiveGameBridge(manager: gameManager);
     await _bridge!.init(controller: _controller, bindings: bindings);
     setState(() => isInitialized = true);
   }

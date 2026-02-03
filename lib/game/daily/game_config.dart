@@ -1,9 +1,9 @@
-import 'package:csbingo/models/game_info.dart';
+import 'package:csbingo/csbingo.dart';
 
 class GameConfig {
   final bool debugMode;
   final int maxSkips;
-  final GameOutput initialGameOutput;
+  final GameOverState initialGameOutput;
   final Duration roundTime;
   final int gridSize;
   final int maxRounds;
@@ -11,7 +11,7 @@ class GameConfig {
   const GameConfig({
     this.debugMode = false,
     this.maxSkips = 3,
-    this.initialGameOutput = GameOutput.userAnswers,
+    this.initialGameOutput = GameOverState.displayingPlayerAnswers,
     this.roundTime = const Duration(seconds: 60),
     this.gridSize = 16,
     this.maxRounds = 20,
