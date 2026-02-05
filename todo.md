@@ -1,5 +1,6 @@
-# TODO
+# BACKLOG
 
+DONE:
 - [x] Load dumb images (or text for starters)
 - [x] game state
 - [x] add loading state to button (?)
@@ -35,21 +36,35 @@
 - [x] UI update: remove "correct", "wrong" delay in animation
 - [x] add end-game proposed solution (use switch to toggle solution vs answer)
 - [x] UI update: fix trophies images
-- [ ] fix visible loading images in cells
-- [ ] UI update: fix pop-up dialogs "cuts"
-- [ ] UI update: add "under development" notice
-- [ ] fetch & present proposed solution from the backend
-- [ ] enable random mode
-- [ ] Rive bug: cells red bkgd color should reset at the end of the game
-- [ ] develop random game mode
+- [x] FEATURE: UI make cords on top smaller
+
+----
+FEATURES TODO: 
+- [ ] FEATURE: suggested answers BE & FE
+- [ ] FEATURE: random game mode FE
+- [ ] FEATURE: loading screen message
+
+- [ ] FEATURE: UI add "shock" visuals
+- [ ] FEATURE: UI make colors more real
+- [ ] FEATURE: UI add backlight behind C4 toggle it according to game state...
+- [ ] FEATURE: UI add "under development" notice
+- [ ] FEATURE: UI round players & flags images corners
+- [ ] Update JSON with the latest CS Major Tournament
+
+
+----
+FIXES TODO:
+- [ ] FIX: dialog boxes scroll and presentation in smaller screens (pop-up dialogs "cuts")
+- [ ] FIX: delay loading images
+- [ ] FIX: delay when selecting cells 
+- [ ] FIX: UI html: fix splash screen loading font
+- [ ] FIX: Rive bug: cells red bkgd color should reset at the end of the game
+
+----
+FUTURE TOPICS:
 - [ ] add FFA mode: join lobby, select answers until the end, see result at the end
 - [ ] add "generations" criteria to the games: a generation should be 5 years apart, so '95 to 2000 is one generation, 2000 to 2005 is another...
-- [ ] Rive bug: toggle animation get's bugged on the last toggle choice
-- [ ] round players & flags images corners
-- [ ] UI update: fix splash screen loading font
-- [ ] Update JSON with the latest CS Major Tournament
-- [ ] UI update: update Input display UI to be prettier
 - [ ] BE deplloyment: improve loading game latency (takes too long to load game)
 ...
-- [ ] Add Google Ads
 - [ ] Buy and set URL
+- [ ] Add Google Ads
