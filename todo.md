@@ -8,23 +8,25 @@
 - [ ] FEATURE: add "player generation" cell topic (born between 95-2000 vs 90-95)
 - [ ] FEATURE: add FFA message "in development.../ comming soon..."
 
-- [ ] FEATURE: UI add "shock" visuals
-- [ ] FEATURE: UI make colors more real
 - [ ] FEATURE: UI add backlight behind C4 toggle it according to game state...
-- [ ] FEATURE: UI add "under development" notice
+- [ ] FEATURE: UI add "shock" visuals
 - [ ] FEATURE: UI round players & flags images corners
+- [ ] FEATURE: UI add "under development" notice
+- [ ] FEATURE: UI make colors more real
+
 - [ ] Update JSON with the latest CS Major Tournament
 
 ----
 ## FIXES TODO 🛠️
+- [ ] FIX: UI html: fix splash screen loading font
 - [ ] FIX: dialog boxes scroll and presentation in smaller screens (pop-up dialogs "cuts")
 - [ ] FIX: delay loading images
 - [ ] FIX: delay when selecting cells 
-- [ ] FIX: UI html: fix splash screen loading font
 - [ ] FIX: Rive bug: cells red bkgd color should reset at the end of the game
 
 ----
 #### FUTURE TOPICS 🔮
+- [ ] save users with steam login / simple login
 - [ ] add FFA mode: join lobby, select answers until the end, see result at the end
 - [ ] add "generations" criteria to the games: a generation should be 5 years apart, so '95 to 2000 is one generation, 2000 to 2005 is another...
 - [ ] BE deplloyment: improve loading game latency (takes too long to load game)
@@ -39,7 +41,7 @@
 ------------------------------------------------------------------------------------------------
 
 # ROADMAP 🛣️
-- [ ] MVP Ready
+- [ ] MVP Ready (?)
 - [ ] Share with friends
 - [ ] Share on Reddit
 - [ ] Share with streamers
