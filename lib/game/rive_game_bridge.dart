@@ -81,6 +81,8 @@ class RiveGameBridge {
         "[RIVE_GAME_BRIDGE] Applying game state to Rive: ${manager.game.info.state}");
     switch (manager.game.info.state) {
       case GameState.loading:
+        _bindings!.secondOutputTitleText.value =
+            "Loading ${manager.targetType.fullName}";
         _bindings!.secondOutputLoadingTrigger.trigger();
         _setLoadingText();
         _setMaxRoundText();
@@ -133,11 +135,13 @@ class RiveGameBridge {
       case MenuState.ffaGame:
         _setPlayButton();
         _setMenuTextInMainDisplay();
-        _bindings!.secondOutputTextTrigger.trigger();
         _setGhostCellStatus();
         _setEmptyImages();
         _bindings!.secondOutputTitleText.value = manager.targetType.fullName;
         _bindings!.secondOutputBodyText.value = manager.targetType.description;
+        _bindings!.secondOutputTextTrigger.trigger();
+        print(
+            "[RIVE_GAME_BRIDGE] Menu state applied: ${_bindings!.secondOutputBodyText.value}");
         break;
       case MenuState.inactive:
         break;
@@ -263,7 +267,7 @@ class RiveGameBridge {
     for (var i = 0; i < manager.game.config.gridSize; i++) {
       if (manager.game.info.gameOverState ==
           GameOverState.displayingSuggestedAnswers) {
-        _bindings!.cellStatuses[i].value = "idle";
+        _bindings!.cellStatuses[i].value = "answer";
       } else {
         switch (manager.game.cellAt(i)) {
           case var cell when cell.isCompleted:
@@ -310,7 +314,7 @@ class RiveGameBridge {
   }
 
   void _setLoadingText() {
-    _bindings!.outputText.value = "";
+    _bindings!.outputText.value = "This might take a few seconds...\n)";
     _bindings!.outputTextInfo.value = "CS BINGO: ${manager.game.type.name}";
   }
 
