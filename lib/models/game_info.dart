@@ -13,6 +13,7 @@ class PlayedCell {
 }
 
 class GameInfo {
+  final String gameId;
   final String cardId;
   final List<Cell> cells;
   final List<Player> players;
@@ -29,6 +30,7 @@ class GameInfo {
   Map<int, PlayedCell> userPlays = {};
 
   GameInfo({
+    required this.gameId,
     required this.cardId,
     required this.cells,
     required this.players,
@@ -94,6 +96,7 @@ class GameInfo {
     GameType type,
   ) {
     return GameInfo(
+      gameId: info.gameId,
       cardId: info.cardId,
       cells: info.cells,
       players: info.players,
@@ -111,6 +114,7 @@ class GameInfo {
   }) {
     return GameInfo(
       cardId: "",
+      gameId: "",
       cells: List.generate(
         gridSize,
         (i) => Cell(
@@ -142,6 +146,7 @@ class GameInfo {
   ) {
     return GameInfo(
       cardId: "",
+      gameId: "",
       cells: List.generate(
         gridSize,
         (i) => Cell(

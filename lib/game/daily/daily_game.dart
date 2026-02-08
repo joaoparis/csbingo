@@ -149,7 +149,7 @@ class DailyGame extends IGame {
 
   @override
   Future<void> getAnswers() async {
-    var dto = await gateway.getAnswers(info.cardId);
+    var dto = await gateway.getAnswers(info.gameId);
     for (var i = 0; i < info.cells.length; i++) {
       info.suggestedAnswers[i] = dto.answers[i].answer;
     }

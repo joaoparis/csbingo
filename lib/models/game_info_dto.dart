@@ -34,6 +34,7 @@ class GameAnswersDTO {
 }
 
 class GameInfoDTO {
+  final String gameId;
   final String cardId;
   final List<Cell> cells;
   final List<Player> players;
@@ -41,6 +42,7 @@ class GameInfoDTO {
   int points;
 
   GameInfoDTO({
+    required this.gameId,
     required this.cardId,
     required this.cells,
     required this.players,
@@ -49,6 +51,7 @@ class GameInfoDTO {
 
   factory GameInfoDTO.fromJson(Map<String, dynamic> json) {
     final id = json['id']?.toString() ?? '-1';
+    final gameId = json['gameId']?.toString() ?? '-1';
     final playersJson = json['players'] as List<dynamic>? ?? [];
     final template = json['cells'] as List<dynamic>? ?? [];
     final points = (json['points'] as num?)?.toInt() ?? 0;
@@ -76,6 +79,11 @@ class GameInfoDTO {
     }).toList();
 
     return GameInfoDTO(
-        cardId: id, cells: cells, players: players, points: points);
+      gameId: gameId,
+      cardId: id,
+      cells: cells,
+      players: players,
+      points: points,
+    );
   }
 }

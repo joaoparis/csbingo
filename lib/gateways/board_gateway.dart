@@ -115,6 +115,7 @@ class BoardGateway {
     }
     return GameInfoDTO(
       cardId: '1',
+      gameId: '1',
       cells: List.empty(),
       players: List.empty(),
       points: 0,
