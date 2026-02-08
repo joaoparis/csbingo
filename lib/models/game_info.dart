@@ -16,6 +16,8 @@ class GameInfo {
   final String cardId;
   final List<Cell> cells;
   final List<Player> players;
+  List<String> userAnswers;
+  List<String> suggestedAnswers;
 
   GameState state;
   GameOverState gameOverState = GameOverState.displayingPlayerAnswers;
@@ -35,7 +37,17 @@ class GameInfo {
     this.skips = 0,
     this.currentRound = 0,
     this.type = GameType.daily,
-  });
+    this.userAnswers = const [],
+    this.suggestedAnswers = const [],
+  }) {
+    // Ensure userAnswers and suggestedAnswers have the same length as cells
+    if (userAnswers.length != cells.length) {
+      userAnswers = List.filled(cells.length, '');
+    }
+    if (suggestedAnswers.length != cells.length) {
+      suggestedAnswers = List.filled(cells.length, '');
+    }
+  }
 
   setPoints(int value) => points = value;
 
@@ -61,7 +73,8 @@ class GameInfo {
   void setUserAnswers() {
     for (var i = 0; i < cells.length; i++) {
       if (userPlays.containsKey(i) && userPlays[i]!.isCorrect) {
-        cells[i].answer = userPlays[i]!.answer;
+        userAnswers[i] = userPlays[i]!.answer;
+        cells[i].answer = userAnswers[i];
       } else {
         cells[i].answer = '';
       }
@@ -70,7 +83,7 @@ class GameInfo {
 
   void setSuggestedAnswers() {
     for (var i = 0; i < cells.length; i++) {
-      cells[i].answer = "????";
+      cells[i].answer = suggestedAnswers[i];
     }
   }
 

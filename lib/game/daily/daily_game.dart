@@ -147,6 +147,15 @@ class DailyGame extends IGame {
     _notify("toggleGameOverState(): gameOverState=${info.gameOverState}");
   }
 
+  @override
+  Future<void> getAnswers() async {
+    var dto = await gateway.getAnswers(info.cardId);
+    for (var i = 0; i < info.cells.length; i++) {
+      info.suggestedAnswers[i] = dto.answers[i].answer;
+    }
+    _notify("getAnswers(): answers fetched for all cells");
+  }
+
   void _toggleGameOverCursor() {
     var newIndex = info.gameOverState.index + 1;
 

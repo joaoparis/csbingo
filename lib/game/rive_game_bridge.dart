@@ -103,6 +103,7 @@ class RiveGameBridge {
         _setGameOverText();
         _resetRoundText();
         _resetTimerText();
+        _setCellsStatus();
         await _setCellText();
         hasLoadedCells = false;
         break;
@@ -260,17 +261,22 @@ class RiveGameBridge {
 
   void _setCellsStatus() {
     for (var i = 0; i < manager.game.config.gridSize; i++) {
-      switch (manager.game.cellAt(i)) {
-        case var cell when cell.isCompleted:
-          _bindings!.cellStatuses[i].value = "correct";
-          _bindings!.cellsText[i].value = manager.game.cellTitle(i);
-          break;
-        case var cell when cell.isWrong:
-          _bindings!.cellStatuses[i].value = "wrong";
-          break;
-        default:
-          _bindings!.cellStatuses[i].value = "idle";
-          break;
+      if (manager.game.info.gameOverState ==
+          GameOverState.displayingSuggestedAnswers) {
+        _bindings!.cellStatuses[i].value = "idle";
+      } else {
+        switch (manager.game.cellAt(i)) {
+          case var cell when cell.isCompleted:
+            _bindings!.cellStatuses[i].value = "correct";
+            _bindings!.cellsText[i].value = manager.game.cellTitle(i);
+            break;
+          case var cell when cell.isWrong:
+            _bindings!.cellStatuses[i].value = "wrong";
+            break;
+          default:
+            _bindings!.cellStatuses[i].value = "idle";
+            break;
+        }
       }
     }
   }

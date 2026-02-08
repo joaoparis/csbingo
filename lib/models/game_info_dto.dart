@@ -1,6 +1,38 @@
 import 'package:csbingo/models/cell.dart';
 import 'package:csbingo/models/player.dart';
 
+class GameAnswerDTO {
+  final String answer;
+
+  GameAnswerDTO({
+    required this.answer,
+  });
+
+  factory GameAnswerDTO.fromJson(Map<String, dynamic> json) {
+    final answer = json['answer']?.toString() ?? '';
+
+    return GameAnswerDTO(answer: answer);
+  }
+}
+
+class GameAnswersDTO {
+  final List<GameAnswerDTO> answers;
+
+  GameAnswersDTO({
+    required this.answers,
+  });
+
+  factory GameAnswersDTO.fromJson(Map<String, dynamic> json) {
+    final answersJson = json['answers'] as List<dynamic>? ?? [];
+
+    final answers = answersJson
+        .map((a) => GameAnswerDTO.fromJson(a as Map<String, dynamic>))
+        .toList();
+
+    return GameAnswersDTO(answers: answers);
+  }
+}
+
 class GameInfoDTO {
   final String cardId;
   final List<Cell> cells;

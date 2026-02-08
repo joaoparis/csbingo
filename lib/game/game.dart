@@ -40,6 +40,7 @@ abstract class IGame extends ChangeNotifier {
   Future<void> selectCell(int index);
   Future<void> evaluateAction({int index = -1});
   Future<void> toggleGameOverState();
+  Future<void> getAnswers();
 }
 
 class GameFactory {

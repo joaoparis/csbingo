@@ -1,12 +1,10 @@
 import 'dart:convert';
 
-import 'package:csbingo/config.dart';
-import 'package:csbingo/models/game_info_dto.dart';
+import 'package:csbingo/csbingo.dart';
 import 'package:flutter/services.dart' show rootBundle;
 import 'package:http/browser_client.dart';
 import 'package:http/http.dart' as http;
 import 'package:web/web.dart' as web;
-import 'package:url_launcher/url_launcher.dart';
 
 class BoardGateway {
   final String baseUrl = AppConfig.apiBaseUrl;
@@ -40,6 +38,32 @@ class BoardGateway {
       //   throw Exception('Error: $e');
       // }
       // rethrow;
+    }
+  }
+
+  Future<GameAnswersDTO> getAnswers(String id) async {
+    final uri = Uri.parse('$baseUrl/api/game/answers/$id');
+
+    try {
+      final resp = await http.get(
+        uri,
+        headers: {"Content-Type": "application/json"},
+      );
+      if (resp.statusCode == 200) {
+        print(
+            "[DEBUG] Successfully fetched card's answers from backend ${resp.body}");
+        final Map<String, dynamic> jsonBody = json.decode(resp.body);
+        return GameAnswersDTO.fromJson(jsonBody);
+      } else {
+        throw Exception(
+            'Failed to fetch board answers: ${resp.statusCode} ${resp.body}');
+      }
+    } catch (e) {
+      print("[DEBUG] Error fetching card's answers from backend: $e");
+      if (kIsWeb) {
+        throw Exception('Error: $e');
+      }
+      rethrow;
     }
   }
 

@@ -2,7 +2,7 @@
 
 ----
 ## FEATURES TODO 💫
-- [ ] FEATURE: suggested answers BE & FE
+- [x] FEATURE: suggested answers BE & FE
 - [ ] FEATURE: random game mode FE
 - [ ] FEATURE: loading screen message
 - [ ] FEATURE: add "player generation" cell topic (born between 95-2000 vs 90-95)

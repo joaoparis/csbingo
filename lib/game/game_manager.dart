@@ -43,6 +43,7 @@ class GameManager extends ChangeNotifier {
   VoidCallback get _setGameOverOnManager => () async {
         orchestratorState = OrchestratorState.gameOver;
         menuState = MenuState.inactive;
+        await game.getAnswers();
         notify("GameManager: Game over triggered from game instance");
       };
 
