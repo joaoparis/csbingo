@@ -170,12 +170,10 @@ class DailyGame extends IGame {
   }
 
   void _updateCellsText() {
-    for (var i = 0; i < info.cells.length; i++) {
-      if (info.gameOverState == GameOverState.displayingPlayerAnswers) {
-        info.setUserAnswers();
-      } else {
-        info.setSuggestedAnswers();
-      }
+    if (info.gameOverState == GameOverState.displayingPlayerAnswers) {
+      info.setUserAnswers();
+    } else {
+      info.setSuggestedAnswers();
     }
   }
 
@@ -230,6 +228,9 @@ class DailyGame extends IGame {
 
   void _updateStatesWithGameOver() {
     info.state = GameState.gameOver;
+    for (var cell in info.cells) {
+      cell.isAnswered = false;
+    }
     setGameOverOnManager();
   }
 }

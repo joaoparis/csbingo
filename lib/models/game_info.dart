@@ -94,11 +94,10 @@ class GameInfo {
         cells[i].isAnswered = false;
         cells[i].isWrong = false;
       } else {
-        print("Setting cell $i as wrong with answer: ${userPlays[i]!.answer}");
         cells[i].isWrong = true;
         cells[i].isCorrect = false;
         cells[i].isAnswered = false;
-        cells[i].answer = userPlays[i]!.answer;
+        cells[i].answer = "";
       }
     }
   }

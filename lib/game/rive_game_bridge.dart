@@ -319,7 +319,7 @@ class RiveGameBridge {
   }
 
   void _setLoadingText() {
-    _bindings!.outputText.value = "This might take a few seconds...\n)";
+    _bindings!.outputText.value = "Loading...\n)";
     _bindings!.outputTextInfo.value = "CS BINGO: ${manager.game.type.name}";
   }
 

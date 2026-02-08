@@ -81,6 +81,8 @@ class RandomGame extends IGame {
   Future<void> selectCell(int index) async {
     if (info.state != GameState.playing) return;
 
+    if (info.cells[index].isAnswered) return;
+
     final cell = info.cells[index];
     if (cell.isCorrect) return;
 
@@ -170,13 +172,11 @@ class RandomGame extends IGame {
   }
 
   void _updateGameOverCellsText() {
-    // for (var i = 0; i < info.cells.length; i++) {
     if (info.gameOverState == GameOverState.displayingPlayerAnswers) {
       info.setUserAnswers();
     } else {
       info.setSuggestedAnswers();
     }
-    // }
   }
 
   _notify(String src) {
