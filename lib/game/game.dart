@@ -4,7 +4,9 @@ import 'package:csbingo/csbingo.dart';
 
 export 'game_manager.dart';
 export 'game_timer.dart';
+export 'game_config.dart';
 export 'daily/daily.dart';
+export 'random/random.dart';
 export 'rive_game_bridge.dart';
 
 abstract class IGame extends ChangeNotifier {
@@ -21,7 +23,7 @@ abstract class IGame extends ChangeNotifier {
 
   bool get isNotLastRound => info.currentRound < config.maxRounds - 1;
   bool get isNotGameOver => info.state != GameState.gameOver;
-  bool get isBoardComplete => !info.cells.any((c) => !c.isCompleted);
+  bool get isBoardComplete => !info.cells.any((c) => !c.isCorrect);
   bool get hasSkips => info.skips >= 0;
 
   String cellTitle(int index) => info.cells[index].title;
@@ -49,7 +51,7 @@ class GameFactory {
       case GameType.daily:
         return DailyGame();
       case GameType.random:
-        return DailyGame();
+        return RandomGame();
       case GameType.ffa:
         return DailyGame();
     }

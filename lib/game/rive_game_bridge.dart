@@ -270,12 +270,17 @@ class RiveGameBridge {
         _bindings!.cellStatuses[i].value = "answer";
       } else {
         switch (manager.game.cellAt(i)) {
-          case var cell when cell.isCompleted:
+          case var cell when cell.isAnswered:
+            _bindings!.cellStatuses[i].value = "answer";
+            _bindings!.cellsText[i].value = manager.game.cellTitle(i);
+            break;
+          case var cell when cell.isCorrect:
             _bindings!.cellStatuses[i].value = "correct";
             _bindings!.cellsText[i].value = manager.game.cellTitle(i);
             break;
           case var cell when cell.isWrong:
             _bindings!.cellStatuses[i].value = "wrong";
+            _bindings!.cellsText[i].value = manager.game.cellTitle(i);
             break;
           default:
             _bindings!.cellStatuses[i].value = "idle";

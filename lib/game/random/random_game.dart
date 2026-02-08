@@ -1,6 +1,6 @@
 import 'package:csbingo/csbingo.dart';
 
-class DailyGame extends IGame {
+class RandomGame extends IGame {
   @override
   GameConfig get config => const GameConfig();
 
@@ -27,7 +27,7 @@ class DailyGame extends IGame {
 
   @override
   Future<void> initialize() async {
-    print("DailyGame: initialize()");
+    print("RandomGame: initialize()");
     info.currentRound = 0;
     info.skips = config.maxSkips;
     info.gameOverState = GameOverState.displayingPlayerAnswers;
@@ -62,7 +62,7 @@ class DailyGame extends IGame {
 
     await evaluateAction();
 
-    if (isNotLastRound) {
+    if (isNotLastRound && _hasIncompleteBoard) {
       info.currentRound++;
       info.skips--;
       if (hasSkips) {
@@ -95,7 +95,7 @@ class DailyGame extends IGame {
       return;
     }
 
-    if (isNotLastRound) {
+    if (isNotLastRound && _hasIncompleteBoard) {
       info.currentRound++;
       timer.resetTimer();
       timer.startTimer(config.roundTime);
@@ -127,7 +127,6 @@ class DailyGame extends IGame {
       //     "[DEBUG] ✅ Right answer ✅ card:${gameInfo.cardId} round:$currentRound [cell index: $index] match: ${info.cells[index].title} <> ${gameInfo.players[currentRound].name}");
       info.setCorrectCell(index, dto.cells[index], info.currentRound);
       info.setPoints(dto.points);
-      _notify("_evaluateAction(): reset wrong answer visual");
     } else {
       // print(
       //     "[DEBUG] ❌ Wrong answer! ❌ round:$currentRound [cell index: $index] try: ${info.cells[index].title} <> ${gameInfo.players[currentRound].name}");
@@ -135,15 +134,16 @@ class DailyGame extends IGame {
       info.cells[index].isWrong = true;
       Future.delayed(const Duration(milliseconds: 500), () {
         info.cells[index].isWrong = false;
-        _notify("_evaluateAction(): reset wrong answer visual");
       });
     }
+    info.setAnsweredCell(index, dto.cells[index], info.currentRound);
+    _notify("_evaluateAction(): reset wrong answer visual");
   }
 
   @override
   Future<void> toggleGameOverState() async {
     _toggleGameOverCursor();
-    _updateCellsText();
+    _updateGameOverCellsText();
     _notify("toggleGameOverState(): gameOverState=${info.gameOverState}");
   }
 
@@ -169,14 +169,14 @@ class DailyGame extends IGame {
     info.gameOverState = GameOverState.values[newIndex];
   }
 
-  void _updateCellsText() {
-    for (var i = 0; i < info.cells.length; i++) {
-      if (info.gameOverState == GameOverState.displayingPlayerAnswers) {
-        info.setUserAnswers();
-      } else {
-        info.setSuggestedAnswers();
-      }
+  void _updateGameOverCellsText() {
+    // for (var i = 0; i < info.cells.length; i++) {
+    if (info.gameOverState == GameOverState.displayingPlayerAnswers) {
+      info.setUserAnswers();
+    } else {
+      info.setSuggestedAnswers();
     }
+    // }
   }
 
   _notify(String src) {
@@ -196,7 +196,7 @@ class DailyGame extends IGame {
   }
 
   void _onTimerFinished() {
-    if (isNotLastRound && isNotGameOver) {
+    if (isNotLastRound && isNotGameOver && _hasIncompleteBoard) {
       info.currentRound++;
       evaluateAction();
       timer.resetTimer();
@@ -230,6 +230,11 @@ class DailyGame extends IGame {
 
   void _updateStatesWithGameOver() {
     info.state = GameState.gameOver;
+    for (var cell in info.cells) {
+      cell.isAnswered = false;
+    }
     setGameOverOnManager();
   }
+
+  bool get _hasIncompleteBoard => info.cells.any((c) => !c.isAnswered);
 }

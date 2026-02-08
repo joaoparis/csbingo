@@ -2,16 +2,18 @@ class Cell {
   String image;
   String title;
   String answer;
-  bool isCompleted;
+  bool isCorrect;
   bool isWrong;
+  bool isAnswered;
   String criteria;
 
   Cell({
     required this.title,
     required this.image,
     required this.criteria,
-    this.isCompleted = false,
+    this.isCorrect = false,
     this.isWrong = false,
+    this.isAnswered = false,
     this.answer = '',
   });
 }

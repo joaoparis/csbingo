@@ -92,7 +92,7 @@ class BoardGateway {
     } catch (e) {
       print("[DEBUG] Error sending action to backend: $e");
       var info = await _fetchLocalGame();
-      if (!skip) info.cells[cellId].isCompleted = !skip;
+      if (!skip) info.cells[cellId].isCorrect = !skip;
       return info;
 
       // if (kIsWeb) {

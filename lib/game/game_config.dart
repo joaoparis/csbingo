@@ -12,7 +12,7 @@ class GameConfig {
     this.debugMode = false,
     this.maxSkips = 3,
     this.initialGameOutput = GameOverState.displayingPlayerAnswers,
-    this.roundTime = const Duration(seconds: 60),
+    this.roundTime = const Duration(seconds: 120),
     this.gridSize = 16,
     this.maxRounds = 20,
   });

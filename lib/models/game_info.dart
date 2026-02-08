@@ -17,7 +17,7 @@ class GameInfo {
   final String cardId;
   final List<Cell> cells;
   final List<Player> players;
-  List<String> userAnswers;
+  // List<String> userAnswers;
   List<String> suggestedAnswers;
 
   GameState state;
@@ -39,13 +39,13 @@ class GameInfo {
     this.skips = 0,
     this.currentRound = 0,
     this.type = GameType.daily,
-    this.userAnswers = const [],
+    // this.userAnswers = const [],
     this.suggestedAnswers = const [],
   }) {
     // Ensure userAnswers and suggestedAnswers have the same length as cells
-    if (userAnswers.length != cells.length) {
-      userAnswers = List.filled(cells.length, '');
-    }
+    // if (userAnswers.length != cells.length) {
+    //   userAnswers = List.filled(cells.length, '');
+    // }
     if (suggestedAnswers.length != cells.length) {
       suggestedAnswers = List.filled(cells.length, '');
     }
@@ -72,13 +72,33 @@ class GameInfo {
     );
   }
 
+  void setAnsweredCell(int index, Cell newCell, int currentRound) {
+    cells[index] = newCell;
+    cells[index].answer = players[currentRound].name;
+    cells[index].isAnswered = true;
+    userPlays[index] = PlayedCell(
+      index: index,
+      answer: players[currentRound].name,
+      isCorrect: newCell.isCorrect,
+    );
+  }
+
   void setUserAnswers() {
+    print("Setting user answers based on userPlays: ${userPlays.length} plays");
     for (var i = 0; i < cells.length; i++) {
       if (userPlays.containsKey(i) && userPlays[i]!.isCorrect) {
-        userAnswers[i] = userPlays[i]!.answer;
-        cells[i].answer = userAnswers[i];
+        print(
+            "Setting cell $i as correct with answer: ${userPlays[i]!.answer}");
+        cells[i].answer = userPlays[i]!.answer;
+        cells[i].isCorrect = true;
+        cells[i].isAnswered = false;
+        cells[i].isWrong = false;
       } else {
-        cells[i].answer = '';
+        print("Setting cell $i as wrong with answer: ${userPlays[i]!.answer}");
+        cells[i].isWrong = true;
+        cells[i].isCorrect = false;
+        cells[i].isAnswered = false;
+        cells[i].answer = userPlays[i]!.answer;
       }
     }
   }
@@ -86,6 +106,9 @@ class GameInfo {
   void setSuggestedAnswers() {
     for (var i = 0; i < cells.length; i++) {
       cells[i].answer = suggestedAnswers[i];
+      cells[i].isAnswered = true;
+      cells[i].isCorrect = false;
+      cells[i].isWrong = false;
     }
   }
 
