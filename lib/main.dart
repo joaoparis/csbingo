@@ -157,13 +157,14 @@ class _MyHomePageState extends State<MyHomePage> {
           ),
         ),
         actions: [
-          widget.username.isEmpty
-              ? IconButton(
-                  tooltip: 'Login',
-                  icon: const Icon(Icons.login),
-                  onPressed: _loginDialog,
-                )
-              : Text(widget.username),
+          // Commented for now...
+          // widget.username.isEmpty
+          //     ? IconButton(
+          //         tooltip: 'Login',
+          //         icon: const Icon(Icons.login),
+          //         onPressed: _loginDialog,
+          //       )
+          //     : Text(widget.username),
           IconButton(
             tooltip: 'How to play?',
             icon: const Icon(Icons.gamepad_rounded),
@@ -256,10 +257,13 @@ class _MyHomePageState extends State<MyHomePage> {
         title: 'How to play?',
         content: RichText(
           text: const TextSpan(
-            text: "Use the cursor to select the Game Mode you want to play.\n"
-                "In game: Try to match the name of the CS player on the Main Display with one of the cells below.\n"
-                "The cells will show: Trophies, Teammates, Squads & Nationalities\n"
-                "Match the max players possible to win!",
+            text: "Use the toggle to select the Game Mode you want to play.\n\n"
+                "In game:\nTry to match the name of the CS player on the Main Display with one of the cells below.\n\n"
+                "The cells will show: Trophies, Teammates, Squads & Nationalities.\n\n"
+                "Match the max players possible to win more points.\n\n"
+                "The information used in this game is based on all Major Final Stages CS2 and CS:GO.\n\n"
+                "Hope you like it!\n"
+                "gl hf",
             style: TextStyle(
               color: Colors.white,
               fontSize: 20,

@@ -212,6 +212,6 @@ enum GameType {
         GameType.random =>
           "Play a random Game. No timeout, no pressure. Select the cells you think match the current player. Points are awarded at the end of the game based on your performance.",
         GameType.ffa =>
-          "Join a Free For All lobby with other players and compete to get the highest score! Coming soon!",
+          "Join a Free For All lobby with other players and compete to get the highest score.\n\nComing soon!",
       };
 }

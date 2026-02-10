@@ -50,6 +50,10 @@ class GameManager extends ChangeNotifier {
   Future<void> buttonClicked() async {
     switch (orchestratorState) {
       case OrchestratorState.menu:
+        if (targetType == GameType.ffa) {
+          print("FFA game type selected, but not implemented yet.");
+          return;
+        }
         game = GameFactory.create(targetType);
         game.setGameOverOnManager = _setGameOverOnManager;
         _onGameInstanceChanged();
@@ -84,8 +88,10 @@ class GameManager extends ChangeNotifier {
     var newIndex = targetType.index + 1;
     if (newIndex == GameType.values.length) {
       targetType = GameType.values[0];
+      menuState = MenuState.values[0];
       return;
     }
+    menuState = MenuState.values[newIndex];
     targetType = GameType.values[newIndex];
   }
 }

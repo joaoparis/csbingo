@@ -53,7 +53,7 @@ class GameFactory {
       case GameType.random:
         return RandomGame();
       case GameType.ffa:
-        return DailyGame();
+        throw UnimplementedError("FFA game type is not implemented yet.");
     }
   }
 }

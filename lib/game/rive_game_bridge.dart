@@ -132,7 +132,6 @@ class RiveGameBridge {
     switch (manager.menuState) {
       case MenuState.dailyGame:
       case MenuState.randomGame:
-      case MenuState.ffaGame:
         _setPlayButton();
         _setMenuTextInMainDisplay();
         _setGhostCellStatus();
@@ -142,6 +141,17 @@ class RiveGameBridge {
         _bindings!.secondOutputTextTrigger.trigger();
         print(
             "[RIVE_GAME_BRIDGE] Menu state applied: ${_bindings!.secondOutputBodyText.value}");
+        break;
+      case MenuState.ffaGame:
+        _setInactiveButton();
+        _setMenuTextInMainDisplay();
+        _setGhostCellStatus();
+        _setEmptyImages();
+        _bindings!.secondOutputTitleText.value = manager.targetType.fullName;
+        _bindings!.secondOutputBodyText.value = manager.targetType.description;
+        _bindings!.secondOutputTextTrigger.trigger();
+        print(
+            "[RIVE_GAME_BRIDGE] FFA Menu state applied: ${_bindings!.secondOutputBodyText.value}");
         break;
       case MenuState.inactive:
         break;
@@ -189,9 +199,9 @@ class RiveGameBridge {
     _bindings!.buttonText.value = 'PLAY';
   }
 
-  void _setBackButton() {
-    _bindings!.buttonStatus.value = 'red';
-    _bindings!.buttonText.value = 'BACK';
+  void _setInactiveButton() {
+    _bindings!.buttonStatus.value = 'grey';
+    _bindings!.buttonText.value = 'Comming soon!';
   }
 
   Future<void> _setEmptyImages() async {
@@ -319,7 +329,7 @@ class RiveGameBridge {
   }
 
   void _setLoadingText() {
-    _bindings!.outputText.value = "Loading...\n)";
+    _bindings!.outputText.value = "Loading...";
     _bindings!.outputTextInfo.value = "CS BINGO: ${manager.game.type.name}";
   }
 

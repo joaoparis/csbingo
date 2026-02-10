@@ -3,26 +3,27 @@
 ----
 ## FEATURES TODO 💫
 - [x] FEATURE: suggested answers BE & FE
-- [ ] FEATURE: random game mode FE
-- [ ] FEATURE: loading screen message
+- [x] FEATURE: random game mode FE
+- [x] FEATURE: loading screen message
 - [ ] FEATURE: add "player generation" cell topic (born between 95-2000 vs 90-95)
-- [ ] FEATURE: add FFA message "in development.../ comming soon..."
+- [x] FEATURE: add FFA message "in development.../ comming soon..."
 
 - [ ] FEATURE: UI add backlight behind C4 toggle it according to game state...
 - [ ] FEATURE: UI add "shock" visuals
 - [ ] FEATURE: UI round players & flags images corners
 - [ ] FEATURE: UI add "under development" notice
-- [ ] FEATURE: UI make colors more real
+- [x] FEATURE: UI make colors more real
 
 - [ ] Update JSON with the latest CS Major Tournament
 
 ----
 ## FIXES TODO 🛠️
 - [ ] FIX: UI html: fix splash screen loading font
-- [ ] FIX: dialog boxes scroll and presentation in smaller screens (pop-up dialogs "cuts")
+- [x] FIX: dialog boxes scroll and presentation in smaller screens (pop-up dialogs "cuts")
 - [ ] FIX: delay loading images
 - [ ] FIX: delay when selecting cells 
 - [ ] FIX: Rive bug: cells red bkgd color should reset at the end of the game
+- [ ] FIX: random mode points should only be visible at the end of the game 
 
 ----
 #### FUTURE TOPICS 🔮

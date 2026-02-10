@@ -39,7 +39,7 @@ class Cs2Dialog extends StatelessWidget {
         children: [
           // Title Bar
           Expanded(
-            flex: 1,
+            flex: 2,
             child: Container(
               width: double.infinity,
               padding: const EdgeInsets.fromLTRB(14, 14, 14, 0),
@@ -58,19 +58,22 @@ class Cs2Dialog extends StatelessWidget {
 
           // Body Text
           Expanded(
-            flex: 3,
-            child: Container(
-              padding: const EdgeInsets.fromLTRB(14, 30, 14, 14),
-              alignment: Alignment.topLeft,
-              child: content,
+            flex: 4,
+            child: SingleChildScrollView(
+              child: Container(
+                padding: const EdgeInsets.fromLTRB(10, 10, 14, 10),
+                alignment: Alignment.topLeft,
+                child: content,
+              ),
             ),
           ),
 
           // Button
           Expanded(
-            flex: 1,
+            flex: 2,
             child: Container(
-              padding: const EdgeInsets.fromLTRB(0, 0, 14, 14),
+              margin: const EdgeInsets.fromLTRB(0, 5, 0, 3),
+              padding: const EdgeInsets.fromLTRB(0, 0, 10, 0),
               alignment: Alignment.centerRight,
               child: CS2Button(
                 text: buttonText,
