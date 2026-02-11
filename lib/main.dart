@@ -1,7 +1,9 @@
+import 'package:csbingo/adsense/ad_widget.dart';
 import 'package:csbingo/csbingo.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  AdSenseAd.register();
   runApp(const MyApp());
 }
 
@@ -201,6 +203,11 @@ class _MyHomePageState extends State<MyHomePage> {
           const SafeArea(
             child: BingoWidget(),
           ),
+          const SizedBox(
+            height: 90,
+            width: 120,
+            child: HtmlElementView(viewType: 'adsense-ad'),
+          )
         ],
       ),
     );
