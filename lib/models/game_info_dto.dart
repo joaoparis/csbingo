@@ -72,7 +72,7 @@ class GameInfoDTO {
 
       return Cell(
         title: map['altName']?.toString() ?? '',
-        image: img.isEmpty ? 'assets/images/question_mark.png' : img,
+        imageUrl: img.isEmpty ? 'assets/images/question_mark.png' : img,
         isCorrect: map['isMarked'] as bool,
         criteria: map['criteria']?.toString() ?? 'idle',
       );

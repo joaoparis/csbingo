@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:csbingo/csbingo.dart';
+import 'package:rive/rive.dart';
 
 export 'game_manager.dart';
 export 'game_timer.dart';
@@ -16,10 +17,12 @@ abstract class IGame extends ChangeNotifier {
 
   final GameTimer timer = GameTimer();
   final BoardGateway gateway = BoardGateway();
+  final ImagesGateway imagesGateway = ImagesGateway();
 
   late VoidCallback setGameOverOnManager;
   late VoidCallback timerListener;
   late StreamSubscription timerFinishedSub;
+  late List<RenderImage?> images;
 
   bool get isNotLastRound => info.currentRound < config.maxRounds - 1;
   bool get isNotGameOver => info.state != GameState.gameOver;

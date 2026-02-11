@@ -141,7 +141,7 @@ class GameInfo {
         gridSize,
         (i) => Cell(
           title: "",
-          image: "assets/images/empty_placeholder.png",
+          imageUrl: "assets/images/empty_placeholder.png",
           criteria: "empty",
         ),
       ),
@@ -173,7 +173,7 @@ class GameInfo {
         gridSize,
         (i) => Cell(
           title: "",
-          image: "assets/images/empty_placeholder.png",
+          imageUrl: "assets/images/empty_placeholder.png",
           criteria: "empty",
         ),
       ),

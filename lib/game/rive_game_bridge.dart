@@ -218,26 +218,10 @@ class RiveGameBridge {
     if (hasLoadedCells) return;
     hasLoadedCells = true;
 
-    final results = await Future.wait(
-      List.generate(manager.game.config.gridSize, (i) async {
-        try {
-          return await _getImage(manager.game.cellAt(i));
-        } catch (e) {
-          var asset =
-              "assets/images/${manager.game.cellAt(i).criteria}_placeholder.png";
-          var bytes = await _getBytesFromLocalAsset(asset);
-          return await Factory.rive.decodeImage(bytes);
-        }
-      }),
-    );
-
-    for (var i = 0; i < results.length; i++) {
+    for (var i = 0; i < manager.game.images.length; i++) {
       if (_bindings!.cellsText[i].value.length <= 33) {
-        _bindings!.cellImages[i].value = results[i];
-      } else {
-        var asset = "assets/images/empty_placeholder.png";
-        var bytes = await _getBytesFromLocalAsset(asset);
-        _bindings!.cellImages[i].value = await Factory.rive.decodeImage(bytes);
+        //33 magic number! (text size to fit the display)
+        _bindings!.cellImages[i].value = manager.game.images[i];
       }
     }
   }
@@ -365,60 +349,6 @@ class RiveGameBridge {
     _bindings!.scoreText.value = manager.game.info.points.toString();
   }
 
-  void _setFFALobbyText() {
-    _bindings!.outputText.value = "";
-    _bindings!.outputTextInfo.value = "CS BINGO: ffa\nComming soon!";
-  }
-
-  Future<RenderImage?> _getImage(Cell cell) async {
-    Uint8List? bytes;
-    switch (cell.criteria) {
-      case "nationality":
-        print("NATIONALITY! ${cell.title} ${cell.image} ");
-        bytes = await getImageFromUrl(
-            "https://flagsapi.com/${cell.title}/flat/64.png");
-        break;
-      default:
-        if (cell.image.startsWith("http")) {
-          bytes = await getImageFromUrl(cell.image);
-        } else {
-          var asset = "assets/images/${cell.criteria}_placeholder.png";
-          bytes = await _getBytesFromLocalAsset(asset);
-        }
-    }
-
-    return await Factory.rive.decodeImage(bytes!);
-  }
-
   Future<Uint8List> _getBytesFromLocalAsset(String asset) async =>
       (await rootBundle.load(asset)).buffer.asUint8List();
-
-  Future<Uint8List?> getImageFromUrl(url) async {
-    Uint8List? bytes;
-
-    try {
-      const proxyBase = 'https://vercel-image-proxy-nu.vercel.app/api/proxy';
-      final proxiedUrl = '$proxyBase?url=${Uri.encodeComponent(url)}';
-
-      final resp = await _httpClient.get(Uri.parse(proxiedUrl)).timeout(
-        const Duration(seconds: 10),
-        onTimeout: () {
-          throw TimeoutException('Image request timeout for: $url');
-        },
-      );
-
-      if (resp.statusCode == 200) {
-        bytes = resp.bodyBytes;
-        print(
-            "[CELL_IMAGE] Retrieve image from url: $url (status: ${resp.statusCode})");
-      } else {
-        print(
-            "[CELL_IMAGE] Failed to retrieve image from url: $url (status: ${resp.statusCode})");
-      }
-    } catch (e) {
-      print("[CELL_IMAGE] Error fetching image from url: $url - Error: $e");
-    }
-
-    return bytes;
-  }
 }

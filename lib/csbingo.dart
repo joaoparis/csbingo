@@ -10,3 +10,4 @@ export 'package:csbingo/widgets/cs2_dialog.dart';
 export 'package:csbingo/constants/constants.dart';
 export 'package:csbingo/game/game.dart';
 export 'package:csbingo/models/models.dart';
+export 'package:csbingo/gateways/gateways.dart';

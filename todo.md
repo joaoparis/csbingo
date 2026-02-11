@@ -13,6 +13,7 @@
 - [ ] FEATURE: UI round players & flags images corners
 - [ ] FEATURE: UI add "under development" notice
 - [x] FEATURE: UI make colors more real
+- [ ] FEATURE: UI ijmporve toggle button to add exit button and transparency
 
 - [ ] Update JSON with the latest CS Major Tournament
 
@@ -20,7 +21,7 @@
 ## FIXES TODO 🛠️
 - [ ] FIX: UI html: fix splash screen loading font
 - [x] FIX: dialog boxes scroll and presentation in smaller screens (pop-up dialogs "cuts")
-- [ ] FIX: delay loading images
+- [x] FIX: delay loading images
 - [ ] FIX: delay when selecting cells 
 - [ ] FIX: Rive bug: cells red bkgd color should reset at the end of the game
 - [ ] FIX: random mode points should only be visible at the end of the game 

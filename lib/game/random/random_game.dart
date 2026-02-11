@@ -41,6 +41,7 @@ class RandomGame extends IGame {
     );
     _notify("_loadGame(): start loading game=${info.state}");
     await _loadGame();
+    images = await imagesGateway.loadImages(info.cells);
 
     info.state = GameState.playing;
     timer.startTimer(config.roundTime);

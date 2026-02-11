@@ -1,5 +1,5 @@
 class Cell {
-  String image;
+  String imageUrl;
   String title;
   String answer;
   bool isCorrect;
@@ -9,7 +9,7 @@ class Cell {
 
   Cell({
     required this.title,
-    required this.image,
+    required this.imageUrl,
     required this.criteria,
     this.isCorrect = false,
     this.isWrong = false,
