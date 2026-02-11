@@ -13,7 +13,8 @@
 - [ ] FEATURE: UI round players & flags images corners
 - [ ] FEATURE: UI add "under development" notice
 - [x] FEATURE: UI make colors more real
-- [ ] FEATURE: UI ijmporve toggle button to add exit button and transparency
+- [x] FEATURE: UI improve toggle button with transparency
+- [x] FEATURE: UI add exit option to toggle button
 
 - [ ] Update JSON with the latest CS Major Tournament
 
