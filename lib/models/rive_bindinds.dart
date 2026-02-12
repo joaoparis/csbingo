@@ -16,6 +16,8 @@ class RiveBindings {
   final List<ViewModelInstanceString> cellsText;
   final List<ViewModelInstanceString> cellsAnswers;
   final List<ViewModelInstanceTrigger> cellTaps;
+  final List<ViewModelInstanceBoolean> cellIsLoading;
+  final List<ViewModelInstanceNumber> cellLoad;
   final List<ViewModelInstanceString> skips;
   final ViewModelInstanceString secondOutputTitleText;
   final ViewModelInstanceString secondOutputBodyText;
@@ -39,6 +41,8 @@ class RiveBindings {
     required this.cellsText,
     required this.cellsAnswers,
     required this.cellTaps,
+    required this.cellIsLoading,
+    required this.cellLoad,
     required this.skips,
     required this.secondOutputTitleText,
     required this.secondOutputBodyText,

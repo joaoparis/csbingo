@@ -114,11 +114,17 @@ class RandomGame extends IGame {
 
   @override
   Future<void> evaluateAction({int index = -1}) async {
+    info.cells[index].isLoadingAnswer = true;
+    _notify("evaluateAction(): cell $index is loading answer");
+
     var dto = await gateway.sendAction(
       info.cardId,
       cellId: index,
       skip: index == -1 ? true : false,
     );
+
+    info.cells[index].isLoadingAnswer = false;
+    _notify("evaluateAction(): cell $index is loading answer");
 
     if (index == -1) return;
 

@@ -17,6 +17,10 @@ class RiveGameBridge {
   bool get isReady => _bindings != null && _controller != null;
   bool hasLoadedCells = false;
 
+  final Map<int, Timer?> _loadingTimers = {};
+  final Map<int, Timer?> _completionTimers = {};
+  int? _currentlyLoadingCellIndex;
+
   RiveGameBridge({required this.manager}) {
     _gameListener = _onGameChanged;
     _menuListener = _onMenuChanged;
@@ -66,6 +70,13 @@ class RiveGameBridge {
 
   void _handleCellTap(int cellIndex, ViewModelInstanceTrigger tap) {
     tap.addListener((event) {
+      // Prevent tapping other cells while one is loading
+      if (_currentlyLoadingCellIndex != null &&
+          _currentlyLoadingCellIndex != cellIndex) {
+        print(
+            "[RIVE_GAME_BRIDGE] Ignoring tap on cell $cellIndex, waiting for cell $_currentlyLoadingCellIndex");
+        return;
+      }
       manager.game.selectCell(cellIndex);
     });
   }
@@ -159,6 +170,15 @@ class RiveGameBridge {
   }
 
   void dispose() {
+    for (var timer in _loadingTimers.values) {
+      timer?.cancel();
+    }
+    _loadingTimers.clear();
+    for (var timer in _completionTimers.values) {
+      timer?.cancel();
+    }
+    _completionTimers.clear();
+
     try {
       manager.removeListener(_gameListener);
     } catch (_) {}
@@ -172,6 +192,70 @@ class RiveGameBridge {
     try {
       _httpClient.close();
     } catch (_) {}
+  }
+
+  void _stopLoadingAnimation(int cellIndex) {
+    _loadingTimers[cellIndex]?.cancel();
+    _loadingTimers.remove(cellIndex);
+    _currentlyLoadingCellIndex = null;
+
+    // Smoothly ramp to 100 when request finishes
+    if (isReady) {
+      _animateToCompletion(cellIndex);
+    }
+  }
+
+  void _animateToCompletion(int cellIndex) {
+    // Cancel any previous completion animation for this cell
+    _completionTimers[cellIndex]?.cancel();
+
+    final startValue = _bindings!.cellLoad[cellIndex].value;
+    const stepDuration = Duration(milliseconds: 30);
+    const totalSteps = 10;
+    int currentStep = 0;
+
+    _completionTimers[cellIndex] = Timer.periodic(stepDuration, (timer) {
+      if (!isReady) {
+        timer.cancel();
+        _completionTimers.remove(cellIndex);
+        return;
+      }
+
+      currentStep++;
+      final progress = currentStep / totalSteps;
+      final newValue = startValue + (100.0 - startValue) * progress;
+      _bindings!.cellLoad[cellIndex].value = newValue.clamp(0.0, 100.0);
+
+      if (currentStep >= totalSteps) {
+        timer.cancel();
+        _completionTimers.remove(cellIndex);
+        _bindings!.cellLoad[cellIndex].value = 100.0;
+      }
+    });
+  }
+
+  void _startLoadingAnimation(int cellIndex) {
+    if (_loadingTimers[cellIndex] != null ||
+        _completionTimers[cellIndex] != null) return;
+
+    _currentlyLoadingCellIndex = cellIndex;
+    _bindings!.cellLoad[cellIndex].value = 0.0;
+
+    _loadingTimers[cellIndex] = Timer.periodic(
+      const Duration(milliseconds: 20),
+      (timer) {
+        if (!isReady) {
+          timer.cancel();
+          _loadingTimers.remove(cellIndex);
+          return;
+        }
+
+        final currentValue = _bindings!.cellLoad[cellIndex].value;
+        final increment = 1.0 + (DateTime.now().millisecond % 5).toDouble();
+        final newValue = (currentValue + increment).clamp(0.0, 100.0);
+        _bindings!.cellLoad[cellIndex].value = newValue;
+      },
+    );
   }
 
   void _setResetButton() {
@@ -264,19 +348,39 @@ class RiveGameBridge {
         _bindings!.cellStatuses[i].value = "answer";
       } else {
         switch (manager.game.cellAt(i)) {
+          case var cell when cell.isLoadingAnswer:
+            _bindings!.cellIsLoading[i].value = true;
+            _startLoadingAnimation(i);
+            break;
           case var cell when cell.isAnswered:
+            if (_bindings!.cellIsLoading[i].value) {
+              _bindings!.cellIsLoading[i].value = false;
+              _stopLoadingAnimation(i);
+            }
             _bindings!.cellStatuses[i].value = "answer";
             _bindings!.cellsText[i].value = manager.game.cellTitle(i);
             break;
           case var cell when cell.isCorrect:
+            if (_bindings!.cellIsLoading[i].value) {
+              _bindings!.cellIsLoading[i].value = false;
+              _stopLoadingAnimation(i);
+            }
             _bindings!.cellStatuses[i].value = "correct";
             _bindings!.cellsText[i].value = manager.game.cellTitle(i);
             break;
           case var cell when cell.isWrong:
+            if (_bindings!.cellIsLoading[i].value) {
+              _bindings!.cellIsLoading[i].value = false;
+              _stopLoadingAnimation(i);
+            }
             _bindings!.cellStatuses[i].value = "wrong";
             _bindings!.cellsText[i].value = manager.game.cellTitle(i);
             break;
           default:
+            if (_bindings!.cellIsLoading[i].value) {
+              _bindings!.cellIsLoading[i].value = false;
+              _stopLoadingAnimation(i);
+            }
             _bindings!.cellStatuses[i].value = "idle";
             break;
         }

@@ -2,6 +2,7 @@ class Cell {
   String imageUrl;
   String title;
   String answer;
+  bool isLoadingAnswer;
   bool isCorrect;
   bool isWrong;
   bool isAnswered;
@@ -15,5 +16,6 @@ class Cell {
     this.isWrong = false,
     this.isAnswered = false,
     this.answer = '',
+    this.isLoadingAnswer = false,
   });
 }

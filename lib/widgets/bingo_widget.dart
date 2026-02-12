@@ -105,8 +105,10 @@ class _BingoWidgetState extends State<BingoWidget> {
       cellStatuses: _cells.map((c) => c.status).toList(),
       cellsText: _cells.map((c) => c.text).toList(),
       cellsAnswers: _cells.map((c) => c.answer).toList(),
-      skips: _skips,
       cellTaps: _cells.map((c) => c.tap).toList(),
+      cellIsLoading: _cells.map((c) => c.isLoading).toList(),
+      cellLoad: _cells.map((c) => c.load).toList(),
+      skips: _skips,
       secondOutputTitleText: _secondOutputTitleText,
       secondOutputBodyText: _secondOutputBodyText,
       secondOutputLoadingTrigger: _loadingTrigger,
@@ -168,12 +170,24 @@ class _BingoWidgetState extends State<BingoWidget> {
         print("[DEBUG] Failed to load answer text for cell $i");
         return false;
       }
+      var isLoading = viewModelInstance.boolean("cellsVM/cell$i/isLoading");
+      if (isLoading == null) {
+        print("[DEBUG] Failed to load isLoading for cell $i");
+        return false;
+      }
+      var load = viewModelInstance.number("cellsVM/cell$i/load");
+      if (load == null) {
+        print("[DEBUG] Failed to load load for cell $i");
+        return false;
+      }
       _cells.add(RiveCell(
         img,
         str,
         txt,
         tap,
         answer,
+        isLoading,
+        load,
       ));
     }
 
