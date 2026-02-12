@@ -204,8 +204,8 @@ class _MyHomePageState extends State<MyHomePage> {
             child: BingoWidget(),
           ),
           const SizedBox(
-            height: 90,
-            width: 120,
+            height: 600,
+            width: 200,
             child: HtmlElementView(viewType: 'adsense-ad'),
           )
         ],
