@@ -30,6 +30,7 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  go_router: ^14.0.0
   http: ^0.13.5
   rive: ^0.14.0-dev.6
   url_launcher: ^6.3.2
