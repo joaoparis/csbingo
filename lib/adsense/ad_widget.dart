@@ -17,11 +17,9 @@ class AdSenseAd {
           ..setInnerHtml(
             '''
             <ins class="adsbygoogle"
-                 style="display:block"
-                 data-ad-client="ca-pub-3606445852359484"
-                 data-ad-slot="5460841390"
-                 data-ad-format="auto"
-                 data-full-width-responsive="true"></ins>
+              style="display:inline-block;width:200px;height:600px"
+              data-ad-client="ca-pub-3606445852359484"
+              data-ad-slot="5460841390"></ins>
             <script>
               (adsbygoogle = window.adsbygoogle || []).push({});
             </script>
