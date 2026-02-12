@@ -200,8 +200,34 @@ class _MyHomePageState extends State<MyHomePage> {
               colorBlendMode: BlendMode.darken,
             ),
           ),
-          const SafeArea(
-            child: BingoWidget(),
+          Flex(
+            direction: Axis.horizontal,
+            children: [
+              Expanded(
+                flex: 1,
+                child: Container(
+                  color: Color.fromARGB(151, 129, 129, 129),
+                  height: 600,
+                  width: 200,
+                  child: HtmlElementView(viewType: 'adsense-ad'),
+                ),
+              ),
+              const Expanded(
+                flex: 4,
+                child: SafeArea(
+                  child: BingoWidget(),
+                ),
+              ),
+              Expanded(
+                flex: 1,
+                child: Container(
+                  color: Color.fromARGB(113, 133, 133, 133),
+                  height: 600,
+                  width: 200,
+                  child: HtmlElementView(viewType: 'adsense-ad'),
+                ),
+              )
+            ],
           ),
           const SizedBox(
             height: 600,
