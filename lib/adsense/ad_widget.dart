@@ -19,7 +19,7 @@ class AdSenseAd {
             <ins class="adsbygoogle"
                  style="display:block"
                  data-ad-client="ca-pub-3606445852359484"
-                 data-ad-slot="YYYYYYYYYY"
+                 data-ad-slot="5460841390"
                  data-ad-format="auto"
                  data-full-width-responsive="true"></ins>
             <script>
