@@ -2,12 +2,14 @@ import 'package:flutter/material.dart';
 
 class CS2Button extends StatefulWidget {
   final String text;
+  final double? size;
   final VoidCallback onPressed;
 
   const CS2Button({
     super.key,
     required this.text,
     required this.onPressed,
+    this.size = 20,
   });
 
   @override
@@ -52,9 +54,9 @@ class _CS2ButtonState extends State<CS2Button> {
           ),
           child: Text(
             widget.text,
-            style: const TextStyle(
+            style: TextStyle(
               color: Colors.white,
-              fontSize: 20,
+              fontSize: widget.size,
               fontFamily: "StratumNo2",
             ),
           ),

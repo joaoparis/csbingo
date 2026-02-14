@@ -2,27 +2,20 @@
 
 ----
 ## FEATURES TODO 💫
-- [x] FEATURE: suggested answers BE & FE
-- [x] FEATURE: random game mode FE
-- [x] FEATURE: loading screen message
 - [ ] FEATURE: add "player generation" cell topic (born between 95-2000 vs 90-95)
-- [x] FEATURE: add FFA message "in development.../ comming soon..."
+- [ ] FEATURE: game mode where the lines and colums earn more points OR the game end when the user gets one.
+
 
 - [ ] FEATURE: UI add backlight behind C4 toggle it according to game state...
 - [ ] FEATURE: UI add "shock" visuals
 - [ ] FEATURE: UI round players & flags images corners
 - [ ] FEATURE: UI add "under development" notice
-- [x] FEATURE: UI make colors more real
-- [x] FEATURE: UI improve toggle button with transparency
-- [x] FEATURE: UI add exit option to toggle button
 
 - [ ] Update JSON with the latest CS Major Tournament
 
 ----
 ## FIXES TODO 🛠️
 - [ ] FIX: UI html: fix splash screen loading font
-- [x] FIX: dialog boxes scroll and presentation in smaller screens (pop-up dialogs "cuts")
-- [x] FIX: delay loading images
 - [ ] FIX: delay when selecting cells 
 - [ ] FIX: Rive bug: cells red bkgd color should reset at the end of the game
 - [ ] FIX: random mode points should only be visible at the end of the game 
@@ -56,6 +49,15 @@
 ------------------------------------------------------------------------------------------------
 
 ## DONE ✅
+- [x] FEATURE: suggested answers BE & FE
+- [x] FEATURE: random game mode FE
+- [x] FEATURE: loading screen message
+- [x] FEATURE: add FFA message "in development.../ comming soon..."
+- [x] FEATURE: UI make colors more real
+- [x] FEATURE: UI improve toggle button with transparency
+- [x] FEATURE: UI add exit option to toggle button
+- [x] FIX: dialog boxes scroll and presentation in smaller screens (pop-up dialogs "cuts")
+- [x] FIX: delay loading images
 - [x] Load dumb images (or text for starters)
 - [x] game state
 - [x] add loading state to button (?)

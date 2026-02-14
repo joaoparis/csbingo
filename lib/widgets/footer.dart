@@ -12,8 +12,8 @@ class Footer extends StatelessWidget {
         child: Text(
           '© 2026 CS BINGO. All rights reserved.',
           style: Theme.of(context).textTheme.bodySmall?.copyWith(
-            color: Colors.white70,
-          ),
+                color: Colors.white70,
+              ),
         ),
       ),
     );
