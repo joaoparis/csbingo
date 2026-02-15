@@ -12,14 +12,19 @@
 - [ ] FEATURE: UI round players & flags images corners
 - [ ] FEATURE: UI add "under development" notice
 
+- [ ] FEATURE: points logic: 1 point per correct cell + the time it took to answer the cell
+- [ ] FEATURE: add UI pop up when game ends showing the points! and maybe an explosion if the bomb was not desarmed?
+
 - [ ] Update JSON with the latest CS Major Tournament
 
 ----
 ## FIXES TODO 🛠️
-- [O] FIX: daily & random mode should not allow multiple taps
+- [X] FIX: daily & random mode should not allow multiple taps
+- [O] FIX: random mode points should only be visible at the end of the game 
+- [ ] FIX: loading cell answer logic. it is loading the oposite way, sometimes... and it's not reaching the 100%...
+- [ ] FIX: BE rm extra players' info from the GET /card response 
 
 - [ ] FIX: Rive bug: cells red bkgd color should reset at the end of the game
-- [ ] FIX: random mode points should only be visible at the end of the game 
 - [ ] FIX: UI html: fix splash screen loading font
 - [ ] FIX: big player names that don't fit the output UI should not be displayed with in a newline, instead make the text smaller or something...
 

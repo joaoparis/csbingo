@@ -99,7 +99,7 @@ class RiveGameBridge {
         _setCellsStatus();
         _setRoundText();
         _setSkips();
-        _updateScore();
+        if (manager.game.type == GameType.daily) _updateScore();
         await _setCellText();
         break;
       case GameState.verifyingAnswer:
@@ -110,6 +110,7 @@ class RiveGameBridge {
         _resetRoundText();
         _resetTimerText();
         _setCellsStatus();
+        _updateScore();
         await _setCellText();
         hasLoadedCells = false;
         break;
@@ -118,6 +119,7 @@ class RiveGameBridge {
         _bindings!.outputText.value = "Error loading game.";
         break;
       case GameState.inactive:
+        _updateScore(value: "0");
         _setGhostCellStatus();
         _bindings!.outputText.value = "";
         break;
@@ -340,32 +342,32 @@ class RiveGameBridge {
             break;
           case var cell when cell.isAnswered:
             if (_bindings!.cellIsLoading[i].value) {
-              _bindings!.cellIsLoading[i].value = false;
               _stopLoadingAnimation(i);
+              _bindings!.cellIsLoading[i].value = false;
             }
             _bindings!.cellStatuses[i].value = "answer";
             _bindings!.cellsText[i].value = manager.game.cellTitle(i);
             break;
           case var cell when cell.isCorrect:
             if (_bindings!.cellIsLoading[i].value) {
-              _bindings!.cellIsLoading[i].value = false;
               _stopLoadingAnimation(i);
+              _bindings!.cellIsLoading[i].value = false;
             }
             _bindings!.cellStatuses[i].value = "correct";
             _bindings!.cellsText[i].value = manager.game.cellTitle(i);
             break;
           case var cell when cell.isWrong:
             if (_bindings!.cellIsLoading[i].value) {
-              _bindings!.cellIsLoading[i].value = false;
               _stopLoadingAnimation(i);
+              _bindings!.cellIsLoading[i].value = false;
             }
             _bindings!.cellStatuses[i].value = "wrong";
             _bindings!.cellsText[i].value = manager.game.cellTitle(i);
             break;
           default:
             if (_bindings!.cellIsLoading[i].value) {
-              _bindings!.cellIsLoading[i].value = false;
               _stopLoadingAnimation(i);
+              _bindings!.cellIsLoading[i].value = false;
             }
             _bindings!.cellStatuses[i].value = "idle";
             break;
@@ -435,8 +437,8 @@ class RiveGameBridge {
           ? _setForfeitButton()
           : _setSkipButton();
 
-  void _updateScore() {
-    _bindings!.scoreText.value = manager.game.info.points.toString();
+  void _updateScore({String? value}) {
+    _bindings!.scoreText.value = value ?? manager.game.info.points.toString();
   }
 
   Future<Uint8List> _getBytesFromLocalAsset(String asset) async =>
