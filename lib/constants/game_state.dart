@@ -37,6 +37,7 @@ enum MenuEvent {
 enum GameState {
   loading,
   playing,
+  verifyingAnswer,
   gameOver,
   error,
   inactive,

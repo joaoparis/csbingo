@@ -6,6 +6,8 @@ class DailyGame extends IGame {
   @override
   GameConfig get config => const GameConfig();
 
+  bool isEvaluatingAnswer = false;
+
   @override
   void dispose() {
     try {
@@ -116,13 +118,16 @@ class DailyGame extends IGame {
     info.cells[index].isLoadingAnswer = true;
     _notify("evaluateAction(): cell $index is loading answer");
 
+    info.state = GameState.verifyingAnswer;
+
     var dto = await gateway.sendAction(
       info.cardId,
       cellId: index,
       skip: index == -1 ? true : false,
     );
-
     // DEBUG await Future.delayed(const Duration(milliseconds: 500));
+
+    info.state = GameState.playing;
 
     info.cells[index].isLoadingAnswer = false;
     _notify("evaluateAction(): cell $index is loading answer");

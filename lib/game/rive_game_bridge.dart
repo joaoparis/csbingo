@@ -102,6 +102,8 @@ class RiveGameBridge {
         _updateScore();
         await _setCellText();
         break;
+      case GameState.verifyingAnswer:
+        break;
       case GameState.gameOver:
         _setResetButton();
         _setGameOverText();

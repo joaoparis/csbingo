@@ -16,10 +16,12 @@
 
 ----
 ## FIXES TODO 🛠️
-- [ ] FIX: UI html: fix splash screen loading font
-- [ ] FIX: delay when selecting cells 
+- [O] FIX: daily & random mode should not allow multiple taps
+
 - [ ] FIX: Rive bug: cells red bkgd color should reset at the end of the game
 - [ ] FIX: random mode points should only be visible at the end of the game 
+- [ ] FIX: UI html: fix splash screen loading font
+- [ ] FIX: big player names that don't fit the output UI should not be displayed with in a newline, instead make the text smaller or something...
 
 ----
 #### FUTURE TOPICS 🔮
@@ -50,6 +52,7 @@
 ------------------------------------------------------------------------------------------------
 
 ## DONE ✅
+- [x] FIX: delay when selecting cells ADDED LOADING 
 - [x] FEATURE: suggested answers BE & FE
 - [x] FEATURE: random game mode FE
 - [x] FEATURE: loading screen message

@@ -17,7 +17,6 @@ class GameInfo {
   final String cardId;
   final List<Cell> cells;
   final List<Player> players;
-  // List<String> userAnswers;
   List<String> suggestedAnswers;
 
   GameState state;
