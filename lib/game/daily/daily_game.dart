@@ -6,8 +6,6 @@ class DailyGame extends IGame {
   @override
   GameConfig get config => const GameConfig();
 
-  bool isEvaluatingAnswer = false;
-
   DailyGame() {
     info.type = GameType.daily;
   }
@@ -57,9 +55,10 @@ class DailyGame extends IGame {
 
   @override
   Future<void> gameOver() async {
-    info.state = GameState.inactive;
+    // info.state = GameState.inactive;
     timer.timerText.removeListener(timerListener);
     timerFinishedSub.cancel();
+    info.state = GameState.gameOver;
     _notify("gameOver(): info.state=${info.state}");
     reset();
   }
@@ -119,10 +118,12 @@ class DailyGame extends IGame {
 
   @override
   Future<void> evaluateAction({int index = -1}) async {
-    info.cells[index].isLoadingAnswer = true;
-    _notify("evaluateAction(): cell $index is loading answer");
-
     info.state = GameState.verifyingAnswer;
+
+    if (index != -1) {
+      info.cells[index].isLoadingAnswer = true;
+    }
+    _notify("evaluateAction(): cell $index is loading answer");
 
     var dto = await gateway.sendAction(
       info.cardId,
@@ -131,13 +132,16 @@ class DailyGame extends IGame {
     );
     // DEBUG await Future.delayed(const Duration(milliseconds: 500));
 
-    info.state = GameState.playing;
-
-    info.cells[index].isLoadingAnswer = false;
+    info.state = GameState.finishingVerification;
     _notify("evaluateAction(): cell $index is loading answer");
+
+    while (info.state != GameState.playing) {
+      await Future.delayed(const Duration(milliseconds: 20));
+    }
 
     if (index == -1) return;
 
+    info.cells[index].isLoadingAnswer = false;
     info.cells[index].isWrong = false;
     _notify("_evaluateAction(): before evaluating answer");
 
@@ -152,8 +156,9 @@ class DailyGame extends IGame {
       //     "[DEBUG] ❌ Wrong answer! ❌ round:$currentRound [cell index: $index] try: ${info.cells[index].title} <> ${gameInfo.players[currentRound].name}");
       info.setIncorrectCell(index, dto.cells[index]);
       info.cells[index].isWrong = true;
+      _notify("_evaluateAction(): reset wrong answer visual");
       if (isNotLastRound) {
-        Future.delayed(const Duration(milliseconds: 500), () {
+        await Future.delayed(const Duration(milliseconds: 500), () {
           info.cells[index].isWrong = false;
           _notify("_evaluateAction(): reset wrong answer visual");
         });
@@ -175,6 +180,14 @@ class DailyGame extends IGame {
       info.suggestedAnswers[i] = dto.answers[i].answer;
     }
     _notify("getAnswers(): answers fetched for all cells");
+  }
+
+  @override
+  void setPlayingState() {
+    if (info.state != GameState.gameOver) {
+      info.state = GameState.playing;
+    }
+    _notify("setPlayingState()");
   }
 
   void _toggleGameOverCursor() {

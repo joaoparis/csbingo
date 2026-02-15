@@ -40,6 +40,7 @@ abstract class IGame extends ChangeNotifier {
   void resetCurrentRound() => info.currentRound = config.maxRounds - 1;
 
   void reset();
+  void setPlayingState();
   Future<void> initialize();
   Future<void> skip();
   Future<void> gameOver();

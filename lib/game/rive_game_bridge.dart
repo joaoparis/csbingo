@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:math' as math;
 
 import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
@@ -18,7 +19,6 @@ class RiveGameBridge {
   bool hasLoadedCells = false;
 
   final Map<int, Timer?> _loadingTimers = {};
-  final Map<int, Timer?> _completionTimers = {};
   int? _currentlyLoadingCellIndex;
 
   RiveGameBridge({required this.manager}) {
@@ -77,6 +77,7 @@ class RiveGameBridge {
 
   void _onGameChanged() {
     if (!isReady) return;
+    print("_currentlyLoadingCellIndex? $_currentlyLoadingCellIndex");
     _applyGameStateToRive();
   }
 
@@ -96,20 +97,35 @@ class RiveGameBridge {
         _updateTimer();
         _setPlayText();
         _setButtonText();
-        _setCellsStatus();
+        await _setCellsStatus();
         _setRoundText();
         _setSkips();
         if (manager.game.type == GameType.daily) _updateScore();
         await _setCellText();
         break;
       case GameState.verifyingAnswer:
+        for (var i = 0; i < manager.game.config.gridSize; i++) {
+          if (manager.game.cellAt(i).isLoadingAnswer) {
+            _bindings!.cellIsLoading[i].value = true;
+            _startLoadingAnimation(i);
+          }
+        }
+        break;
+      case GameState.finishingVerification:
+        for (var i = 0; i < manager.game.config.gridSize; i++) {
+          if (manager.game.cellAt(i).isLoadingAnswer) {
+            await _stopLoadingAnimation(i);
+            _bindings!.cellIsLoading[i].value = false;
+          }
+        }
+        manager.game.setPlayingState();
         break;
       case GameState.gameOver:
         _setResetButton();
         _setGameOverText();
         _resetRoundText();
         _resetTimerText();
-        _setCellsStatus();
+        await _setCellsStatus();
         _updateScore();
         await _setCellText();
         hasLoadedCells = false;
@@ -119,6 +135,7 @@ class RiveGameBridge {
         _bindings!.outputText.value = "Error loading game.";
         break;
       case GameState.inactive:
+        hasLoadedCells = false;
         _updateScore(value: "0");
         _setGhostCellStatus();
         _bindings!.outputText.value = "";
@@ -162,10 +179,6 @@ class RiveGameBridge {
       timer?.cancel();
     }
     _loadingTimers.clear();
-    for (var timer in _completionTimers.values) {
-      timer?.cancel();
-    }
-    _completionTimers.clear();
 
     try {
       manager.removeListener(_gameListener);
@@ -182,49 +195,26 @@ class RiveGameBridge {
     } catch (_) {}
   }
 
-  void _stopLoadingAnimation(int cellIndex) {
+  Future<void> _stopLoadingAnimation(int cellIndex) async {
+    print("loading start: ${_bindings!.cellLoad[cellIndex].value}");
+    while (_bindings!.cellLoad[cellIndex].value != 100) {
+      await Future.delayed(const Duration(milliseconds: 20));
+      // print("finishing loading: ${_bindings!.cellLoad[cellIndex].value}");
+    }
+
+    await Future.delayed(const Duration(milliseconds: 200));
+
+    print("SHOULD NOT laoding");
     _loadingTimers[cellIndex]?.cancel();
     _loadingTimers.remove(cellIndex);
+
+    print("end laoding");
     _currentlyLoadingCellIndex = null;
-
-    // Smoothly ramp to 100 when request finishes
-    if (isReady) {
-      _animateToCompletion(cellIndex);
-    }
-  }
-
-  void _animateToCompletion(int cellIndex) {
-    // Cancel any previous completion animation for this cell
-    _completionTimers[cellIndex]?.cancel();
-
-    final startValue = _bindings!.cellLoad[cellIndex].value;
-    const stepDuration = Duration(milliseconds: 30);
-    const totalSteps = 10;
-    int currentStep = 0;
-
-    _completionTimers[cellIndex] = Timer.periodic(stepDuration, (timer) {
-      if (!isReady) {
-        timer.cancel();
-        _completionTimers.remove(cellIndex);
-        return;
-      }
-
-      currentStep++;
-      final progress = currentStep / totalSteps;
-      final newValue = startValue + (100.0 - startValue) * progress;
-      _bindings!.cellLoad[cellIndex].value = newValue.clamp(0.0, 100.0);
-
-      if (currentStep >= totalSteps) {
-        timer.cancel();
-        _completionTimers.remove(cellIndex);
-        _bindings!.cellLoad[cellIndex].value = 100.0;
-      }
-    });
+    _bindings!.cellLoad[cellIndex].value = 0;
   }
 
   void _startLoadingAnimation(int cellIndex) {
-    if (_loadingTimers[cellIndex] != null ||
-        _completionTimers[cellIndex] != null) return;
+    if (_loadingTimers[cellIndex] != null) return;
 
     _currentlyLoadingCellIndex = cellIndex;
     _bindings!.cellLoad[cellIndex].value = 0.0;
@@ -232,11 +222,7 @@ class RiveGameBridge {
     _loadingTimers[cellIndex] = Timer.periodic(
       const Duration(milliseconds: 20),
       (timer) {
-        if (!isReady) {
-          timer.cancel();
-          _loadingTimers.remove(cellIndex);
-          return;
-        }
+        print("PERIODIC");
 
         final currentValue = _bindings!.cellLoad[cellIndex].value;
         final increment = 1.0 + (DateTime.now().millisecond % 5).toDouble();
@@ -329,7 +315,7 @@ class RiveGameBridge {
     return prettyTitle + title;
   }
 
-  void _setCellsStatus() {
+  Future<void> _setCellsStatus() async {
     for (var i = 0; i < manager.game.config.gridSize; i++) {
       if (manager.game.info.gameOverState ==
           GameOverState.displayingSuggestedAnswers) {
@@ -337,38 +323,22 @@ class RiveGameBridge {
       } else {
         switch (manager.game.cellAt(i)) {
           case var cell when cell.isLoadingAnswer:
-            _bindings!.cellIsLoading[i].value = true;
-            _startLoadingAnimation(i);
+            // _bindings!.cellIsLoading[i].value = true;
+            // _startLoadingAnimation(i);
             break;
           case var cell when cell.isAnswered:
-            if (_bindings!.cellIsLoading[i].value) {
-              _stopLoadingAnimation(i);
-              _bindings!.cellIsLoading[i].value = false;
-            }
             _bindings!.cellStatuses[i].value = "answer";
             _bindings!.cellsText[i].value = manager.game.cellTitle(i);
             break;
           case var cell when cell.isCorrect:
-            if (_bindings!.cellIsLoading[i].value) {
-              _stopLoadingAnimation(i);
-              _bindings!.cellIsLoading[i].value = false;
-            }
             _bindings!.cellStatuses[i].value = "correct";
             _bindings!.cellsText[i].value = manager.game.cellTitle(i);
             break;
           case var cell when cell.isWrong:
-            if (_bindings!.cellIsLoading[i].value) {
-              _stopLoadingAnimation(i);
-              _bindings!.cellIsLoading[i].value = false;
-            }
             _bindings!.cellStatuses[i].value = "wrong";
             _bindings!.cellsText[i].value = manager.game.cellTitle(i);
             break;
           default:
-            if (_bindings!.cellIsLoading[i].value) {
-              _stopLoadingAnimation(i);
-              _bindings!.cellIsLoading[i].value = false;
-            }
             _bindings!.cellStatuses[i].value = "idle";
             break;
         }

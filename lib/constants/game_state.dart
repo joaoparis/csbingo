@@ -38,6 +38,7 @@ enum GameState {
   loading,
   playing,
   verifyingAnswer,
+  finishingVerification,
   gameOver,
   error,
   inactive,

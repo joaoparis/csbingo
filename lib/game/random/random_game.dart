@@ -120,10 +120,12 @@ class RandomGame extends IGame {
 
   @override
   Future<void> evaluateAction({int index = -1}) async {
-    info.cells[index].isLoadingAnswer = true;
-    _notify("evaluateAction(): cell $index is loading answer");
-
     info.state = GameState.verifyingAnswer;
+
+    if (index != -1) {
+      info.cells[index].isLoadingAnswer = true;
+    }
+    _notify("evaluateAction(): cell $index is loading answer");
 
     var dto = await gateway.sendAction(
       info.cardId,
@@ -132,13 +134,16 @@ class RandomGame extends IGame {
     );
     // DEBUG await Future.delayed(const Duration(milliseconds: 500));
 
-    info.state = GameState.playing;
-
-    info.cells[index].isLoadingAnswer = false;
+    info.state = GameState.finishingVerification;
     _notify("evaluateAction(): cell $index is loading answer");
+
+    while (info.state != GameState.playing) {
+      await Future.delayed(const Duration(milliseconds: 20));
+    }
 
     if (index == -1) return;
 
+    info.cells[index].isLoadingAnswer = false;
     info.cells[index].isWrong = false;
     _notify("_evaluateAction(): before evaluating answer");
 
@@ -171,6 +176,14 @@ class RandomGame extends IGame {
       info.suggestedAnswers[i] = dto.answers[i].answer;
     }
     _notify("getAnswers(): answers fetched for all cells");
+  }
+
+  @override
+  void setPlayingState() {
+    if (info.state != GameState.gameOver) {
+      info.state = GameState.playing;
+    }
+    _notify("setPlayingState()");
   }
 
   void _toggleGameOverCursor() {

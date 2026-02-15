@@ -3,7 +3,12 @@
 ----
 ## FEATURES TODO 💫
 - [ ] FEATURE: add "player generation" cell topic (born between 95-2000 vs 90-95)
+
+- [ ] FEATURE: points logic: 1 point per correct cell + the time it took to answer the cell
+
 - [ ] FEATURE: game mode where the lines and colums earn more points OR the game end when the user gets one.
+
+- [ ] FEATURE: add UI pop up when game ends showing the points! and maybe an explosion if the bomb was not desarmed?
 
 - SEE PHONE NOTES FROM QA TESTERS!!!!
 
@@ -12,25 +17,21 @@
 - [ ] FEATURE: UI round players & flags images corners
 - [ ] FEATURE: UI add "under development" notice
 
-- [ ] FEATURE: points logic: 1 point per correct cell + the time it took to answer the cell
-- [ ] FEATURE: add UI pop up when game ends showing the points! and maybe an explosion if the bomb was not desarmed?
-
 - [ ] Update JSON with the latest CS Major Tournament
+- [ ] FIX: make scroll down the landing page more visible
+- [ ] FIX: toggle button should be able to do something
 
 ----
 ## FIXES TODO 🛠️
-- [X] FIX: daily & random mode should not allow multiple taps
-- [X] FIX: random mode points should only be visible at the end of the game 
-- [X] FIX: BE rm extra players' info from the GET /card response 
-- [X] FIX: show correct game type name 
-- [X] FIX: Random mode should show the wrong cell names that the user choose
-- [X] FIX: Daily mode should not show the wrong cell names that the user choose
-- [X] FIX: Daily mode endgame wrong cells color should also be red when the game ends - like random mode
+- [X] FIX: Forfeit button not working
+- [X] FIX: SKIP button not working
+
+- [O] FIX: loading cell answer logic. it is loading the oposite way, sometimes... and it's not reaching the 100%...
+
+- [ ] FIX: Game Page: UI for mobile
+- [ ] FIX: Landing Page: UI for mobile
 
 - [ ] FIX: Some names are very little in some of the cells, when answering. (prob name is too big?)
-- [ ] FIX: loading cell answer logic. it is loading the oposite way, sometimes... and it's not reaching the 100%...
-- [ ] FIX: Forfeit button not working
-- [ ] FIX: BE daily mode should fetch the first game template created on that day
 - [ ] FIX: UI html: fix splash screen loading font
 - [ ] FIX: big player names that don't fit the output UI should not be displayed with in a newline, instead make the text smaller or something...
 
@@ -63,6 +64,14 @@
 ------------------------------------------------------------------------------------------------
 
 ## DONE ✅
+- [X] FIX: daily & random mode should not allow multiple taps
+- [X] FIX: random mode points should only be visible at the end of the game 
+- [X] FIX: BE rm extra players' info from the GET /card response 
+- [X] FIX: show correct game type name 
+- [X] FIX: Random mode should show the wrong cell names that the user choose
+- [X] FIX: Daily mode should not show the wrong cell names that the user choose
+- [X] FIX: Daily mode endgame wrong cells color should also be red when the game ends - like random mode
+- [X] FIX: BE daily mode should fetch the first game template created on that day
 - [x] FIX: delay when selecting cells ADDED LOADING 
 - [x] FEATURE: suggested answers BE & FE
 - [x] FEATURE: random game mode FE
