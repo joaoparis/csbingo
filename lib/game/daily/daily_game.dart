@@ -8,6 +8,10 @@ class DailyGame extends IGame {
 
   bool isEvaluatingAnswer = false;
 
+  DailyGame() {
+    info.type = GameType.daily;
+  }
+
   @override
   void dispose() {
     try {
@@ -148,10 +152,12 @@ class DailyGame extends IGame {
       //     "[DEBUG] ❌ Wrong answer! ❌ round:$currentRound [cell index: $index] try: ${info.cells[index].title} <> ${gameInfo.players[currentRound].name}");
       info.setIncorrectCell(index, dto.cells[index]);
       info.cells[index].isWrong = true;
-      Future.delayed(const Duration(milliseconds: 500), () {
-        info.cells[index].isWrong = false;
-        _notify("_evaluateAction(): reset wrong answer visual");
-      });
+      if (isNotLastRound) {
+        Future.delayed(const Duration(milliseconds: 500), () {
+          info.cells[index].isWrong = false;
+          _notify("_evaluateAction(): reset wrong answer visual");
+        });
+      }
     }
   }
 
@@ -242,6 +248,7 @@ class DailyGame extends IGame {
     info.state = GameState.gameOver;
     for (var cell in info.cells) {
       cell.isAnswered = false;
+      cell.isCorrect ? cell.isWrong = false : cell.isWrong = true;
     }
     setGameOverOnManager();
   }

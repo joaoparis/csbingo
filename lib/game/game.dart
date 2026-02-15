@@ -25,6 +25,7 @@ abstract class IGame extends ChangeNotifier {
   late List<RenderImage?> images;
 
   bool get isNotLastRound => info.currentRound < config.maxRounds - 1;
+  bool get isLastRound => info.currentRound == config.maxRounds - 1;
   bool get isNotGameOver => info.state != GameState.gameOver;
   bool get isBoardComplete => !info.cells.any((c) => !c.isCorrect);
   bool get hasSkips => info.skips >= 0;

@@ -93,7 +93,7 @@ class GameInfo {
         cells[i].isWrong = true;
         cells[i].isCorrect = false;
         cells[i].isAnswered = false;
-        cells[i].answer = "";
+        cells[i].answer = (type == GameType.daily) ? "" : userPlays[i]!.answer;
       }
     }
   }

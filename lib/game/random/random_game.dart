@@ -4,6 +4,10 @@ class RandomGame extends IGame {
   @override
   GameConfig get config => const GameConfig();
 
+  RandomGame() {
+    info.type = GameType.random;
+  }
+
   @override
   void dispose() {
     try {
@@ -148,9 +152,6 @@ class RandomGame extends IGame {
       //     "[DEBUG] ❌ Wrong answer! ❌ round:$currentRound [cell index: $index] try: ${info.cells[index].title} <> ${gameInfo.players[currentRound].name}");
       info.setIncorrectCell(index, dto.cells[index]);
       info.cells[index].isWrong = true;
-      Future.delayed(const Duration(milliseconds: 500), () {
-        info.cells[index].isWrong = false;
-      });
     }
     info.setAnsweredCell(index, dto.cells[index], info.currentRound);
     _notify("_evaluateAction(): reset wrong answer visual");
