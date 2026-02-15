@@ -49,8 +49,6 @@ class RiveGameBridge {
 
   void _attachGameListener() {
     try {
-      print(
-          "[RIVE_GAME_BRIDGE] Attaching game listener to game instance: ${manager.game.hashCode}");
       manager.game.addListener(_gameListener);
     } catch (e) {
       print(
@@ -64,8 +62,6 @@ class RiveGameBridge {
       manager.buttonClicked();
       return;
     }
-
-    print("[DEBUG] Unhandled Rive event: $name");
   }
 
   void _handleCellTap(int cellIndex, ViewModelInstanceTrigger tap) {
@@ -73,8 +69,6 @@ class RiveGameBridge {
       // Prevent tapping other cells while one is loading
       if (_currentlyLoadingCellIndex != null &&
           _currentlyLoadingCellIndex != cellIndex) {
-        print(
-            "[RIVE_GAME_BRIDGE] Ignoring tap on cell $cellIndex, waiting for cell $_currentlyLoadingCellIndex");
         return;
       }
       manager.game.selectCell(cellIndex);
@@ -82,14 +76,11 @@ class RiveGameBridge {
   }
 
   void _onGameChanged() {
-    print("[RIVE_GAME_BRIDGE] Game changed: ${manager.game.info.state}");
     if (!isReady) return;
     _applyGameStateToRive();
   }
 
   void _applyGameStateToRive() async {
-    print(
-        "[RIVE_GAME_BRIDGE] Applying game state to Rive: ${manager.game.info.state}");
     switch (manager.game.info.state) {
       case GameState.loading:
         _bindings!.secondOutputTitleText.value =
@@ -132,14 +123,11 @@ class RiveGameBridge {
   }
 
   void _onMenuChanged() {
-    print("[RIVE_GAME_BRIDGE] Manager changed: ${manager.game.info.state}");
     if (!isReady) return;
     _applyMenuStateToRive();
   }
 
   void _applyMenuStateToRive() async {
-    print(
-        "[RIVE_GAME_BRIDGE] Applying manager state to Rive: ${manager.menuState}");
     switch (manager.menuState) {
       case MenuState.dailyGame:
       case MenuState.randomGame:
@@ -150,8 +138,6 @@ class RiveGameBridge {
         _bindings!.secondOutputTitleText.value = manager.targetType.fullName;
         _bindings!.secondOutputBodyText.value = manager.targetType.description;
         _bindings!.secondOutputTextTrigger.trigger();
-        print(
-            "[RIVE_GAME_BRIDGE] Menu state applied: ${_bindings!.secondOutputBodyText.value}");
         break;
       case MenuState.ffaGame:
         _setInactiveButton();
@@ -161,8 +147,6 @@ class RiveGameBridge {
         _bindings!.secondOutputTitleText.value = manager.targetType.fullName;
         _bindings!.secondOutputBodyText.value = manager.targetType.description;
         _bindings!.secondOutputTextTrigger.trigger();
-        print(
-            "[RIVE_GAME_BRIDGE] FFA Menu state applied: ${_bindings!.secondOutputBodyText.value}");
         break;
       case MenuState.inactive:
         break;

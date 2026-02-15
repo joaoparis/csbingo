@@ -51,7 +51,6 @@ class GameManager extends ChangeNotifier {
     switch (orchestratorState) {
       case OrchestratorState.menu:
         if (targetType == GameType.ffa) {
-          print("FFA game type selected, but not implemented yet.");
           return;
         }
         game = GameFactory.create(targetType);
@@ -79,12 +78,10 @@ class GameManager extends ChangeNotifier {
   }
 
   notify(String src) {
-    print("[GameManager] Notifying - src: $src; state: $orchestratorState");
     notifyListeners();
   }
 
   void _toogleMainMenuCursor() {
-    print("Toggling cursor from $targetType");
     var newIndex = targetType.index + 1;
     if (newIndex == GameType.values.length) {
       targetType = GameType.values[0];

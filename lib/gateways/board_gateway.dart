@@ -12,9 +12,6 @@ class BoardGateway {
 
   Future<GameInfoDTO> createCard(String type) async {
     final uri = Uri.parse('$baseUrl/api/cards?type=$type');
-    // uri.replace(queryParameters: {'type': type});
-    print(
-        "[DEBUG] Calling createCard at '${uri.toString()}' with type='$type'");
 
     try {
       final resp = await http.post(
@@ -23,7 +20,6 @@ class BoardGateway {
         body: jsonEncode({"type": "normal"}),
       );
       if (resp.statusCode == 200) {
-        print("[DEBUG] Successfully fetched card from backend ${resp.body}");
         isLocal = false;
         final Map<String, dynamic> jsonBody = json.decode(resp.body);
         return GameInfoDTO.fromJson(jsonBody);
@@ -32,7 +28,6 @@ class BoardGateway {
             'Failed to fetch board: ${resp.statusCode} ${resp.body}');
       }
     } catch (e) {
-      print("[DEBUG] Error fetching card from backend: $e");
       return await _fetchLocalGame();
       // if (kIsWeb) {
       //   throw Exception('Error: $e');
@@ -50,8 +45,6 @@ class BoardGateway {
         headers: {"Content-Type": "application/json"},
       );
       if (resp.statusCode == 200) {
-        print(
-            "[DEBUG] Successfully fetched card's answers from backend ${resp.body}");
         final Map<String, dynamic> jsonBody = json.decode(resp.body);
         return GameAnswersDTO.fromJson(jsonBody);
       } else {
@@ -59,7 +52,6 @@ class BoardGateway {
             'Failed to fetch board answers: ${resp.statusCode} ${resp.body}');
       }
     } catch (e) {
-      print("[DEBUG] Error fetching card's answers from backend: $e");
       if (kIsWeb) {
         throw Exception('Error: $e');
       }
@@ -90,7 +82,6 @@ class BoardGateway {
             'Failed to select cell: ${resp.statusCode} ${resp.body}');
       }
     } catch (e) {
-      print("[DEBUG] Error sending action to backend: $e");
       var info = await _fetchLocalGame();
       if (!skip) info.cells[cellId].isCorrect = !skip;
       return info;
@@ -142,8 +133,6 @@ class SteamGateway {
     try {
       if (await canLaunchUrl(uri)) {
         web.window.location.href = uri.toString();
-        // await launchUrl(uri, mode: LaunchMode.inAppBrowserView);
-        print('[DEBUG] Launched auth URL in browser: $uri');
       } else {
         print('[DEBUG] Cannot launch auth URL: $uri');
       }

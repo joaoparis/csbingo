@@ -82,7 +82,7 @@ class _GamePageState extends State<GamePage> {
                       Expanded(
                         flex: 1,
                         child: Container(
-                          color: const Color.fromARGB(151, 129, 129, 129),
+                          color: const Color.fromARGB(0, 129, 129, 129),
                           width: 200,
                           child: const HtmlElementView(viewType: 'adsense-ad'),
                         ),
@@ -99,7 +99,7 @@ class _GamePageState extends State<GamePage> {
                       Expanded(
                         flex: 1,
                         child: Container(
-                          color: const Color.fromARGB(113, 133, 133, 133),
+                          color: const Color.fromARGB(0, 133, 133, 133),
                           width: 200,
                           child: const HtmlElementView(viewType: 'adsense-ad'),
                         ),
@@ -110,14 +110,6 @@ class _GamePageState extends State<GamePage> {
               ],
             ),
           ),
-          // Footer
-          // const Footer(),
-          // Bottom ad
-          // const SizedBox(
-          //   height: 60,
-          //   width: 200,
-          //   child: HtmlElementView(viewType: 'adsense-ad'),
-          // )
         ],
       ),
     );

@@ -29,7 +29,6 @@ class DailyGame extends IGame {
 
   @override
   Future<void> initialize() async {
-    print("DailyGame: initialize()");
     info.currentRound = 0;
     info.skips = config.maxSkips;
     info.gameOverState = GameOverState.displayingPlayerAnswers;
@@ -170,8 +169,6 @@ class DailyGame extends IGame {
   void _toggleGameOverCursor() {
     var newIndex = info.gameOverState.index + 1;
 
-    print("Toggling game over cursor from ${info.gameOverState}");
-
     if (newIndex == GameOverState.values.length) {
       info.gameOverState = GameOverState.values[0];
       return;
@@ -219,7 +216,6 @@ class DailyGame extends IGame {
   }
 
   Future<void> _loadGame() async {
-    print("_loadGame(): loading game...");
     try {
       var dto = await gateway.createCard(info.type.name);
       info = GameInfo.fromDTO(

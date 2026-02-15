@@ -26,7 +26,6 @@ class ImagesGateway {
     Uint8List? bytes;
     switch (cell.criteria) {
       case "nationality":
-        print("NATIONALITY! ${cell.title} ${cell.imageUrl} ");
         bytes = await getImageFromUrl(
             "https://flagsapi.com/${cell.title}/flat/64.png");
         break;
@@ -63,8 +62,6 @@ class ImagesGateway {
 
       if (resp.statusCode == 200) {
         bytes = resp.bodyBytes;
-        print(
-            "[CELL_IMAGE] Retrieve image from url: $url (status: ${resp.statusCode})");
       } else {
         print(
             "[CELL_IMAGE] Failed to retrieve image from url: $url (status: ${resp.statusCode})");

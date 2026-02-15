@@ -5,6 +5,7 @@
 - [ ] FEATURE: add "player generation" cell topic (born between 95-2000 vs 90-95)
 - [ ] FEATURE: game mode where the lines and colums earn more points OR the game end when the user gets one.
 
+- SEE PHONE NOTES FROM QA TESTERS!!!!
 
 - [ ] FEATURE: UI add backlight behind C4 toggle it according to game state...
 - [ ] FEATURE: UI add "shock" visuals

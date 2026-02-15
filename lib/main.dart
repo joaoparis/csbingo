@@ -3,8 +3,6 @@ import 'package:csbingo/csbingo.dart';
 import 'package:csbingo/config/router_config.dart';
 
 void main() async {
-  print("[DEBUG] App started");
-  print("[DEBUG] API BASE URL: '${AppConfig.apiBaseUrl}'");
   WidgetsFlutterBinding.ensureInitialized();
   AdSenseAd.register();
   runApp(const MyApp());

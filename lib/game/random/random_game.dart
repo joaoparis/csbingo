@@ -168,8 +168,6 @@ class RandomGame extends IGame {
   void _toggleGameOverCursor() {
     var newIndex = info.gameOverState.index + 1;
 
-    print("Toggling game over cursor from ${info.gameOverState}");
-
     if (newIndex == GameOverState.values.length) {
       info.gameOverState = GameOverState.values[0];
       return;
@@ -217,7 +215,6 @@ class RandomGame extends IGame {
   }
 
   Future<void> _loadGame() async {
-    print("_loadGame(): loading game...");
     try {
       var dto = await gateway.createCard(info.type.name);
       info = GameInfo.fromDTO(

@@ -84,11 +84,8 @@ class GameInfo {
   }
 
   void setUserAnswers() {
-    print("Setting user answers based on userPlays: ${userPlays.length} plays");
     for (var i = 0; i < cells.length; i++) {
       if (userPlays.containsKey(i) && userPlays[i]!.isCorrect) {
-        print(
-            "Setting cell $i as correct with answer: ${userPlays[i]!.answer}");
         cells[i].answer = userPlays[i]!.answer;
         cells[i].isCorrect = true;
         cells[i].isAnswered = false;
