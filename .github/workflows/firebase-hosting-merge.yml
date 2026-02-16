@@ -23,8 +23,7 @@ jobs:
 
       - name: Build Flutter Web
         run: |
-          echo "[DEBUG] API_BASE_URL=${{ secrets.API_BASE_URL }}"
-          flutter build web --release \
+          flutter build web --release --web \
             --dart-define="API_BASE_URL=${{ secrets.API_BASE_URL }}" \
             --dart-define="FRONTEND_CALLBACK_URL=${{ secrets.FRONTEND_CALLBACK_URL }}"
 

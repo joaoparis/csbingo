@@ -189,6 +189,8 @@ class LandingPage extends StatelessWidget {
               ),
             ),
           ),
+
+          //Daily explanation
           SliverToBoxAdapter(
             child: Container(
               color: Colors.black,
@@ -245,6 +247,7 @@ class LandingPage extends StatelessWidget {
             ),
           ),
 
+          //Random explanation
           SliverToBoxAdapter(
             child: Container(
               color: Colors.black,
@@ -302,6 +305,7 @@ class LandingPage extends StatelessWidget {
             ),
           ),
 
+          //FFA explanation
           SliverToBoxAdapter(
             child: Container(
               color: Colors.black,
@@ -359,6 +363,7 @@ class LandingPage extends StatelessWidget {
             ),
           ),
 
+          //Play button
           SliverToBoxAdapter(
             child: Container(
               color: Colors.black,
@@ -387,9 +392,129 @@ class LandingPage extends StatelessWidget {
             ),
           ),
 
-          // Footer
+          //About
           SliverToBoxAdapter(
-            child: const Footer(),
+            child: Container(
+              color: const Color.fromARGB(255, 32, 32, 32),
+              height: height * 3 / 4,
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 40.0),
+                child: LayoutBuilder(
+                  builder: (context, constraints) {
+                    return Row(
+                      children: [
+                        Expanded(
+                          child: Padding(
+                            padding:
+                                const EdgeInsets.only(top: 40.0, right: 40.0),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  'About',
+                                  style:
+                                      theme.textTheme.headlineLarge?.copyWith(
+                                    fontFamily: 'HighSpeed',
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                                const SizedBox(height: 24),
+                                Expanded(
+                                  child: SingleChildScrollView(
+                                    child: Text(
+                                      "CS Bingo is a free-to-play browser game created for Counter-Strike 2 players who live and breathe the game. Whether you're grinding Premier, watching Majors, or arguing about the meta with your stack, this game was built with you in mind."
+                                      "The idea came from seeing how much the community enjoys Counter-Strike trivia, inside jokes, and deep knowledge about maps, mechanics, and iconic moments. There was clear interest in having a game focused purely on Counter-Strike lore and game sense — something competitive, fast, and memory-based, but also fun."
+                                      "This project is not affiliated with Valve, but it is inspired by the culture, strategy, and history surrounding Counter-Strike. The goal is simple: create a place where CS2 players can test their knowledge, compete with friends, and prove they truly understand the game beyond just aim and mechanics."
+                                      "No downloads, no paywalls, no hidden mechanics. Just open your browser and play.",
+                                      style: theme.textTheme.headlineMedium
+                                          ?.copyWith(
+                                        fontFamily: 'StratumNo2',
+                                        color: Colors.white70,
+                                      ),
+                                      textAlign: TextAlign.left,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ],
+                    );
+                  },
+                ),
+              ),
+            ),
+          ),
+
+          // QA
+          SliverToBoxAdapter(
+            child: Container(
+              color: Colors.black,
+              height: height,
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 40.0),
+                child: LayoutBuilder(
+                  builder: (context, constraints) {
+                    return Row(
+                      children: [
+                        Expanded(
+                          child: Padding(
+                            padding:
+                                const EdgeInsets.only(top: 40.0, right: 40.0),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  'Q&A',
+                                  style:
+                                      theme.textTheme.headlineLarge?.copyWith(
+                                    fontFamily: 'HighSpeed',
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                                const SizedBox(height: 24),
+                                Expanded(
+                                  child: SingleChildScrollView(
+                                    child: Text(
+                                      "Q: Is CS Bingo free to play?\n"
+                                      "A:Yes. CS Bingo is completely free to play. There are no entry fees, no purchases required, and no pay-to-win mechanics."
+                                      "\n\nQ: Do I need to register to play?\n"
+                                      "A: No registration is required for basic gameplay. You can jump straight into the action. Some features like tracking progress or competing with friends may require joining a lobby."
+                                      "\n\nQ: Does the game involve real money or gambling?\n"
+                                      "A: No. CS Bingo does not involve gambling, betting, or real-money prizes. It is purely a knowledge and skill-based browser game created for entertainment."
+                                      "\n\nQ: Can I play on mobile?\n"
+                                      "A: Yes. CS Bingo will is designed to run in modern web browsers and works on desktop and most mobile devices. For the best competitive experience, desktop is recommended."
+                                      "\n\nQ: How often are boards updated?\n"
+                                      "A: Game boards and challenges are updated regularly to reflect Counter-Strike updates, meta changes, and community trends. The Daily Challenge refreshes each day, giving players new opportunities to test their knowledge."
+                                      "\n\nQ: What data is used?\n"
+                                      "A: The game is based on all final stages of Counter-Strike Major events: which include CS:GO and CS2 events.",
+                                      style: theme.textTheme.headlineMedium
+                                          ?.copyWith(
+                                        fontFamily: 'StratumNo2',
+                                        color: Colors.white70,
+                                      ),
+                                      textAlign: TextAlign.left,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ],
+                    );
+                  },
+                ),
+              ),
+            ),
+          ),
+
+          // Footer
+          const SliverToBoxAdapter(
+            child: Footer(),
           ),
         ],
       ),
