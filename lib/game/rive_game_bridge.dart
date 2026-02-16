@@ -77,7 +77,7 @@ class RiveGameBridge {
 
   void _onGameChanged() {
     if (!isReady) return;
-    print("_currentlyLoadingCellIndex? $_currentlyLoadingCellIndex");
+    // print("_currentlyLoadingCellIndex? $_currentlyLoadingCellIndex");
     _applyGameStateToRive();
   }
 
@@ -196,7 +196,7 @@ class RiveGameBridge {
   }
 
   Future<void> _stopLoadingAnimation(int cellIndex) async {
-    print("loading start: ${_bindings!.cellLoad[cellIndex].value}");
+    // print("loading start: ${_bindings!.cellLoad[cellIndex].value}");
     while (_bindings!.cellLoad[cellIndex].value != 100) {
       await Future.delayed(const Duration(milliseconds: 20));
       // print("finishing loading: ${_bindings!.cellLoad[cellIndex].value}");
@@ -204,11 +204,11 @@ class RiveGameBridge {
 
     await Future.delayed(const Duration(milliseconds: 200));
 
-    print("SHOULD NOT laoding");
+    // print("SHOULD NOT laoding");
     _loadingTimers[cellIndex]?.cancel();
     _loadingTimers.remove(cellIndex);
 
-    print("end laoding");
+    // print("end laoding");
     _currentlyLoadingCellIndex = null;
     _bindings!.cellLoad[cellIndex].value = 0;
   }
@@ -222,7 +222,7 @@ class RiveGameBridge {
     _loadingTimers[cellIndex] = Timer.periodic(
       const Duration(milliseconds: 20),
       (timer) {
-        print("PERIODIC");
+        // print("PERIODIC");
 
         final currentValue = _bindings!.cellLoad[cellIndex].value;
         final increment = 1.0 + (DateTime.now().millisecond % 5).toDouble();
