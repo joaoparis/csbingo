@@ -23,7 +23,7 @@ jobs:
 
       - name: Build Flutter Web
         run: |
-          flutter build web --release --web \
+          flutter build web --release \
             --dart-define="API_BASE_URL=${{ secrets.API_BASE_URL }}" \
             --dart-define="FRONTEND_CALLBACK_URL=${{ secrets.FRONTEND_CALLBACK_URL }}"
 
