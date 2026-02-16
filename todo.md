@@ -18,13 +18,10 @@
 - [ ] FEATURE: UI add "under development" notice
 
 - [ ] Update JSON with the latest CS Major Tournament
-- [ ] FIX: make scroll down the landing page more visible
 - [ ] FIX: toggle button should be able to do something
 
 ----
 ## FIXES TODO 🛠️
-- [X] FIX: Forfeit button not working
-- [X] FIX: SKIP button not working
 
 - [O] FIX: loading cell answer logic. it is loading the oposite way, sometimes... and it's not reaching the 100%...
 
@@ -64,6 +61,9 @@
 ------------------------------------------------------------------------------------------------
 
 ## DONE ✅
+- [x] FIX: make scroll down the landing page more visible
+- [X] FIX: Forfeit button not working
+- [X] FIX: SKIP button not working
 - [X] FIX: daily & random mode should not allow multiple taps
 - [X] FIX: random mode points should only be visible at the end of the game 
 - [X] FIX: BE rm extra players' info from the GET /card response 
