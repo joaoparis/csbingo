@@ -22,7 +22,6 @@
 
 ----
 ## FIXES TODO 🛠️
-
 - [O] FIX: loading cell answer logic. it is loading the oposite way, sometimes... and it's not reaching the 100%...
 
 - [ ] FIX: Game Page: UI for mobile

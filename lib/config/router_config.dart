@@ -1,3 +1,5 @@
+import 'package:csbingo/pages/ffa_page.dart';
+import 'package:csbingo/pages/lobby_page.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:csbingo/pages/app_shell.dart';
@@ -18,19 +20,36 @@ GoRouter createRouter() {
         ),
         routes: [
           GoRoute(
+            // path: '/ffa',
             path: '/',
-            builder: (context, state) => const LandingPage(
-              key: Key("landing_page_key"),
+            builder: (context, state) => const FFAPage(
+              key: Key("ffa_page_key"),
             ),
           ),
           GoRoute(
-            path: '/game',
+            path: '/ffa/lobby/:code',
             builder: (context, state) {
-              return GamePage(
-                themeMode: ThemeMode.dark, // TODO: Pass theme mode from parent
+              final code = state.pathParameters['code'];
+              return LobbyPage(
+                key: const Key("lobby_page_key"),
+                lobbyCode: code,
               );
             },
           ),
+          // GoRoute(
+          //   path: '/',
+          //   builder: (context, state) => const LandingPage(
+          //     key: Key("landing_page_key"),
+          //   ),
+          // ),
+          // GoRoute(
+          //   path: '/game',
+          //   builder: (context, state) {
+          //     return GamePage(
+          //       themeMode: ThemeMode.dark, // TODO: Pass theme mode from parent
+          //     );
+          //   },
+          // ),
         ],
       ),
     ],
