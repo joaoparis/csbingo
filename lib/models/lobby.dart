@@ -1,90 +1,61 @@
 import 'package:equatable/equatable.dart';
 import 'lobby_player.dart';
 
-enum LobbyGameState { waiting, ready, inProgress, finished }
-
 class Lobby extends Equatable {
   final String code;
-  final String ownerId;
-  final List<LobbyPlayer> players;
-  final LobbyGameState gameState;
-  final DateTime createdAt;
-  final int maxPlayers;
+  final String owner;
+  final List<LobbyPlayer> users;
 
   const Lobby({
     required this.code,
-    required this.ownerId,
-    required this.players,
-    this.gameState = LobbyGameState.waiting,
-    required this.createdAt,
-    this.maxPlayers = 8,
+    required this.owner,
+    required this.users,
   });
 
   factory Lobby.fromJson(Map<String, dynamic> json) {
-    final playersJson = json['players'] as List<dynamic>? ?? [];
-    final players = playersJson
-        .map((p) => LobbyPlayer.fromJson(p as Map<String, dynamic>))
+    final usersJson = json['users'] as List<dynamic>? ?? [];
+    final users = usersJson
+        .map((u) => LobbyPlayer.fromJson(u as Map<String, dynamic>))
         .toList();
 
-    final gameStateStr = json['gameState'] as String? ?? json['game_state'] as String? ?? 'waiting';
-    final gameState = LobbyGameState.values.firstWhere(
-      (e) => e.name == gameStateStr,
-      orElse: () => LobbyGameState.waiting,
-    );
-
     return Lobby(
-      code: json['code'] as String,
-      ownerId: json['ownerId'] as String? ?? json['owner_id'] as String? ?? '',
-      players: players,
-      gameState: gameState,
-      createdAt: json['createdAt'] is String
-          ? DateTime.parse(json['createdAt'] as String)
-          : DateTime.now(),
-      maxPlayers: json['maxPlayers'] as int? ?? json['max_players'] as int? ?? 8,
+      code: json['lobbyCode'] as String? ?? json['code'] as String? ?? '',
+      owner: json['owner'] as String? ?? '',
+      users: users,
     );
   }
 
   Map<String, dynamic> toJson() {
     return {
-      'code': code,
-      'ownerId': ownerId,
-      'players': players.map((p) => p.toJson()).toList(),
-      'gameState': gameState.name,
-      'createdAt': createdAt.toIso8601String(),
-      'maxPlayers': maxPlayers,
+      'lobbyCode': code,
+      'owner': owner,
+      'users': users.map((u) => u.toJson()).toList(),
     };
   }
 
   Lobby copyWith({
     String? code,
-    String? ownerId,
-    List<LobbyPlayer>? players,
-    LobbyGameState? gameState,
-    DateTime? createdAt,
-    int? maxPlayers,
+    String? owner,
+    List<LobbyPlayer>? users,
   }) {
     return Lobby(
       code: code ?? this.code,
-      ownerId: ownerId ?? this.ownerId,
-      players: players ?? this.players,
-      gameState: gameState ?? this.gameState,
-      createdAt: createdAt ?? this.createdAt,
-      maxPlayers: maxPlayers ?? this.maxPlayers,
+      owner: owner ?? this.owner,
+      users: users ?? this.users,
     );
   }
 
   LobbyPlayer? getOwner() {
     try {
-      return players.firstWhere((p) => p.id == ownerId);
+      return users.firstWhere((u) => u.id == owner);
     } catch (e) {
       return null;
     }
   }
 
-  int get playerCount => players.length;
-  bool get isFull => playerCount >= maxPlayers;
-  bool get allReady => players.isNotEmpty && players.every((p) => p.ready);
+  int get playerCount => users.length;
+  bool get isEmpty => users.isEmpty;
 
   @override
-  List<Object?> get props => [code, ownerId, players, gameState, createdAt, maxPlayers];
+  List<Object?> get props => [code, owner, users];
 }

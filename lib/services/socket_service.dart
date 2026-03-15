@@ -2,27 +2,16 @@ import 'dart:async';
 import 'dart:convert';
 import 'package:web_socket_channel/web_socket_channel.dart';
 
-class SocketRequest {
-  final String id;
-  final Completer<dynamic> completer;
-  final Duration timeout;
-
-  SocketRequest({
-    required this.id,
-    required this.completer,
-    this.timeout = const Duration(seconds: 10),
-  });
-}
-
 class SocketService {
   static SocketService? _instance;
 
   final String url;
   late WebSocketChannel _channel;
-  final Map<String, SocketRequest> _pendingRequests = {};
   late StreamSubscription _subscription;
   bool _isConnected = false;
   final List<Function(Map<String, dynamic>)> _eventListeners = [];
+  final Map<String, List<Function(Map<String, dynamic>)>> _broadcastListeners =
+      {};
 
   SocketService._internal({this.url = 'ws://localhost:8080/socket'});
 
@@ -31,7 +20,7 @@ class SocketService {
     _instance ??= SocketService._internal(
       url: url ?? 'ws://localhost:8080/socket',
     );
-    return _instance;
+    return _instance!;
   }
 
   /// Reset singleton (for testing)
@@ -65,16 +54,16 @@ class SocketService {
   void _handleMessage(dynamic message) {
     try {
       final decoded = jsonDecode(message as String);
-      final responseId = decoded['id'] as String?;
+      final messageType = decoded['type'] as String?;
 
-      debugPrint('Received message: $decoded'); // Debug log
-      
+      debugPrint('Received message: $decoded');
+
       // Notify all event listeners
       _notifyListeners(decoded);
-      
-      if (responseId != null && _pendingRequests.containsKey(responseId)) {
-        final request = _pendingRequests.remove(responseId);
-        request!.completer.complete(decoded);
+
+      // Notify broadcast listeners for specific message types
+      if (messageType != null) {
+        _notifyBroadcastListeners(messageType, decoded);
       }
     } catch (e) {
       debugPrint('Error handling message: $e');
@@ -83,71 +72,26 @@ class SocketService {
 
   void _handleError(dynamic error) {
     debugPrint('WebSocket error: $error');
-    // Reject all pending requests
-    for (final request in _pendingRequests.values) {
-      if (!request.completer.isCompleted) {
-        request.completer.completeError(error);
-      }
-    }
-    _pendingRequests.clear();
   }
 
-  /// Send a message and wait for a response with the same ID
-  Future<dynamic> request(String type, {Map<String, dynamic>? data}) async {
+  /// Send a message (fire-and-forget)
+  void request(String type, {Map<String, dynamic>? data}) {
     if (!_isConnected) {
       throw Exception('Socket not connected');
     }
 
-    final requestId = DateTime.now().millisecondsSinceEpoch.toString();
-    final completer = Completer<dynamic>();
-    final request = SocketRequest(id: requestId, completer: completer);
-
-    _pendingRequests[requestId] = request;
-
-    // Send message
     final message = {
-      'id': requestId,
       'type': type,
       if (data != null) ...data,
     };
 
     try {
       _channel.sink.add(jsonEncode(message));
-
-      debugPrint('Sent message: $message'); // Debug log
-
-      // Await with timeout
-      final response =
-          await completer.future.timeout(const Duration(seconds: 10));
-
-      debugPrint(
-          'Received response for action "$type": $response'); // Debug log
-
-      return response;
-    } on TimeoutException {
-      _pendingRequests.remove(requestId);
-      throw TimeoutException(
-        'No response for action: $type',
-        const Duration(seconds: 10),
-      );
+      debugPrint('Sent message: $message');
     } catch (e) {
-      _pendingRequests.remove(requestId);
+      debugPrint('Error sending message: $e');
       rethrow;
     }
-  }
-
-  /// Send a message without expecting a response
-  void send(String action, {Map<String, dynamic>? data}) {
-    if (!_isConnected) {
-      throw Exception('Socket not connected');
-    }
-
-    final message = {
-      'action': action,
-      if (data != null) ...data,
-    };
-
-    _channel.sink.add(jsonEncode(message));
   }
 
   Future<void> dispose() async {
@@ -173,6 +117,37 @@ class SocketService {
         listener(event);
       } catch (e) {
         debugPrint('Error in event listener: $e');
+      }
+    }
+  }
+
+  /// Register a listener for a specific broadcast message type
+  void onBroadcast(
+      String messageType, Function(Map<String, dynamic>) listener) {
+    _broadcastListeners.putIfAbsent(messageType, () => []);
+    _broadcastListeners[messageType]!.add(listener);
+  }
+
+  /// Remove a broadcast listener
+  void offBroadcast(
+      String messageType, Function(Map<String, dynamic>) listener) {
+    _broadcastListeners[messageType]?.remove(listener);
+    if (_broadcastListeners[messageType]?.isEmpty ?? false) {
+      _broadcastListeners.remove(messageType);
+    }
+  }
+
+  /// Notify broadcast listeners for a specific message type
+  void _notifyBroadcastListeners(
+      String messageType, Map<String, dynamic> message) {
+    final listeners = _broadcastListeners[messageType];
+    if (listeners != null) {
+      for (final listener in listeners) {
+        try {
+          listener(message);
+        } catch (e) {
+          debugPrint('Error in broadcast listener for $messageType: $e');
+        }
       }
     }
   }

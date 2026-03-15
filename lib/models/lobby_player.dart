@@ -2,49 +2,37 @@ import 'package:equatable/equatable.dart';
 
 class LobbyPlayer extends Equatable {
   final String id;
-  final String username;
-  final bool ready;
-  final bool isOwner;
+  final String nickname;
 
   const LobbyPlayer({
     required this.id,
-    required this.username,
-    this.ready = false,
-    this.isOwner = false,
+    required this.nickname,
   });
 
   factory LobbyPlayer.fromJson(Map<String, dynamic> json) {
     return LobbyPlayer(
       id: json['id'] as String,
-      username: json['username'] as String? ?? 'Unknown',
-      ready: json['ready'] as bool? ?? false,
-      isOwner: json['isOwner'] as bool? ?? json['is_owner'] as bool? ?? false,
+      nickname: json['nickname'] as String? ?? 'Unknown',
     );
   }
 
   Map<String, dynamic> toJson() {
     return {
       'id': id,
-      'username': username,
-      'ready': ready,
-      'isOwner': isOwner,
+      'nickname': nickname,
     };
   }
 
   LobbyPlayer copyWith({
     String? id,
-    String? username,
-    bool? ready,
-    bool? isOwner,
+    String? nickname,
   }) {
     return LobbyPlayer(
       id: id ?? this.id,
-      username: username ?? this.username,
-      ready: ready ?? this.ready,
-      isOwner: isOwner ?? this.isOwner,
+      nickname: nickname ?? this.nickname,
     );
   }
 
   @override
-  List<Object?> get props => [id, username, ready, isOwner];
+  List<Object?> get props => [id, nickname];
 }

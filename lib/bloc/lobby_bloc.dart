@@ -5,6 +5,7 @@ import 'package:equatable/equatable.dart';
 import 'package:csbingo/models/lobby.dart';
 import 'package:csbingo/models/lobby_player.dart';
 import 'package:csbingo/services/socket_service.dart';
+import 'package:csbingo/services/user_service.dart';
 
 // Events
 abstract class LobbyEvent extends Equatable {
@@ -15,15 +16,20 @@ abstract class LobbyEvent extends Equatable {
 }
 
 class CreateLobbyRequested extends LobbyEvent {
-  const CreateLobbyRequested();
+  final String username;
+  const CreateLobbyRequested(this.username);
+
+  @override
+  List<Object?> get props => [username];
 }
 
 class JoinLobbyRequested extends LobbyEvent {
   final String code;
-  const JoinLobbyRequested(this.code);
+  final String username;
+  const JoinLobbyRequested(this.code, this.username);
 
   @override
-  List<Object?> get props => [code];
+  List<Object?> get props => [code, username];
 }
 
 class LobbyUpdated extends LobbyEvent {
@@ -32,6 +38,10 @@ class LobbyUpdated extends LobbyEvent {
 
   @override
   List<Object?> get props => [lobby];
+}
+
+class LeaveLobbyRequested extends LobbyEvent {
+  const LeaveLobbyRequested();
 }
 
 class PlayerReadyToggled extends LobbyEvent {
@@ -74,14 +84,6 @@ class LobbyLoaded extends LobbyState {
   List<Object?> get props => [lobby];
 }
 
-class LobbyCreatedSuccess extends LobbyState {
-  final String lobbyCode;
-  const LobbyCreatedSuccess(this.lobbyCode);
-
-  @override
-  List<Object?> get props => [lobbyCode];
-}
-
 class PlayerListUpdated extends LobbyState {
   final Lobby lobby;
   const PlayerListUpdated(this.lobby);
@@ -102,18 +104,32 @@ class LobbyError extends LobbyState {
 class LobbyBloc extends Bloc<LobbyEvent, LobbyState> {
   final SocketService socketService;
   Lobby? _currentLobby;
+  bool _isInitialResponse = true;
 
   LobbyBloc({required this.socketService}) : super(const LobbyInitial()) {
     on<CreateLobbyRequested>(_onCreateLobbyRequested);
     on<JoinLobbyRequested>(_onJoinLobbyRequested);
     on<LobbyUpdated>(_onLobbyUpdated);
+    on<LeaveLobbyRequested>(_onLeaveLobbyRequested);
     on<PlayerReadyToggled>(_onPlayerReadyToggled);
+
+    // Register listener for lobby_update broadcasts
+    socketService.onBroadcast('lobby_update', _handleLobbyUpdate);
+  }
+
+  void _handleLobbyUpdate(Map<String, dynamic> message) {
+    debugPrint('Received lobby update: $message');
+    if (message['type'] == 'lobby_update') {
+      final lobby = Lobby.fromJson(message);
+      add(LobbyUpdated(lobby));
+    }
   }
 
   Future<void> _onCreateLobbyRequested(
     CreateLobbyRequested event,
     Emitter<LobbyState> emit,
   ) async {
+    _isInitialResponse = true;
     emit(const LobbyLoading());
 
     try {
@@ -122,22 +138,24 @@ class LobbyBloc extends Bloc<LobbyEvent, LobbyState> {
         await socketService.connect();
       }
 
-      // Send join_lobby request with create flag
-      final response = await socketService.request(
-        'join_lobby',
-        data: {'create': true},
-      );
-      print('Create lobby response: $response');
+      final userService = UserService.getInstance();
+      userService.setNickname(event.username);
 
-      if (response is Map && response.containsKey('code')) {
-        final lobby = Lobby.fromJson(response as Map<String, dynamic>);
-        _currentLobby = lobby;
-        emit(LobbyLoaded(lobby));
-      } else {
-        emit(const LobbyError('Invalid response from server'));
-      }
-    } on TimeoutException {
-      emit(const LobbyError('Request timed out. Please try again.'));
+      print(
+          'Creating lobby for user: ${userService.nickname} (ID: ${userService.id})');
+
+      // Send join message - fire and forget, broadcast listener will handle response
+      socketService.request(
+        'join',
+        data: {
+          'type': 'join',
+          'id': userService.id,
+          'nickname': event.username,
+          'lobbyCode': '', // Empty code = create new
+        },
+      );
+
+      // State will be updated via _handleLobbyUpdate callback when server broadcasts lobby_update
     } catch (e) {
       emit(LobbyError('Failed to create lobby: ${e.toString()}'));
     }
@@ -147,6 +165,7 @@ class LobbyBloc extends Bloc<LobbyEvent, LobbyState> {
     JoinLobbyRequested event,
     Emitter<LobbyState> emit,
   ) async {
+    _isInitialResponse = true;
     emit(const LobbyLoading());
 
     try {
@@ -155,22 +174,23 @@ class LobbyBloc extends Bloc<LobbyEvent, LobbyState> {
         await socketService.connect();
       }
 
-      // Send join_lobby request with code
-      final response = await socketService.request(
-        'join_lobby',
-        data: {'code': event.code},
-      );
-      print('Join lobby response: $response');
+      final userService = UserService.getInstance();
+      userService.setNickname(event.username);
 
-      if (response is Map && response.containsKey('code')) {
-        final lobby = Lobby.fromJson(response as Map<String, dynamic>);
-        _currentLobby = lobby;
-        emit(LobbyLoaded(lobby));
-      } else {
-        emit(const LobbyError('Failed to join lobby'));
-      }
-    } on TimeoutException {
-      emit(const LobbyError('Request timed out. Please try again.'));
+      print('Joining lobby with code: ${event.code} as ${event.username}');
+
+      // Send join message - fire and forget, broadcast listener will handle response
+      socketService.request(
+        'join',
+        data: {
+          'type': 'join',
+          'id': userService.id,
+          'nickname': event.username,
+          'lobbyCode': event.code,
+        },
+      );
+
+      // State will be updated via _handleLobbyUpdate callback when server broadcasts lobby_update
     } catch (e) {
       emit(LobbyError('Failed to join lobby: ${e.toString()}'));
     }
@@ -181,7 +201,39 @@ class LobbyBloc extends Bloc<LobbyEvent, LobbyState> {
     Emitter<LobbyState> emit,
   ) async {
     _currentLobby = event.lobby;
-    emit(PlayerListUpdated(event.lobby));
+    
+    if (_isInitialResponse) {
+      // First response: emit LobbyLoaded to trigger navigation
+      _isInitialResponse = false;
+      emit(LobbyLoaded(event.lobby));
+    } else {
+      // Subsequent updates: emit PlayerListUpdated for UI refresh
+      emit(PlayerListUpdated(event.lobby));
+    }
+  }
+
+  Future<void> _onLeaveLobbyRequested(
+    LeaveLobbyRequested event,
+    Emitter<LobbyState> emit,
+  ) async {
+    if (_currentLobby == null) return;
+
+    try {
+      final userService = UserService.getInstance();
+      // Send leave message to socket (fire-and-forget)
+      socketService.request(
+        'leave',
+        data: {
+          'type': 'leave',
+          'id': userService.id,
+          'lobbyCode': _currentLobby!.code,
+        },
+      );
+      _currentLobby = null;
+      _isInitialResponse = true;
+    } catch (e) {
+      print('Error leaving lobby: $e');
+    }
   }
 
   Future<void> _onPlayerReadyToggled(
@@ -191,8 +243,8 @@ class LobbyBloc extends Bloc<LobbyEvent, LobbyState> {
     if (_currentLobby == null) return;
 
     try {
-      // Send ready status update to socket
-      socketService.send('player_ready', data: {'ready': event.ready});
+      // Send ready status update to socket (fire-and-forget)
+      socketService.request('player_ready', data: {'ready': event.ready});
     } catch (e) {
       emit(LobbyError('Failed to update ready status: ${e.toString()}'));
     }

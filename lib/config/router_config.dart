@@ -28,13 +28,9 @@ GoRouter createRouter() {
           ),
           GoRoute(
             path: '/ffa/lobby/:code',
-            builder: (context, state) {
-              final code = state.pathParameters['code'];
-              return LobbyPage(
-                key: const Key("lobby_page_key"),
-                lobbyCode: code,
-              );
-            },
+            builder: (context, state) => const LobbyPage(
+              key: Key("lobby_page_key"),
+            ),
           ),
           // GoRoute(
           //   path: '/',

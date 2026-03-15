@@ -1,6 +1,9 @@
 import 'package:csbingo/adsense/ad_widget.dart';
+import 'package:csbingo/bloc/lobby_bloc.dart';
 import 'package:csbingo/csbingo.dart';
 import 'package:csbingo/config/router_config.dart';
+import 'package:csbingo/services/socket_service.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -29,12 +32,18 @@ class MyApp extends StatelessWidget {
       useMaterial3: true,
     );
 
-    return MaterialApp.router(
-      title: 'CS BINGO',
-      theme: light,
-      darkTheme: dark,
-      themeMode: ThemeMode.dark,
-      routerConfig: createRouter(),
+    return BlocProvider<LobbyBloc>(
+      create: (context) {
+        final socketService = SocketService.getInstance();
+        return LobbyBloc(socketService: socketService);
+      },
+      child: MaterialApp.router(
+        title: 'CS BINGO',
+        theme: light,
+        darkTheme: dark,
+        themeMode: ThemeMode.dark,
+        routerConfig: createRouter(),
+      ),
     );
   }
 }
