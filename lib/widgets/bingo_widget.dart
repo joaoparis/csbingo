@@ -2,7 +2,9 @@ import 'package:rive/rive.dart';
 import 'package:csbingo/csbingo.dart';
 
 class BingoWidget extends StatefulWidget {
-  const BingoWidget({super.key});
+  const BingoWidget({super.key, required this.gameManager});
+
+  final GameManager gameManager;
 
   @override
   State<BingoWidget> createState() => _BingoWidgetState();
@@ -34,9 +36,8 @@ class _BingoWidgetState extends State<BingoWidget> {
   late ViewModelInstanceTrigger _textTrigger;
 
   RiveGameBridge? _bridge;
-  GameManager gameManager = GameManager(
-    game: DailyGame(),
-  );
+
+  late GameManager gameManager;
 
   @override
   void initState() {
@@ -115,9 +116,10 @@ class _BingoWidgetState extends State<BingoWidget> {
       secondOutputEmptyTrigger: _emptyTrigger,
       secondOutputTextTrigger: _textTrigger,
     );
-    _bridge = RiveGameBridge(manager: gameManager);
+    _bridge = RiveGameBridge(manager: widget.gameManager);
     await _bridge!.init(controller: _controller, bindings: bindings);
     setState(() => isInitialized = true);
+    print("[DEBUG] Rive initialized successfully!");
   }
 
   Future<bool> _initViewModels() async {

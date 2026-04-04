@@ -4,10 +4,7 @@ import 'package:csbingo/csbingo.dart';
 class GameManager extends ChangeNotifier {
   IGame game;
 
-  OrchestratorState orchestratorState = OrchestratorState.menu;
-  MenuState menuState = MenuState.dailyGame;
-
-  bool isGameInitialized = false;
+  OrchestratorState orchestratorState;
 
   GameType targetType = GameType.daily;
 
@@ -15,6 +12,7 @@ class GameManager extends ChangeNotifier {
 
   GameManager({
     required this.game,
+    required this.orchestratorState,
   }) {
     game.reset();
     _onGameInstanceChanged = () {};
@@ -24,44 +22,8 @@ class GameManager extends ChangeNotifier {
     _onGameInstanceChanged = callback;
   }
 
-  void handleCursorTrigger(bool value) {
-    switch (orchestratorState) {
-      case OrchestratorState.menu:
-        _toogleMainMenuCursor();
-        notify("handleCursorTrigger(): cursor toggled");
-        return;
-      case OrchestratorState.gameOver:
-        game.toggleGameOverState();
-        notify("handleCursorTrigger(): cursor toggled");
-        return;
-      case OrchestratorState.loading:
-      case OrchestratorState.playing:
-        return;
-    }
-  }
-
-  VoidCallback get _setGameOverOnManager => () async {
-        orchestratorState = OrchestratorState.gameOver;
-        menuState = MenuState.inactive;
-        await game.getAnswers();
-        notify("GameManager: Game over triggered from game instance");
-      };
-
   Future<void> buttonClicked() async {
     switch (orchestratorState) {
-      case OrchestratorState.menu:
-        if (targetType == GameType.ffa) {
-          return;
-        }
-        game = GameFactory.create(targetType);
-        game.setGameOverOnManager = _setGameOverOnManager;
-        _onGameInstanceChanged();
-        orchestratorState = OrchestratorState.loading;
-        menuState = MenuState.inactive;
-        notify("buttonClicked(): game initialized");
-        await game.initialize();
-        orchestratorState = OrchestratorState.playing;
-        return;
       case OrchestratorState.loading:
         return;
       case OrchestratorState.playing:
@@ -69,8 +31,6 @@ class GameManager extends ChangeNotifier {
         return;
       case OrchestratorState.gameOver:
         await game.gameOver();
-        orchestratorState = OrchestratorState.menu;
-        menuState = MenuState.dailyGame;
         targetType = GameType.daily;
         notify("buttonClicked(): game reset");
         return;
@@ -79,16 +39,5 @@ class GameManager extends ChangeNotifier {
 
   notify(String src) {
     notifyListeners();
-  }
-
-  void _toogleMainMenuCursor() {
-    var newIndex = targetType.index + 1;
-    if (newIndex == GameType.values.length) {
-      targetType = GameType.values[0];
-      menuState = MenuState.values[0];
-      return;
-    }
-    menuState = MenuState.values[newIndex];
-    targetType = GameType.values[newIndex];
   }
 }

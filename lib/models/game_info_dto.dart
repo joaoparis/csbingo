@@ -1,3 +1,4 @@
+import 'package:csbingo/constants/game_state.dart';
 import 'package:csbingo/models/cell.dart';
 import 'package:csbingo/models/player.dart';
 
@@ -38,6 +39,7 @@ class GameInfoDTO {
   final String cardId;
   final List<Cell> cells;
   final List<Player> players;
+  final GameState state;
 
   int points;
 
@@ -46,6 +48,7 @@ class GameInfoDTO {
     required this.cardId,
     required this.cells,
     required this.players,
+    required this.state,
     required this.points,
   });
 
@@ -78,12 +81,18 @@ class GameInfoDTO {
       );
     }).toList();
 
+    final gameState = GameState.values.firstWhere(
+      (e) => e.toString() == 'GameState.${json['state']}',
+      orElse: () => GameState.loading,
+    );
+
     return GameInfoDTO(
       gameId: gameId,
       cardId: id,
       cells: cells,
       players: players,
       points: points,
+      state: gameState,
     );
   }
 }

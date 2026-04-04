@@ -1,15 +1,5 @@
-enum OldGameState {
-  Idle,
-  Loading,
-  Playing,
-  GameOver,
-  FFALobby,
-}
-
-// --------------------------------
-
 enum OrchestratorState {
-  menu,
+  // menu,
   loading,
   playing,
   gameOver,

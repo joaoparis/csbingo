@@ -18,8 +18,8 @@ class GameInfo {
   final List<Cell> cells;
   final List<Player> players;
   List<String> suggestedAnswers;
+  final GameState state;
 
-  GameState state;
   GameOverState gameOverState = GameOverState.displayingPlayerAnswers;
   GameType type; // probably will be deleted - it's saved inside the Game itself
 
@@ -34,7 +34,7 @@ class GameInfo {
     required this.cells,
     required this.players,
     required this.points,
-    this.state = GameState.loading,
+    required this.state,
     this.skips = 0,
     this.currentRound = 0,
     this.type = GameType.daily,
@@ -122,6 +122,7 @@ class GameInfo {
       skips: skips,
       currentRound: currentRound,
       type: type,
+      state: info.state,
     );
   }
 
@@ -153,6 +154,7 @@ class GameInfo {
       points: 0,
       skips: skips,
       currentRound: 0,
+      state: GameState.loading,
     );
   }
 

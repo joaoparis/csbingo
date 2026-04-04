@@ -1,4 +1,5 @@
 import 'package:csbingo/csbingo.dart';
+import 'package:csbingo/pages/game_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:csbingo/widgets/bingo_widget.dart';
 import 'package:csbingo/widgets/footer.dart';
@@ -88,13 +89,7 @@ class _GamePageState extends State<GamePage> {
                         ),
                       ),
                       // Center: Game widget
-                      const Expanded(
-                        flex: 4,
-                        child: Padding(
-                          padding: EdgeInsets.all(8.0),
-                          child: BingoWidget(),
-                        ),
-                      ),
+                      const GameWidget(),
                       // Right ad sidebar
                       Expanded(
                         flex: 1,

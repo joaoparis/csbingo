@@ -32,6 +32,13 @@ GoRouter createRouter() {
               key: Key("lobby_page_key"),
             ),
           ),
+          GoRoute(
+            path: '/ffa/lobby/:code/game',
+            builder: (context, state) => const GamePage(
+              key: Key("ffa_game_page_key"),
+              themeMode: ThemeMode.dark,
+            ),
+          ),
           // GoRoute(
           //   path: '/',
           //   builder: (context, state) => const LandingPage(

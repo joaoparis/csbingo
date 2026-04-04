@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:math' as math;
 
 import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
@@ -8,9 +7,8 @@ import 'package:rive/rive.dart';
 import 'package:csbingo/csbingo.dart';
 
 class RiveGameBridge {
-  final GameManager manager;
+  GameManager manager;
   late final VoidCallback _gameListener;
-  late final VoidCallback _menuListener;
   late final http.Client _httpClient;
 
   RiveWidgetController? _controller;
@@ -23,7 +21,6 @@ class RiveGameBridge {
 
   RiveGameBridge({required this.manager}) {
     _gameListener = _onGameChanged;
-    _menuListener = _onMenuChanged;
     _httpClient = http.Client();
   }
 
@@ -31,20 +28,17 @@ class RiveGameBridge {
     required RiveWidgetController controller,
     required RiveBindings bindings,
   }) async {
+    print("[RIVE_BRIDGE] Initializing RiveGameBridge...");
     _controller = controller;
     _bindings = bindings;
 
+    _applyGameStateToRive();
     controller.stateMachine.addEventListener(_handleRiveEvent);
-
-    manager.addListener(_menuListener);
-
     _attachGameListener();
     manager.setGameInstanceChangeCallback(_attachGameListener);
-
-    bindings.cursorTrigger.addListener(manager.handleCursorTrigger);
     bindings.cellTaps.asMap().forEach((i, c) => _handleCellTap(i, c));
 
-    _applyMenuStateToRive();
+    print("[RIVE_BRIDGE] RiveGameBridge initialization complete.");
   }
 
   void _attachGameListener() {
@@ -76,12 +70,18 @@ class RiveGameBridge {
   }
 
   void _onGameChanged() {
-    if (!isReady) return;
+    if (!isReady) {
+      print(
+          "[RIVE_BRIDGE] Game changed but RiveGameBridge is not ready. Ignoring game change.");
+      return;
+    }
+    print("[RIVE_BRIDGE] Game changed. Updating Rive state.");
     // print("_currentlyLoadingCellIndex? $_currentlyLoadingCellIndex");
     _applyGameStateToRive();
   }
 
   void _applyGameStateToRive() async {
+    print("[RIVE_BRIDGE] Game state: ${manager.game.info.state}");
     switch (manager.game.info.state) {
       case GameState.loading:
         _bindings!.secondOutputTitleText.value =
@@ -139,37 +139,6 @@ class RiveGameBridge {
         _updateScore(value: "0");
         _setGhostCellStatus();
         _bindings!.outputText.value = "";
-        break;
-    }
-  }
-
-  void _onMenuChanged() {
-    if (!isReady) return;
-    _applyMenuStateToRive();
-  }
-
-  void _applyMenuStateToRive() async {
-    switch (manager.menuState) {
-      case MenuState.dailyGame:
-      case MenuState.randomGame:
-        _setPlayButton();
-        _setMenuTextInMainDisplay();
-        _setGhostCellStatus();
-        _setEmptyImages();
-        _bindings!.secondOutputTitleText.value = manager.targetType.fullName;
-        _bindings!.secondOutputBodyText.value = manager.targetType.description;
-        _bindings!.secondOutputTextTrigger.trigger();
-        break;
-      case MenuState.ffaGame:
-        _setInactiveButton();
-        _setMenuTextInMainDisplay();
-        _setGhostCellStatus();
-        _setEmptyImages();
-        _bindings!.secondOutputTitleText.value = manager.targetType.fullName;
-        _bindings!.secondOutputBodyText.value = manager.targetType.description;
-        _bindings!.secondOutputTextTrigger.trigger();
-        break;
-      case MenuState.inactive:
         break;
     }
   }
@@ -250,26 +219,6 @@ class RiveGameBridge {
   void _setGreyButton() {
     _bindings!.buttonStatus.value = 'grey';
     _bindings!.buttonText.value = 'SKIP';
-  }
-
-  void _setPlayButton() {
-    _bindings!.buttonStatus.value = 'green';
-    _bindings!.buttonText.value = 'PLAY';
-  }
-
-  void _setInactiveButton() {
-    _bindings!.buttonStatus.value = 'grey';
-    _bindings!.buttonText.value = 'Comming soon!';
-  }
-
-  Future<void> _setEmptyImages() async {
-    var asset = "assets/images/empty_placeholder.png";
-    var bytes = await _getBytesFromLocalAsset(asset);
-
-    for (var i = 0; i < manager.game.config.gridSize; i++) {
-      _bindings!.cellImages[i].value = await Factory.rive.decodeImage(bytes);
-      _bindings!.cellsText[i].value = manager.game.cellTitle(i);
-    }
   }
 
   Future<void> _setCellImages() async {
@@ -366,14 +315,6 @@ class RiveGameBridge {
     }
   }
 
-  void _setMenuTextInMainDisplay() {
-    _bindings!.outputText.value = "";
-    _bindings!.outputTextInfo.value = "Select game:\n"
-        "(${manager.targetType == GameType.daily ? '*' : ' '}) ${GameType.daily.name}\n"
-        "(${manager.targetType == GameType.random ? '*' : ' '}) ${GameType.random.name}\n"
-        "(${manager.targetType == GameType.ffa ? '*' : ' '}) ${GameType.ffa.name}\n";
-  }
-
   void _setLoadingText() {
     _bindings!.outputText.value = "Loading...";
     _bindings!.outputTextInfo.value = "CS BINGO: ${manager.game.type.name}";
@@ -410,7 +351,4 @@ class RiveGameBridge {
   void _updateScore({String? value}) {
     _bindings!.scoreText.value = value ?? manager.game.info.points.toString();
   }
-
-  Future<Uint8List> _getBytesFromLocalAsset(String asset) async =>
-      (await rootBundle.load(asset)).buffer.asUint8List();
 }

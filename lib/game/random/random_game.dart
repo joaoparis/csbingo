@@ -47,14 +47,14 @@ class RandomGame extends IGame {
     await _loadGame();
     images = await imagesGateway.loadImages(info.cells);
 
-    info.state = GameState.playing;
+    // info.state = GameState.playing;
     timer.startTimer(config.roundTime);
     _notify("initialize(): state=${info.state}");
   }
 
   @override
   Future<void> gameOver() async {
-    info.state = GameState.inactive;
+    // info.state = GameState.inactive;
     timer.timerText.removeListener(timerListener);
     timerFinishedSub.cancel();
     _notify("gameOver(): info.state=${info.state}");
@@ -93,7 +93,7 @@ class RandomGame extends IGame {
 
     await evaluateAction(index: index);
 
-    info.state = GameState.playing;
+    // info.state = GameState.playing;
 
     if (isBoardComplete) {
       resetCurrentRound;
@@ -120,7 +120,7 @@ class RandomGame extends IGame {
 
   @override
   Future<void> evaluateAction({int index = -1}) async {
-    info.state = GameState.verifyingAnswer;
+    // info.state = GameState.verifyingAnswer;
 
     if (index != -1) {
       info.cells[index].isLoadingAnswer = true;
@@ -134,7 +134,7 @@ class RandomGame extends IGame {
     );
     // DEBUG await Future.delayed(const Duration(milliseconds: 500));
 
-    info.state = GameState.finishingVerification;
+    // info.state = GameState.finishingVerification;
     _notify("evaluateAction(): cell $index is loading answer");
 
     while (info.state != GameState.playing) {
@@ -181,7 +181,7 @@ class RandomGame extends IGame {
   @override
   void setPlayingState() {
     if (info.state != GameState.gameOver) {
-      info.state = GameState.playing;
+      // info.state = GameState.playing;
     }
     _notify("setPlayingState()");
   }
@@ -246,7 +246,7 @@ class RandomGame extends IGame {
       );
       // _notify("_loadGame(): game has loaded info.state=$info.state");
     } catch (err) {
-      info.state = GameState.error;
+      // info.state = GameState.error;
       // _notify(
       //     "_loadGame(): failed to load game, reverting to info.state=${info.state}");
       rethrow;
@@ -254,7 +254,7 @@ class RandomGame extends IGame {
   }
 
   void _updateStatesWithGameOver() {
-    info.state = GameState.gameOver;
+    // info.state = GameState.gameOver;
     for (var cell in info.cells) {
       cell.isAnswered = false;
     }

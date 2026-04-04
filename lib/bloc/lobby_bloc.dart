@@ -1,6 +1,9 @@
 import 'dart:async';
 
 import 'package:bloc/bloc.dart';
+import 'package:csbingo/models/cell.dart';
+import 'package:csbingo/models/game_info.dart';
+import 'package:csbingo/models/round.dart';
 import 'package:equatable/equatable.dart';
 import 'package:csbingo/models/lobby.dart';
 import 'package:csbingo/models/lobby_player.dart';
@@ -60,6 +63,33 @@ class LobbyCreated extends LobbyEvent {
   List<Object?> get props => [lobbyCode];
 }
 
+class StartGame extends LobbyEvent {
+  final Lobby lobby;
+  final int countdown;
+  const StartGame(this.lobby, this.countdown);
+
+  @override
+  List<Object?> get props => [lobby, countdown];
+}
+
+class RoundStart extends LobbyEvent {
+  final Lobby lobby;
+  final Round round;
+  const RoundStart(this.lobby, this.round);
+
+  @override
+  List<Object?> get props => [lobby, round];
+}
+
+class RoundEnd extends LobbyEvent {
+  final Lobby lobby;
+  final Round round;
+  const RoundEnd(this.lobby, this.round);
+
+  @override
+  List<Object?> get props => [lobby, round];
+}
+
 // States
 abstract class LobbyState extends Equatable {
   const LobbyState();
@@ -100,6 +130,33 @@ class LobbyError extends LobbyState {
   List<Object?> get props => [message];
 }
 
+class LobbyGameLoading extends LobbyState {
+  final Lobby lobby;
+  final int countdown;
+  const LobbyGameLoading(this.lobby, this.countdown);
+
+  @override
+  List<Object?> get props => [lobby, countdown];
+}
+
+class LobbyRoundStarted extends LobbyState {
+  final Lobby lobby;
+  final String timer;
+  final GameInfo gameInfo;
+  const LobbyRoundStarted(
+    this.lobby,
+    this.timer,
+    this.gameInfo,
+  );
+
+  @override
+  List<Object?> get props => [
+        lobby,
+        timer,
+        gameInfo,
+      ];
+}
+
 // BLoC
 class LobbyBloc extends Bloc<LobbyEvent, LobbyState> {
   final SocketService socketService;
@@ -112,17 +169,14 @@ class LobbyBloc extends Bloc<LobbyEvent, LobbyState> {
     on<LobbyUpdated>(_onLobbyUpdated);
     on<LeaveLobbyRequested>(_onLeaveLobbyRequested);
     on<PlayerReadyToggled>(_onPlayerReadyToggled);
+    on<StartGame>(_onStartGame);
+    on<RoundStart>(_onRoundStart);
+    on<RoundEnd>(_onRoundEnd);
 
     // Register listener for lobby_update broadcasts
     socketService.onBroadcast('lobby_update', _handleLobbyUpdate);
-  }
-
-  void _handleLobbyUpdate(Map<String, dynamic> message) {
-    debugPrint('Received lobby update: $message');
-    if (message['type'] == 'lobby_update') {
-      final lobby = Lobby.fromJson(message);
-      add(LobbyUpdated(lobby));
-    }
+    socketService.onBroadcast('start_game', _handleGameStart);
+    socketService.onBroadcast('round_start', _handleRoundStart);
   }
 
   Future<void> _onCreateLobbyRequested(
@@ -201,7 +255,7 @@ class LobbyBloc extends Bloc<LobbyEvent, LobbyState> {
     Emitter<LobbyState> emit,
   ) async {
     _currentLobby = event.lobby;
-    
+
     if (_isInitialResponse) {
       // First response: emit LobbyLoaded to trigger navigation
       _isInitialResponse = false;
@@ -247,6 +301,63 @@ class LobbyBloc extends Bloc<LobbyEvent, LobbyState> {
       socketService.request('player_ready', data: {'ready': event.ready});
     } catch (e) {
       emit(LobbyError('Failed to update ready status: ${e.toString()}'));
+    }
+  }
+
+  Future<void> _onStartGame(
+    StartGame event,
+    Emitter<LobbyState> emit,
+  ) async =>
+      emit(LobbyGameLoading(event.lobby, event.countdown));
+
+  Future<void> _onRoundStart(
+    RoundStart event,
+    Emitter<LobbyState> emit,
+  ) async =>
+      emit(LobbyRoundStarted(
+          event.lobby,
+          '00:30', // TODO: Get actual timer from server
+          GameInfo(
+            gameId: event.lobby.code,
+            cardId: event.lobby.code, // TODO: Get actual card ID from server
+            cells: event.round.cells,
+            players: event.round.players,
+            points: 0,
+            state: event.lobby.state,
+          )));
+
+  Future<void> _onRoundEnd(
+    RoundEnd event,
+    Emitter<LobbyState> emit,
+  ) async {
+    // For now, just go back to loading state until next round starts
+    emit(
+        LobbyGameLoading(event.lobby, 5)); // Example countdown until next round
+  }
+
+  void _handleLobbyUpdate(Map<String, dynamic> message) {
+    debugPrint('Received lobby update: $message');
+    if (message['type'] == 'lobby_update') {
+      final lobby = Lobby.fromJson(message);
+      add(LobbyUpdated(lobby));
+    }
+  }
+
+  void _handleGameStart(Map<String, dynamic> message) {
+    debugPrint('Received Game Start: $message');
+    if (message['type'] == 'start_game') {
+      final lobby = Lobby.fromJson(message);
+      add(StartGame(lobby, message['countdown'] ?? '???'));
+    }
+  }
+
+  void _handleRoundStart(Map<String, dynamic> message) {
+    debugPrint('Received Round Start: $message');
+    if (message['type'] == 'round_start') {
+      final lobby = Lobby.fromJson(message);
+      debugPrint("Message: ${message['round']}");
+      final round = Round.fromJson(message['round']);
+      add(RoundStart(lobby, round));
     }
   }
 }

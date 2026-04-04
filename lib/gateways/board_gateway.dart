@@ -110,6 +110,7 @@ class BoardGateway {
       cells: List.empty(),
       players: List.empty(),
       points: 0,
+      state: GameState.error,
     );
   }
 }

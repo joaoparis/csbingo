@@ -26,6 +26,8 @@ class LobbyPage extends StatelessWidget {
                 backgroundColor: Colors.red,
               ),
             );
+          } else if (state is LobbyGameLoading) {
+            context.go('/ffa/lobby/${state.lobby.code}/game');
           }
         },
         child: Padding(
@@ -211,6 +213,19 @@ class LobbyPage extends StatelessWidget {
                           ),
                         ),
                       ),
+
+                      // const Spacer(),
+
+                      // Start game button (only for owner)
+                      if (lobby!.owner == UserService.getInstance().id)
+                        _buildStartGameButton(context, lobby!.code)
+                      else
+                        Text(
+                          'Waiting for owner to start the game...',
+                          style: theme.textTheme.bodyMedium?.copyWith(
+                            color: Colors.white54,
+                          ),
+                        ),
                     ],
                   ),
                 );
@@ -219,6 +234,21 @@ class LobbyPage extends StatelessWidget {
           ),
         ),
       ),
+    );
+  }
+
+  CS2Button _buildStartGameButton(BuildContext context, String lobbyCode) {
+    return CS2Button(
+      text: 'Start Game',
+      size: 50,
+      onPressed: () {
+        final socketService = SocketService.getInstance();
+        // Send start game request to socket (fire-and-forget)
+        socketService.request('start', data: {
+          'type': 'start',
+          'lobbyCode': lobbyCode,
+        });
+      },
     );
   }
 

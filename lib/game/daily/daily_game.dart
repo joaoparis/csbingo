@@ -33,24 +33,24 @@ class DailyGame extends IGame {
 
   @override
   Future<void> initialize() async {
-    info.currentRound = 0;
-    info.skips = config.maxSkips;
-    info.gameOverState = GameOverState.displayingPlayerAnswers;
+    // info.currentRound = 0;
+    // info.skips = config.maxSkips;
+    // info.gameOverState = GameOverState.displayingPlayerAnswers;
 
-    _setupTimer();
-    info = GameInfo.forLoading(
-      config.gridSize,
-      config.maxRounds,
-      config.maxSkips,
-      info.type,
-    );
-    _notify("_loadGame(): start loading game=${info.state}");
-    await _loadGame();
-    images = await imagesGateway.loadImages(info.cells);
+    // _setupTimer();
+    // info = GameInfo.forLoading(
+    //   config.gridSize,
+    //   config.maxRounds,
+    //   config.maxSkips,
+    //   info.type,
+    // );
+    // _notify("_loadGame(): start loading game=${info.state}");
+    // await _loadGame();
+    // images = await imagesGateway.loadImages(info.cells);
 
-    info.state = GameState.playing;
-    timer.startTimer(config.roundTime);
-    _notify("initialize(): state=${info.state}");
+    // // info.state = GameState.playing;
+    // timer.startTimer(config.roundTime);
+    // _notify("initialize(): state=${info.state}");
   }
 
   @override
@@ -58,7 +58,7 @@ class DailyGame extends IGame {
     // info.state = GameState.inactive;
     timer.timerText.removeListener(timerListener);
     timerFinishedSub.cancel();
-    info.state = GameState.gameOver;
+    // info.state = GameState.gameOver;
     _notify("gameOver(): info.state=${info.state}");
     reset();
   }
@@ -118,7 +118,7 @@ class DailyGame extends IGame {
 
   @override
   Future<void> evaluateAction({int index = -1}) async {
-    info.state = GameState.verifyingAnswer;
+    // info.state = GameState.verifyingAnswer;
 
     if (index != -1) {
       info.cells[index].isLoadingAnswer = true;
@@ -132,7 +132,7 @@ class DailyGame extends IGame {
     );
     // DEBUG await Future.delayed(const Duration(milliseconds: 500));
 
-    info.state = GameState.finishingVerification;
+    // info.state = GameState.finishingVerification;
     _notify("evaluateAction(): cell $index is loading answer");
 
     while (info.state != GameState.playing) {
@@ -185,7 +185,7 @@ class DailyGame extends IGame {
   @override
   void setPlayingState() {
     if (info.state != GameState.gameOver) {
-      info.state = GameState.playing;
+      // info.state = GameState.playing;
     }
     _notify("setPlayingState()");
   }
@@ -250,7 +250,7 @@ class DailyGame extends IGame {
       );
       // _notify("_loadGame(): game has loaded info.state=$info.state");
     } catch (err) {
-      info.state = GameState.error;
+      // info.state = GameState.error;
       // _notify(
       //     "_loadGame(): failed to load game, reverting to info.state=${info.state}");
       rethrow;
@@ -258,7 +258,7 @@ class DailyGame extends IGame {
   }
 
   void _updateStatesWithGameOver() {
-    info.state = GameState.gameOver;
+    // info.state = GameState.gameOver;
     for (var cell in info.cells) {
       cell.isAnswered = false;
       cell.isCorrect ? cell.isWrong = false : cell.isWrong = true;

@@ -19,4 +19,13 @@ class Player {
       image: "assets/images/cell_placeholder.png",
     );
   }
+
+  factory Player.fromJson(Map<String, dynamic> json) {
+    return Player(
+      name: json['name'] ?? '',
+      nationality: json['nationality'] ?? '',
+      team: json['team'] ?? '',
+      image: json['image'] ?? 'assets/images/cell_placeholder.png',
+    );
+  }
 }

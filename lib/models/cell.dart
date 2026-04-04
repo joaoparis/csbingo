@@ -18,4 +18,12 @@ class Cell {
     this.answer = '',
     this.isLoadingAnswer = false,
   });
+
+  factory Cell.fromJson(Map<String, dynamic> json) {
+    return Cell(
+      title: json['title'] ?? '',
+      imageUrl: json['image_url'] ?? '',
+      criteria: json['criteria'] ?? '',
+    );
+  }
 }
